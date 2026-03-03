@@ -65,7 +65,7 @@ Base URL: `https://www.googleapis.com/calendar/v3`
 Get all calendars the user has access to:
 
 ```bash
-bash -c 'curl -s "https://www.googleapis.com/calendar/v3/users/me/calendarList" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN"' | jq '.items[] | {id, summary, primary, accessRole}'
+bash -c 'curl -s "https://www.googleapis.com/calendar/v3/users/me/calendarList" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN"' | jq '.items[]? | {id, summary, primary, accessRole}'
 ```
 
 ### Get Calendar Details
@@ -91,7 +91,7 @@ bash -c 'curl -s "https://www.googleapis.com/calendar/v3/calendars/primary" --he
 List upcoming events from the primary calendar:
 
 ```bash
-bash -c 'curl -s "https://www.googleapis.com/calendar/v3/calendars/primary/events?maxResults=10&orderBy=startTime&singleEvents=true&timeMin=$(date -u +%Y-%m-%dT%H:%M:%SZ)" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN"' | jq '.items[] | {id, summary, start, end}'
+bash -c 'curl -s "https://www.googleapis.com/calendar/v3/calendars/primary/events?maxResults=10&orderBy=startTime&singleEvents=true&timeMin=$(date -u +%Y-%m-%dT%H:%M:%SZ)" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN"' | jq '.items[]? | {id, summary, start, end}'
 ```
 
 ### List Events with Time Filter
@@ -99,7 +99,7 @@ bash -c 'curl -s "https://www.googleapis.com/calendar/v3/calendars/primary/event
 Get events within a specific date range:
 
 ```bash
-bash -c 'curl -s "https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=2024-01-01T00:00:00Z&timeMax=2024-12-31T23:59:59Z&singleEvents=true&orderBy=startTime" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN"' | jq '.items[] | {id, summary, start, end}'
+bash -c 'curl -s "https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=2024-01-01T00:00:00Z&timeMax=2024-12-31T23:59:59Z&singleEvents=true&orderBy=startTime" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN"' | jq '.items[]? | {id, summary, start, end}'
 ```
 
 ### Search Events
@@ -107,7 +107,7 @@ bash -c 'curl -s "https://www.googleapis.com/calendar/v3/calendars/primary/event
 Search events by query string:
 
 ```bash
-bash -c 'curl -s "https://www.googleapis.com/calendar/v3/calendars/primary/events?q=meeting&singleEvents=true" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN"' | jq '.items[] | {id, summary, start, end}'
+bash -c 'curl -s "https://www.googleapis.com/calendar/v3/calendars/primary/events?q=meeting&singleEvents=true" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN"' | jq '.items[]? | {id, summary, start, end}'
 ```
 
 ### Get Event Details
@@ -159,7 +159,7 @@ Create a new event. Write to `/tmp/calendar_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://www.googleapis.com/calendar/v3/calendars/primary/events" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '{id, summary, htmlLink}'
+bash -c 'curl -s -X POST "https://www.googleapis.com/calendar/v3/calendars/primary/events" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '.error // {id, summary, htmlLink}'
 ```
 
 ### Create All-Day Event
@@ -181,7 +181,7 @@ Write to `/tmp/calendar_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://www.googleapis.com/calendar/v3/calendars/primary/events" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '{id, summary, htmlLink}'
+bash -c 'curl -s -X POST "https://www.googleapis.com/calendar/v3/calendars/primary/events" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '.error // {id, summary, htmlLink}'
 ```
 
 ### Quick Add Event
@@ -189,7 +189,7 @@ bash -c 'curl -s -X POST "https://www.googleapis.com/calendar/v3/calendars/prima
 Create event from natural language text:
 
 ```bash
-bash -c 'curl -s -X POST "https://www.googleapis.com/calendar/v3/calendars/primary/events/quickAdd?text=Lunch%20with%20Sarah%20tomorrow%20at%2012pm" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN"' | jq '{id, summary, start, end}'
+bash -c 'curl -s -X POST "https://www.googleapis.com/calendar/v3/calendars/primary/events/quickAdd?text=Lunch%20with%20Sarah%20tomorrow%20at%2012pm" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN"' | jq '.error // {id, summary, start, end}'
 ```
 
 ### Update Event
@@ -214,7 +214,7 @@ Update an existing event. Write to `/tmp/calendar_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X PUT "https://www.googleapis.com/calendar/v3/calendars/primary/events/{event-id}" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '{id, summary, updated}'
+bash -c 'curl -s -X PUT "https://www.googleapis.com/calendar/v3/calendars/primary/events/{event-id}" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '.error // {id, summary, updated}'
 ```
 
 ### Patch Event
@@ -230,7 +230,7 @@ Partially update an event (only specified fields). Write to `/tmp/calendar_reque
 Then run:
 
 ```bash
-bash -c 'curl -s -X PATCH "https://www.googleapis.com/calendar/v3/calendars/primary/events/{event-id}" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '{id, summary, updated}'
+bash -c 'curl -s -X PATCH "https://www.googleapis.com/calendar/v3/calendars/primary/events/{event-id}" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '.error // {id, summary, updated}'
 ```
 
 ### Delete Event
@@ -251,15 +251,11 @@ bash -c 'curl -s -X DELETE "https://www.googleapis.com/calendar/v3/calendars/pri
 
 ## Attendees
 
-### Add Attendees to Event
+### Set Attendees on Event
 
-Update event with new attendees. First, get the current event:
+> **Note:** PATCH replaces the entire attendees array — always include all intended attendees in the list, not just the ones you're adding.
 
-```bash
-bash -c 'curl -s "https://www.googleapis.com/calendar/v3/calendars/primary/events/{event-id}" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN"' > /tmp/calendar_event.json
-```
-
-Then modify the attendees array and update. Write to `/tmp/calendar_request.json`:
+Write the full attendees list to `/tmp/calendar_request.json`:
 
 ```json
 {
@@ -279,12 +275,12 @@ Then modify the attendees array and update. Write to `/tmp/calendar_request.json
 Then run:
 
 ```bash
-bash -c 'curl -s -X PATCH "https://www.googleapis.com/calendar/v3/calendars/primary/events/{event-id}?sendUpdates=all" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '{id, summary, attendees}'
+bash -c 'curl -s -X PATCH "https://www.googleapis.com/calendar/v3/calendars/primary/events/{event-id}?sendUpdates=all" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '.error // {id, summary, attendees}'
 ```
 
 ### Remove Attendee from Event
 
-Patch the event with updated attendees list (excluding the one to remove). Write to `/tmp/calendar_request.json`:
+Patch the event with the updated attendees list (omit the attendee you want to remove). Write to `/tmp/calendar_request.json`:
 
 ```json
 {
@@ -299,7 +295,7 @@ Patch the event with updated attendees list (excluding the one to remove). Write
 Then run:
 
 ```bash
-bash -c 'curl -s -X PATCH "https://www.googleapis.com/calendar/v3/calendars/primary/events/{event-id}?sendUpdates=all" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '{id, summary, attendees}'
+bash -c 'curl -s -X PATCH "https://www.googleapis.com/calendar/v3/calendars/primary/events/{event-id}?sendUpdates=all" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '.error // {id, summary, attendees}'
 ```
 
 ---
@@ -331,7 +327,7 @@ Update event with custom reminders. Write to `/tmp/calendar_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X PATCH "https://www.googleapis.com/calendar/v3/calendars/primary/events/{event-id}" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '{id, summary, reminders}'
+bash -c 'curl -s -X PATCH "https://www.googleapis.com/calendar/v3/calendars/primary/events/{event-id}" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '.error // {id, summary, reminders}'
 ```
 
 ### Use Default Reminders
@@ -349,7 +345,7 @@ Write to `/tmp/calendar_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X PATCH "https://www.googleapis.com/calendar/v3/calendars/primary/events/{event-id}" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '{id, summary, reminders}'
+bash -c 'curl -s -X PATCH "https://www.googleapis.com/calendar/v3/calendars/primary/events/{event-id}" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '.error // {id, summary, reminders}'
 ```
 
 ---
@@ -380,7 +376,7 @@ Create an event with recurrence rule. Write to `/tmp/calendar_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://www.googleapis.com/calendar/v3/calendars/primary/events" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '{id, summary, recurrence, htmlLink}'
+bash -c 'curl -s -X POST "https://www.googleapis.com/calendar/v3/calendars/primary/events" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '.error // {id, summary, recurrence, htmlLink}'
 ```
 
 Common recurrence patterns:
@@ -395,7 +391,7 @@ Common recurrence patterns:
 Get all instances of a recurring event:
 
 ```bash
-bash -c 'curl -s "https://www.googleapis.com/calendar/v3/calendars/primary/events/{recurring-event-id}/instances?timeMin=2024-01-01T00:00:00Z&timeMax=2024-12-31T23:59:59Z" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN"' | jq '.items[] | {id, summary, start, end, recurringEventId}'
+bash -c 'curl -s "https://www.googleapis.com/calendar/v3/calendars/primary/events/{recurring-event-id}/instances?timeMin=2024-01-01T00:00:00Z&timeMax=2024-12-31T23:59:59Z" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN"' | jq '.items[]? | {id, summary, start, end, recurringEventId}'
 ```
 
 ---
@@ -424,7 +420,7 @@ Check availability for one or more calendars. Write to `/tmp/calendar_request.js
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://www.googleapis.com/calendar/v3/freeBusy" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '.calendars'
+bash -c 'curl -s -X POST "https://www.googleapis.com/calendar/v3/freeBusy" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '.error // .calendars'
 ```
 
 ---
@@ -446,7 +442,7 @@ Write to `/tmp/calendar_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://www.googleapis.com/calendar/v3/calendars" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '{id, summary, description}'
+bash -c 'curl -s -X POST "https://www.googleapis.com/calendar/v3/calendars" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '.error // {id, summary, description}'
 ```
 
 ### Update Calendar Properties
@@ -463,7 +459,7 @@ Write to `/tmp/calendar_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X PATCH "https://www.googleapis.com/calendar/v3/calendars/{calendar-id}" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '{id, summary, description}'
+bash -c 'curl -s -X PATCH "https://www.googleapis.com/calendar/v3/calendars/{calendar-id}" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '.error // {id, summary, description}'
 ```
 
 ### Delete Secondary Calendar
@@ -489,7 +485,7 @@ Update event color using colorId (1-11). Write to `/tmp/calendar_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X PATCH "https://www.googleapis.com/calendar/v3/calendars/primary/events/{event-id}" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '{id, summary, colorId}'
+bash -c 'curl -s -X PATCH "https://www.googleapis.com/calendar/v3/calendars/primary/events/{event-id}" --header "Authorization: Bearer $GOOGLE_CALENDAR_TOKEN" --header "Content-Type: application/json" -d @/tmp/calendar_request.json' | jq '.error // {id, summary, colorId}'
 ```
 
 Available color IDs:
@@ -527,7 +523,7 @@ Available color IDs:
 2. **Date Format**: Use RFC3339 format for dates (`2024-03-15T10:00:00Z` or with timezone `2024-03-15T10:00:00-04:00`)
 3. **All-Day Events**: Use `date` field instead of `dateTime` for all-day events
 4. **Notifications**: Use `sendUpdates` parameter to control whether attendees receive email notifications
-5. **Patch vs Update**: Use PATCH for partial updates (more efficient), PUT for full replacement
+5. **Patch vs Update**: Use PATCH for partial updates (more efficient), PUT for full replacement. Note: PATCH on `attendees` replaces the entire array — always include all intended attendees
 6. **Time Zones**: Always specify time zones explicitly to avoid ambiguity
 7. **Recurring Events**: To modify all instances, update the recurring event master; to modify single instance, update the specific instance ID
 
