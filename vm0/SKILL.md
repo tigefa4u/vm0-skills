@@ -1,224 +1,201 @@
 ---
 name: vm0
-description: VM0 API for running AI agents in secure sandboxes. Use this skill to execute agents, manage runs, and download outputs (artifacts) and inputs (volumes) via the VM0 platform API.
+description: Gives the agent the ability to create other agents or update itself. Use this skill when the agent needs to modify its own vm0.yaml (skills, instructions, environment variables) and redeploy, or spin up a new agent from scratch.
 vm0_secrets:
   - VM0_TOKEN
 ---
 
-# VM0 API
+# VM0 Agent Self-Management
 
-Execute AI agents in secure sandboxed environments and manage their inputs/outputs.
+Use this skill to inspect and update the current agent's own configuration — its skills, instructions, and environment variables — by cloning, editing, and redeploying via `vm0 compose`.
 
-> **Note:** If you have the VM0 CLI installed and the vm0-cli skill available, prefer using the vm0-cli skill instead. It provides a higher-level interface with more convenient operations.
+> Official docs: https://docs.vm0.ai
+
+---
 
 ## When to Use
 
-- Execute AI agents in isolated sandbox environments
-- Monitor and manage agent runs (status, logs, metrics)
-- List and download input files (volumes) provided to agents
-- List and download output files (artifacts) created by agents
+Use this skill when you need to:
 
-## Prerequisites
+- Understand the current agent's `vm0.yaml` configuration
+- Add or remove skills from the current agent
+- Update the agent's instructions file
+- Change environment variables or secrets references
+- Redeploy the agent after configuration changes
+
+---
+
+## vm0.yaml Format
+
+Every agent is defined by a `vm0.yaml` file:
+
+```yaml
+version: "1.0"
+
+agents:
+  my-agent:
+    framework: claude-code
+    instructions: AGENTS.md
+    skills:
+      - https://github.com/vm0-ai/vm0-skills/tree/main/github
+      - https://github.com/vm0-ai/vm0-skills/tree/main/slack
+    environment:
+      SOME_VAR: "literal-value"
+      API_KEY: "${{ secrets.API_KEY }}"
+      DEBUG: "${{ vars.DEBUG }}"
+```
+
+### Fields
+
+| Field | Description |
+|-------|-------------|
+| `version` | Config version — always `"1.0"` |
+| `agents` | Map of agent definitions (key = agent name) |
+| `framework` | Agent runtime — use `claude-code` |
+| `instructions` | Path to the instructions/system-prompt file (e.g. `AGENTS.md`) |
+| `skills` | List of skill URLs to inject into the agent |
+| `environment` | Environment variables available at runtime |
+
+### Variable Syntax
+
+| Syntax | When to use |
+|--------|-------------|
+| `"literal-value"` | Plain non-sensitive config |
+| `"${{ secrets.NAME }}"` | Sensitive values (API keys, tokens) |
+| `"${{ vars.NAME }}"` | Non-sensitive remote variables |
+
+> **Important:** Each skill's `SKILL.md` declares its own required secrets and vars in the frontmatter (`vm0_secrets` / `vm0_vars`). These are automatically injected when the skill is loaded — do **not** redeclare them in `environment`. Only put entries in `environment` that are specific to this agent and not already covered by a skill's frontmatter.
+
+---
+
+## Finding Skills
+
+Skills come from two marketplaces. Search both when looking for new capabilities.
+
+### 1. skills.sh (33,700+ community skills)
 
 ```bash
-export VM0_TOKEN=vm0_live_your-api-key
+curl -s "https://skills.sh/api/search?q={keyword}"
 ```
 
-### Get API Key
+### 2. vm0-ai/vm0-skills (70+ curated integrations)
 
-1. Install the VM0 CLI: https://docs.vm0.ai/docs/getting-started
-2. Run `vm0 auth login` to authenticate
-3. Run `vm0 auth setup-token` to view your API key
-4. Copy the token starting with `vm0_live_`
+Browse at: https://github.com/vm0-ai/vm0-skills
 
-> **Important:** When using `$VAR` in a command that pipes to another command, wrap only the curl command in `bash -c '...'`, then pipe to jq outside. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
-> ```bash
-> bash -c 'curl -s "https://api.vm0.ai/v1/agents" -H "Authorization: Bearer $VM0_TOKEN"' | jq '.data'
-> ```
+> **Priority rule:** If a skill exists in both marketplaces, prefer the `vm0-ai/vm0-skills` version — it is optimized for VM0 agent workflows and has consistent quality.
 
-## Quick Start
+### Converting search results to vm0.yaml URLs
 
-### List Your Agents
+Skills are referenced in `vm0.yaml` as GitHub tree URLs:
+
+| Source | URL format |
+|--------|------------|
+| `vm0-ai/vm0-skills` | `https://github.com/vm0-ai/vm0-skills/tree/main/{skill-name}` |
+| `anthropics/skills` | `https://github.com/anthropics/skills/tree/main/skills/{skill-name}` |
+| `vercel-labs/agent-skills` | `https://github.com/vercel-labs/agent-skills/tree/main/skills/{skill-name}` |
+| Other repos | `https://github.com/{owner}/{repo}/tree/main/skills/{skill-name}` |
+
+### Checking required credentials
+
+After picking a skill, read its `SKILL.md` to see what secrets or vars it needs:
 
 ```bash
-bash -c 'curl -s "https://api.vm0.ai/v1/agents" -H "Authorization: Bearer $VM0_TOKEN"' | jq '.data[] | {id, name}'
+curl -s "https://raw.githubusercontent.com/vm0-ai/vm0-skills/main/{skill-name}/SKILL.md" | head -20
 ```
 
-### Run an Agent
-
-Write to `/tmp/vm0_request.json`:
-
-```json
-{
-  "agent": "my-agent",
-  "prompt": "Hello, please introduce yourself"
-}
-```
-
-Then run:
+Look for `vm0_secrets` and `vm0_vars` in the frontmatter. Store any missing values before deploying:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.vm0.ai/v1/runs" -H "Authorization: Bearer $VM0_TOKEN" -H "Content-Type: application/json" -d @/tmp/vm0_request.json' | jq '{id, status}'
+vm0 secret set SKILL_TOKEN --body "value"
 ```
 
-### Check Run Status
+---
 
-Replace `<run-id>` with your run ID:
+## CLI: clone & compose
+
+### Clone — download current agent config
+
+`vm0 agent clone` downloads a deployed agent's configuration to the local filesystem. It writes `vm0.yaml` and the instructions file (e.g. `AGENTS.md`) to a local directory.
 
 ```bash
-bash -c 'curl -s "https://api.vm0.ai/v1/runs/<run-id>" -H "Authorization: Bearer $VM0_TOKEN"' | jq '{id, status, error, execution_time_ms}'
+# Clone into a new subdirectory (directory must not already exist)
+vm0 agent clone {agent-name} ./agent-config
+
+# Clone into current directory
+vm0 agent clone {agent-name} .
 ```
 
-### Get Run Logs
+What it downloads:
+- `vm0.yaml` — the compose configuration
+- The instructions file referenced in `vm0.yaml` (e.g. `AGENTS.md`)
+
+> **Note:** Secret values are preserved as `${{ secrets.NAME }}` placeholders — the actual values are never written to disk.
+
+---
+
+### Compose — deploy updated config
+
+`vm0 compose` deploys a `vm0.yaml` to the platform, creating or updating the agent.
 
 ```bash
-bash -c 'curl -s "https://api.vm0.ai/v1/runs/<run-id>/logs" -H "Authorization: Bearer $VM0_TOKEN"' | jq '.data[]'
+# Deploy with confirmation prompt
+vm0 compose vm0.yaml
+
+# Deploy non-interactively (skip confirmation)
+vm0 compose vm0.yaml -y
 ```
 
-## Core Operations
+If the yaml references secrets that don't yet exist on the platform, `compose` will prompt to set them (use `-y` to skip in automated contexts).
 
-### Agents
+---
 
-List all agents:
+## Self-Update Pattern
+
+An agent can modify its own configuration by combining clone → edit → compose. This lets the agent update itself — adding new skills, changing instructions, or updating env vars — without any human intervention.
+
+### 1. Clone own config
 
 ```bash
-bash -c 'curl -s "https://api.vm0.ai/v1/agents" -H "Authorization: Bearer $VM0_TOKEN"' | jq '.data'
+vm0 agent clone {current-agent-name} /tmp/self-config
 ```
 
-Get agent details:
+### 2. Inspect current state
 
 ```bash
-bash -c 'curl -s "https://api.vm0.ai/v1/agents/<agent-id>" -H "Authorization: Bearer $VM0_TOKEN"' | jq '{id, name, description}'
+cat /tmp/self-config/vm0.yaml
+cat /tmp/self-config/AGENTS.md
 ```
 
-See [references/agents.md](references/agents.md) for version listing.
+### 3. Edit vm0.yaml
 
-### Runs
-
-Create a run with variables:
+For example, add a new skill:
 
 ```bash
-curl -s -X POST "https://api.vm0.ai/v1/runs" \
-  -H "Authorization: Bearer $VM0_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d @- << 'EOF'
-{
-  "agent": "my-agent",
-  "prompt": "Process the data file",
-  "variables": {
-    "DEBUG": "true"
-  },
-  "volumes": {
-    "input-data": "latest"
-  }
-}
-EOF
+# Edit /tmp/self-config/vm0.yaml to add a skill entry under skills:
+#   - https://github.com/vm0-ai/vm0-skills/tree/main/notion
 ```
 
-Cancel a running execution:
+Or update the instructions file:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.vm0.ai/v1/runs/<run-id>/cancel" -H "Authorization: Bearer $VM0_TOKEN"' | jq '{id, status}'
+# Edit /tmp/self-config/AGENTS.md to refine the system prompt
 ```
 
-See [references/runs.md](references/runs.md) for events streaming, logs filtering, and metrics.
-
-### Volumes (Input Storage)
-
-List volumes:
+### 4. Redeploy
 
 ```bash
-bash -c 'curl -s "https://api.vm0.ai/v1/volumes" -H "Authorization: Bearer $VM0_TOKEN"' | jq '.data[] | {id, name}'
+cd /tmp/self-config
+vm0 compose vm0.yaml -y
 ```
 
-Download volume as tar.gz archive (follows 302 redirect):
+The agent is now updated. The next run will use the new configuration.
 
-```bash
-curl -L -o volume.tar.gz "https://api.vm0.ai/v1/volumes/<volume-id>/download" \
-  -H "Authorization: Bearer $VM0_TOKEN"
-```
+---
 
-See [references/volumes.md](references/volumes.md) for version listing and download options.
+## Guidelines
 
-### Artifacts (Output Storage)
-
-List artifacts:
-
-```bash
-bash -c 'curl -s "https://api.vm0.ai/v1/artifacts" -H "Authorization: Bearer $VM0_TOKEN"' | jq '.data[] | {id, name}'
-```
-
-Download artifact as tar.gz archive (follows 302 redirect):
-
-```bash
-curl -L -o artifact.tar.gz "https://api.vm0.ai/v1/artifacts/<artifact-id>/download" \
-  -H "Authorization: Bearer $VM0_TOKEN"
-```
-
-Extract downloaded archive:
-
-```bash
-tar -xzf artifact.tar.gz -C ./output/
-```
-
-See [references/artifacts.md](references/artifacts.md) for version listing and download options.
-
-## Common Patterns
-
-### Pagination
-
-List endpoints support cursor-based pagination:
-
-```bash
-bash -c 'curl -s "https://api.vm0.ai/v1/runs?limit=10" -H "Authorization: Bearer $VM0_TOKEN"' | jq '{data, pagination}'
-```
-
-Response includes:
-```json
-{
-  "pagination": {
-    "has_more": true,
-    "next_cursor": "abc123"
-  }
-}
-```
-
-Fetch next page:
-
-```bash
-bash -c 'curl -s "https://api.vm0.ai/v1/runs?limit=10&cursor=abc123" -H "Authorization: Bearer $VM0_TOKEN"' | jq '{data, pagination}'
-```
-
-### Error Handling
-
-All errors return a consistent format:
-
-```json
-{
-  "error": {
-    "type": "invalid_request_error",
-    "code": "resource_not_found",
-    "message": "No such agent: 'my-agent'",
-    "param": "agent"
-  }
-}
-```
-
-| Error Type | Status | Description |
-|------------|--------|-------------|
-| `authentication_error` | 401 | Invalid or missing API key |
-| `invalid_request_error` | 400 | Invalid parameters |
-| `not_found_error` | 404 | Resource doesn't exist |
-| `api_error` | 500 | Internal server error |
-
-## Detailed References
-
-- [Agents API](references/agents.md) - List agents and versions
-- [Runs API](references/runs.md) - Execute agents, stream events, get logs and metrics
-- [Artifacts API](references/artifacts.md) - List and download agent outputs
-- [Volumes API](references/volumes.md) - List and download input files
-
-## API Reference
-
-- Documentation: https://docs.vm0.ai/docs/reference/api
-- Base URL: `https://api.vm0.ai/v1/`
+1. **Agent name**: When self-updating, the agent name comes from the `agents:` key in `vm0.yaml`. The current agent name is available in the `VM0_AGENT_NAME` environment variable if set.
+2. **Clone target must not exist**: `vm0 agent clone` fails if the destination directory already exists. Use a fresh path like `/tmp/self-config` or add a timestamp.
+3. **compose -y for automation**: Always pass `-y` when running compose non-interactively to skip confirmation prompts.
+4. **Instructions file**: The instructions file path in `vm0.yaml` is relative to the directory where `vm0 compose` is run. Keep both files in the same directory.
+5. **Secrets are not cloned**: Secret values are never downloaded — only the `${{ secrets.NAME }}` reference is preserved. Don't try to read secret values from the cloned config.
