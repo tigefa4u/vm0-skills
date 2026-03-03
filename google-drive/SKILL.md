@@ -139,6 +139,8 @@ Upload a file (up to 5MB):
 bash -c 'curl -s -X POST "https://www.googleapis.com/upload/drive/v3/files?uploadType=media" --header "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" --header "Content-Type: application/octet-stream" --data-binary @/path/to/file.txt' | jq '{id, name, mimeType}'
 ```
 
+> **Note:** Simple upload creates the file with an auto-generated name ("Untitled"). Use **Update File Metadata** immediately after to set the filename.
+
 ### Update File Metadata
 
 Update file name or other metadata:
@@ -154,7 +156,7 @@ Write to `/tmp/drive_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X PATCH "https://www.googleapis.com/drive/v3/files/{file-id}" --header "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" --header "Content-Type: application/json" -d @/tmp/drive_request.json' | jq '{id, name, modifiedTime}'
+bash -c 'curl -s -X PATCH "https://www.googleapis.com/drive/v3/files/{file-id}?fields=id,name,modifiedTime" --header "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" --header "Content-Type: application/json" -d @/tmp/drive_request.json' | jq '{id, name, modifiedTime}'
 ```
 
 ### Copy File
@@ -190,7 +192,7 @@ Write to `/tmp/drive_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X PATCH "https://www.googleapis.com/drive/v3/files/{file-id}" --header "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" --header "Content-Type: application/json" -d @/tmp/drive_request.json' | jq '{id, name, trashed}'
+bash -c 'curl -s -X PATCH "https://www.googleapis.com/drive/v3/files/{file-id}?fields=id,name,trashed" --header "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" --header "Content-Type: application/json" -d @/tmp/drive_request.json' | jq '{id, name, trashed}'
 ```
 
 ### Delete File Permanently
@@ -249,7 +251,7 @@ Write to `/tmp/drive_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://www.googleapis.com/drive/v3/files" --header "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" --header "Content-Type: application/json" -d @/tmp/drive_request.json' | jq '{id, name, parents}'
+bash -c 'curl -s -X POST "https://www.googleapis.com/drive/v3/files?fields=id,name,parents" --header "Authorization: Bearer $GOOGLE_DRIVE_TOKEN" --header "Content-Type: application/json" -d @/tmp/drive_request.json' | jq '{id, name, parents}'
 ```
 
 ### List Files in Folder
