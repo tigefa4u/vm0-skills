@@ -48,7 +48,7 @@ export GOOGLE_SHEETS_TOKEN="your-access-token"
 
 > **Placeholders:** Values in `{curly-braces}` like `{spreadsheet-id}` are placeholders. Replace them with actual values when executing.
 
-> **Important:** In range notation like `Sheet1!A1:D10`, the `!` must be URL encoded as `%21` in the URL path (e.g., `Sheet1%21A1:D10`). All examples below use this encoding.
+> **Important:** In range notation, the sheet-name separator `!` must be URL encoded as `%21` in the URL path. For example, `Sheet1!A1:D10` becomes `Sheet1%21A1:D10`. All examples below use this encoding.
 
 ---
 
@@ -306,4 +306,4 @@ bash -c 'curl -s "https://sheets.googleapis.com/v4/spreadsheets/{spreadsheet-id}
 1. **Rate limits**: Default quota is 300 requests per minute per project
 2. **Use batch operations**: Combine multiple reads/writes to reduce API calls
 3. **valueInputOption**: Use `USER_ENTERED` for formulas, `RAW` for literal strings
-4. **URL encode ranges**: Ranges with `!` must be encoded as `%21` in URLs
+4. **URL encode ranges**: The sheet-name separator in ranges must be encoded as `%21` in URLs (e.g., `Sheet1%21A1:D10`)
