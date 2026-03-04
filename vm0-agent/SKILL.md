@@ -160,10 +160,13 @@ If skills changed:
 Deploy the updated configuration:
 
 ```bash
-vm0 compose vm0.yaml
+vm0 compose vm0.yaml --yes
 ```
 
-**Important**: `vm0 compose` is idempotent. If the configuration hasn't actually changed, the version hash stays the same - this is normal, not an error. Do not try flags like `--force` (they don't exist). If compose succeeds without error, the deployment is complete.
+**Important**:
+- Always use `--yes` flag. Without it, `vm0 compose` will fail in non-interactive mode when new secrets are detected.
+- `vm0 compose` is idempotent. If the configuration hasn't actually changed, the version hash stays the same - this is normal, not an error.
+- Do not try flags like `--force` (they don't exist). If compose succeeds without error, the deployment is complete.
 
 Verify with `vm0 agent ls` to see the agent and its version.
 
@@ -174,7 +177,7 @@ Verify with `vm0 agent ls` to see the agent and its version.
 **Run command** (do not guess additional flags):
 
 ```bash
-vm0 cook "your test prompt"
+vm0 cook -y "your test prompt"
 ```
 
 The `cook` command only supports these options: `-y` (skip confirmation). Do not add flags like `--artifact-name` (use `vm0 run` for that).
@@ -190,7 +193,7 @@ Follow the test run loop from create operation:
 
 Determine if schedule needs updating:
 - **New secrets required**: If new skills added that need secrets, store them via `vm0 secret set` — they will be automatically available to scheduled runs
-- **Timing change only**: Use `vm0 schedule update` to modify frequency/time
+- **Timing change only**: Use `vm0 schedule setup` to modify frequency/time (same command for create and edit)
 - **No change needed**: If only AGENTS.md content changed with same skills, existing schedule continues to work after `vm0 compose`
 
 Tell user clearly whether schedule reconfiguration is needed and why.
@@ -225,10 +228,11 @@ In this step, interactively ask the user what they want to do. Use the ask user 
 VM0 agents are designed for **scheduled execution** - the same prompt runs repeatedly with dynamic data sources. Start with this question: "What recurring workflow would you like to automate with scheduled execution?"
 
 - **Option 1: Daily Digest** - Aggregate content from tech communities, news sources, or RSS feeds, generate summaries, and deliver to you daily/weekly
-  - Data sources: HackerNews, RSS, YouTube
+  - Data sources: HackerNews, RSS, YouTube, Twitter/X
   - Processing: Filter top content + AI summarization + categorize
   - Output: Slack / Notion / Email
-  - Skills: hackernews, youtube, slack, notion, agentmail
+  - Skills: hackernews, youtube, x, slack, notion, agentmail
+  - Note: If user wants Twitter/X as a data source, recommend `vm0-ai/vm0-skills/x` — it uses the official X API v2 (read-only: search tweets, view timelines, user profiles). The token is obtained via VM0 connector (Settings → Connectors → X).
 
 - **Option 2: Repository Weekly Report** - Summarize GitHub/GitLab activity (PRs, issues, commits) into a team report
   - Data sources: GitHub PRs / Issues / Commits
@@ -258,13 +262,19 @@ VM0 agents are designed for **scheduled execution** - the same prompt runs repea
 
 After the user selects an option, use 1-5 follow-up questions to refine the details (e.g., which sources to fetch from, where to send output, how often to run). Guide the user to think in terms of a three-step workflow: **Fetch → Process → Output**. Finally, form a complete three-step workflow definition
 
+### Common Data Source Recommendations
+
+When users mention specific data sources, proactively recommend the corresponding vm0-skills:
+
+- **Twitter / X**: Recommend `vm0-ai/vm0-skills/x` — official X API v2, supports search tweets, timelines, user profiles (read-only). Token via VM0 connector (Settings → Connectors → X).
+- **HackerNews**: Recommend `vm0-ai/vm0-skills/hackernews`
+- **GitHub**: Recommend `vm0-ai/vm0-skills/github`
+
 ## Innovate
 
 In this step, refine the technical details in the user's workflow by finding suitable skills from two sources.
 
 ### Step 1: Search skills
-
-There are two skill marketplaces, search them both.
 
 Search the skills.sh ecosystem (33,700+ skills) using:
 
@@ -272,9 +282,11 @@ Search the skills.sh ecosystem (33,700+ skills) using:
 curl -s "https://skills.sh/api/search?q=<keyword>"
 ```
 
-Search https://github.com/vm0-ai/vm0-skills for 70+ curated SaaS integration skills.
+The API returns results from ALL skill repositories. To identify vm0-ai/vm0-skills entries, check the `source` field in results — look for `"source": "vm0-ai/vm0-skills"`.
 
-**Priority rule**: If a skill is found in both marketplaces, always prefer the vm0-ai/vm0-skills version — it is optimized for VM0 agent workflows and has consistent quality.
+**Priority rule**: If a skill is found in both vm0-ai/vm0-skills and other sources, always prefer the vm0-ai/vm0-skills version — it is optimized for VM0 agent workflows and has consistent quality.
+
+**Tip**: When the user mentions a specific service (e.g., "twitter", "slack", "notion"), search by that keyword. The results will include vm0-ai/vm0-skills entries if they exist. No need to search a separate source.
 
 ### Step 2: Convert to vm0.yaml URL Format
 
@@ -292,14 +304,20 @@ Give the user several options for confirmation using the ask user tools. Users c
 ## Compose
 
 - [ ] Based on the conclusions from innovate, create vm0.yaml and AGENTS.md
-- [ ] Use the capabilities of vm0-skills to compose the agent
+- [ ] Deploy with `vm0 compose vm0.yaml --yes`
+  - Always use `--yes` flag — without it, the command fails when new secrets are detected in non-interactive mode
+  - If compose reports "new secrets detected", that's expected — the secrets will be resolved in the Token Collect phase
 
 ## Token Collect
 
+- [ ] **First, check what secrets already exist** by running `vm0 secret list`. Many tokens may already be configured from previous agents or connectors.
 - [ ] For each skill used in vm0.yaml, read its SKILL.md to find required credentials:
   - Check frontmatter for `vm0_secrets` and `vm0_vars` fields
   - If no frontmatter, infer from skill content (look for env vars like `API_KEY`, `TOKEN`, etc.)
-- [ ] For each token needed:
+- [ ] Cross-reference required secrets with the output of `vm0 secret list`:
+  - If a secret already exists (especially `[connector]` type secrets), skip it — no action needed
+  - Only ask the user to provide secrets that are genuinely missing
+- [ ] For each **missing** token:
   - Read the skill's documentation for how to obtain it
   - If not documented, search online for the service's API key/token setup guide
   - Provide step-by-step instructions to help user get the token
@@ -312,6 +330,7 @@ Give the user several options for confirmation using the ask user tools. Users c
     ```bash
     vm0 variable set ENV_NAME production
     ```
+- [ ] If all required secrets already exist, inform the user and skip directly to the test run phase
 
 ## Test run
 
@@ -367,11 +386,44 @@ After each test run, inform the user they can view the complete execution logs o
 
 ## Schedule
 
-Enter this phase when the user is satisfied with the test run results
+Enter this phase when the user is satisfied with the test run results.
 
-- [ ] Use the vm-cli skill capabilities to guide the user to set up scheduled tasks
-- [ ] After successful setup, ask the user if they want to enable the timer
-- [ ] Explain to the user the schedule-related capabilities in vm0 cli, such as how to list, disable, and enable scheduled tasks
+### Schedule CLI Reference
+
+```bash
+# Create or edit a schedule
+vm0 schedule setup <agent-name> [options]
+  -f, --frequency <type>    # daily | weekly | monthly | once | loop
+  -t, --time <HH:MM>        # Time in 24-hour format
+  -d, --day <day>           # Day of week (mon-sun) or day of month (1-31)
+  -z, --timezone <tz>       # IANA timezone (e.g., UTC, Asia/Shanghai)
+  -p, --prompt <text>       # Prompt to run
+  --artifact-name <name>    # Artifact name (default: "artifact")
+  -e, --enable              # Enable schedule immediately after creation
+
+# Other schedule commands
+vm0 schedule ls                    # List all schedules
+vm0 schedule status <agent-name>   # Show detailed status
+vm0 schedule enable <agent-name>   # Enable a schedule
+vm0 schedule disable <agent-name>  # Disable a schedule
+vm0 schedule rm <agent-name>       # Delete a schedule
+```
+
+**Important**: There is NO `vm0 schedule create` or `vm0 schedule update` command. Always use `vm0 schedule setup` for both creating and editing schedules.
+
+### Workflow
+
+- [ ] Ask user for preferred frequency and time
+- [ ] Create the schedule with `vm0 schedule setup`, including `--enable` flag to activate immediately:
+  ```bash
+  vm0 schedule setup <agent-name> --frequency daily --time 08:00 --timezone UTC --prompt "your prompt" --artifact-name artifact --enable
+  ```
+- [ ] Verify with `vm0 schedule status <agent-name>` to confirm schedule is active and show next run time
+- [ ] Explain how to manage the schedule:
+  - `vm0 schedule disable <agent-name>` to pause
+  - `vm0 schedule enable <agent-name>` to resume
+  - `vm0 schedule rm <agent-name>` to delete
+  - `vm0 schedule setup <agent-name>` to modify timing or prompt
 
 ### After Successful Setup
 
