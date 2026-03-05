@@ -148,7 +148,7 @@ bash -c 'curl -s -X POST "https://api.xero.com/api.xro/2.0/Contacts" \
 ### Update Contact
 
 ```bash
-bash -c 'curl -s -X PUT "https://api.xero.com/api.xro/2.0/Contacts/<contact-id>" \
+bash -c 'curl -s -X POST "https://api.xero.com/api.xro/2.0/Contacts/<contact-id>" \
   --header "Authorization: Bearer $XERO_TOKEN" \
   --header "xero-tenant-id: <tenant-id>" \
   --header "Content-Type: application/json" \
@@ -158,7 +158,7 @@ bash -c 'curl -s -X PUT "https://api.xero.com/api.xro/2.0/Contacts/<contact-id>"
 ### Archive Contact
 
 ```bash
-bash -c 'curl -s -X PUT "https://api.xero.com/api.xro/2.0/Contacts/<contact-id>" \
+bash -c 'curl -s -X POST "https://api.xero.com/api.xro/2.0/Contacts/<contact-id>" \
   --header "Authorization: Bearer $XERO_TOKEN" \
   --header "xero-tenant-id: <tenant-id>" \
   --header "Content-Type: application/json" \
@@ -409,14 +409,14 @@ bash -c 'curl -s -X PUT "https://api.xero.com/api.xro/2.0/Quotes" \
 
 ### Update Quote Status
 
-Status transitions: DRAFT -> SENT -> ACCEPTED/DECLINED -> INVOICED. All statuses can go to DELETED.
+Status transitions: DRAFT -> SENT -> ACCEPTED/DECLINED -> INVOICED. All statuses can go to DELETED. Contact and Date are required even for status-only updates.
 
 ```bash
 bash -c 'curl -s -X POST "https://api.xero.com/api.xro/2.0/Quotes" \
   --header "Authorization: Bearer $XERO_TOKEN" \
   --header "xero-tenant-id: <tenant-id>" \
   --header "Content-Type: application/json" \
-  -d "{\"QuoteID\": \"<quote-id>\", \"Status\": \"SENT\"}"'
+  -d "{\"QuoteID\": \"<quote-id>\", \"Contact\": {\"ContactID\": \"<contact-id>\"}, \"Date\": \"2026-03-05\", \"Status\": \"SENT\"}"'
 ```
 
 ---
@@ -945,6 +945,8 @@ Attachments work on: Invoices, CreditNotes, BankTransactions, Contacts, Accounts
 
 Base URL: `https://api.xero.com/assets.xro/1.0` (different from accounting API).
 
+> **Note:** Fixed Assets API requires a Xero plan that includes the Fixed Assets feature (Business or above). Starter plans will return "Forbidden".
+
 ### List Asset Types
 
 ```bash
@@ -1095,16 +1097,26 @@ bash -c 'curl -s "https://api.xero.com/projects.xro/2.0/projects/<project-id>/ti
 
 Params: `userId`, `taskId`, `dateAfterUtc`, `dateBeforeUtc`, `isChargeable`, `invoiceId`, `states` (ACTIVE/LOCKED/INVOICED).
 
+### Get Project Users
+
+The Projects API uses its own user IDs, different from the Accounting API `/Users` endpoint. Get project-specific user IDs first:
+
+```bash
+bash -c 'curl -s "https://api.xero.com/projects.xro/2.0/projectsusers" \
+  --header "Authorization: Bearer $XERO_TOKEN" \
+  --header "xero-tenant-id: <tenant-id>"'
+```
+
 ### Create Time Entry
 
-Required: `userId`, `taskId`, `dateUtc`, `duration` (minutes, 1-59940).
+Required: `userId` (from `/projectsusers`, NOT from Accounting `/Users`), `taskId`, `dateUtc`, `duration` (minutes, 1-59940).
 
 ```bash
 bash -c 'curl -s -X POST "https://api.xero.com/projects.xro/2.0/projects/<project-id>/time" \
   --header "Authorization: Bearer $XERO_TOKEN" \
   --header "xero-tenant-id: <tenant-id>" \
   --header "Content-Type: application/json" \
-  -d "{\"userId\": \"<user-id>\", \"taskId\": \"<task-id>\", \"dateUtc\": \"2026-03-05T09:00:00\", \"duration\": 120, \"description\": \"Design mockups\"}"'
+  -d "{\"userId\": \"<projects-user-id>\", \"taskId\": \"<task-id>\", \"dateUtc\": \"2026-03-05T09:00:00\", \"duration\": 120, \"description\": \"Design mockups\"}"'
 ```
 
 ### Delete Time Entry
