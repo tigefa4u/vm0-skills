@@ -33,7 +33,7 @@ Connect your Figma account via the vm0 platform (OAuth connector). The `FIGMA_TO
 Verify authentication:
 
 ```bash
-bash -c 'curl -s "https://api.figma.com/v1/me" -H "Authorization: Bearer $FIGMA_TOKEN"' | jq '{id, email, handle}'
+bash -c 'curl -s "https://api.figma.com/v1/me" --header "Authorization: Bearer $FIGMA_TOKEN"' | jq '{id, email, handle}'
 ```
 
 Expected response: Your user information (id, email, handle).
@@ -51,10 +51,9 @@ The file key is the alphanumeric string between `/design/` (or `/file/`) and the
 
 ---
 
-
 > **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
 > ```bash
-> bash -c 'curl -s "https://api.example.com" -H "Authorization: Bearer $API_KEY"' | jq '.[0]'
+> bash -c 'curl -s "https://api.example.com" --header "Authorization: Bearer $API_KEY"' | jq '.[0]'
 > ```
 
 ## How to Use
@@ -70,7 +69,7 @@ Base URL: `https://api.figma.com/v1`
 Get information about the authenticated user (no parameters needed):
 
 ```bash
-bash -c 'curl -s "https://api.figma.com/v1/me" -H "Authorization: Bearer $FIGMA_TOKEN"' | jq '{id, email, handle, img_url}'
+bash -c 'curl -s "https://api.figma.com/v1/me" --header "Authorization: Bearer $FIGMA_TOKEN"' | jq '{id, email, handle, img_url}'
 ```
 
 ---
@@ -79,10 +78,10 @@ bash -c 'curl -s "https://api.figma.com/v1/me" -H "Authorization: Bearer $FIGMA_
 
 Retrieve complete file structure including frames, components, and styles.
 
-> **Note:** Replace `my-file-key` with your actual file key from a Figma URL.
+Replace `<file-key>` with your actual file key from a Figma URL.
 
 ```bash
-FILE_KEY=my-file-key bash -c 'curl -s "https://api.figma.com/v1/files/$FILE_KEY" -H "Authorization: Bearer $FIGMA_TOKEN"' | jq '{name, lastModified, version, document: .document.children[0].name}'
+bash -c 'curl -s "https://api.figma.com/v1/files/<file-key>" --header "Authorization: Bearer $FIGMA_TOKEN"' | jq '{name, lastModified, version, document: .document.children[0].name}'
 ```
 
 ---
@@ -91,10 +90,10 @@ FILE_KEY=my-file-key bash -c 'curl -s "https://api.figma.com/v1/files/$FILE_KEY"
 
 Retrieve specific nodes from a file by node IDs.
 
-> **Note:** Replace `my-file-key` with your file key and `1:2` with actual node IDs (comma-separated, e.g., `1:2,1:3`).
+Replace `<file-key>` with your file key and `<node-id>` with actual node IDs (comma-separated for multiple, e.g., `1:2,1:3`).
 
 ```bash
-FILE_KEY=my-file-key NODE_IDS=1:2 bash -c 'curl -s "https://api.figma.com/v1/files/$FILE_KEY/nodes?ids=$NODE_IDS" -H "Authorization: Bearer $FIGMA_TOKEN"' | jq '.nodes'
+bash -c 'curl -s "https://api.figma.com/v1/files/<file-key>/nodes?ids=<node-id>" --header "Authorization: Bearer $FIGMA_TOKEN"' | jq '.nodes'
 ```
 
 Node IDs can be found in the file structure or from the Figma URL `?node-id=X-Y` parameter (convert `-` to `:`).
@@ -105,10 +104,10 @@ Node IDs can be found in the file structure or from the Figma URL `?node-id=X-Y`
 
 Export nodes as images in PNG, JPG, SVG, or PDF format.
 
-> **Note:** Replace `my-file-key` with your file key and `1:2` with actual node IDs.
+Replace `<file-key>` with your file key and `<node-id>` with actual node IDs.
 
 ```bash
-FILE_KEY=my-file-key NODE_IDS=1:2 bash -c 'curl -s "https://api.figma.com/v1/images/$FILE_KEY?ids=$NODE_IDS&format=png&scale=2" -H "Authorization: Bearer $FIGMA_TOKEN"' | jq '.images'
+bash -c 'curl -s "https://api.figma.com/v1/images/<file-key>?ids=<node-id>&format=png&scale=2" --header "Authorization: Bearer $FIGMA_TOKEN"' | jq '.images'
 ```
 
 **Parameters:**
@@ -121,10 +120,10 @@ FILE_KEY=my-file-key NODE_IDS=1:2 bash -c 'curl -s "https://api.figma.com/v1/ima
 
 Get download URLs for all images used in a file.
 
-> **Note:** Replace `my-file-key` with your file key.
+Replace `<file-key>` with your file key.
 
 ```bash
-FILE_KEY=my-file-key bash -c 'curl -s "https://api.figma.com/v1/files/$FILE_KEY/images" -H "Authorization: Bearer $FIGMA_TOKEN"' | jq '.meta.images'
+bash -c 'curl -s "https://api.figma.com/v1/files/<file-key>/images" --header "Authorization: Bearer $FIGMA_TOKEN"' | jq '.meta.images'
 ```
 
 ---
@@ -133,10 +132,10 @@ FILE_KEY=my-file-key bash -c 'curl -s "https://api.figma.com/v1/files/$FILE_KEY/
 
 List all comments on a file.
 
-> **Note:** Replace `my-file-key` with your file key.
+Replace `<file-key>` with your file key.
 
 ```bash
-FILE_KEY=my-file-key bash -c 'curl -s "https://api.figma.com/v1/files/$FILE_KEY/comments" -H "Authorization: Bearer $FIGMA_TOKEN"' | jq '.comments[] | {id, message: .message, user: .user.handle, created_at}'
+bash -c 'curl -s "https://api.figma.com/v1/files/<file-key>/comments" --header "Authorization: Bearer $FIGMA_TOKEN"' | jq '.comments[] | {id, message: .message, user: .user.handle, created_at}'
 ```
 
 ---
@@ -145,10 +144,22 @@ FILE_KEY=my-file-key bash -c 'curl -s "https://api.figma.com/v1/files/$FILE_KEY/
 
 Add a comment to a file. Figma requires `client_meta` with a `node_id` to anchor the comment.
 
-> **Note:** Replace `my-file-key` with your file key and `1:2` with an actual node ID.
+Replace `<file-key>` with your file key and `<node-id>` with an actual node ID.
+
+Write to `/tmp/figma_comment.json`:
+
+```json
+{
+  "message": "This looks great!",
+  "client_meta": {
+    "node_id": "<node-id>",
+    "node_offset": { "x": 0, "y": 0 }
+  }
+}
+```
 
 ```bash
-FILE_KEY=my-file-key NODE_ID=1:2 bash -c 'curl -s -X POST "https://api.figma.com/v1/files/$FILE_KEY/comments" -H "Authorization: Bearer $FIGMA_TOKEN" -H "Content-Type: application/json" -d "{\"message\":\"This looks great!\",\"client_meta\":{\"node_id\":\"'$NODE_ID'\",\"node_offset\":{\"x\":0,\"y\":0}}}"' | jq '{id, message}'
+bash -c 'curl -s -X POST "https://api.figma.com/v1/files/<file-key>/comments" --header "Authorization: Bearer $FIGMA_TOKEN" --header "Content-Type: application/json" -d @/tmp/figma_comment.json' | jq '{id, message}'
 ```
 
 ---
@@ -157,10 +168,10 @@ FILE_KEY=my-file-key NODE_ID=1:2 bash -c 'curl -s -X POST "https://api.figma.com
 
 List version history of a file.
 
-> **Note:** Replace `my-file-key` with your file key.
+Replace `<file-key>` with your file key.
 
 ```bash
-FILE_KEY=my-file-key bash -c 'curl -s "https://api.figma.com/v1/files/$FILE_KEY/versions" -H "Authorization: Bearer $FIGMA_TOKEN"' | jq '.versions[] | {id, created_at, label, description, user: .user.handle}'
+bash -c 'curl -s "https://api.figma.com/v1/files/<file-key>/versions" --header "Authorization: Bearer $FIGMA_TOKEN"' | jq '.versions[] | {id, created_at, label, description, user: .user.handle}'
 ```
 
 ---
@@ -169,10 +180,10 @@ FILE_KEY=my-file-key bash -c 'curl -s "https://api.figma.com/v1/files/$FILE_KEY/
 
 List all files in a project.
 
-> **Note:** Replace `12345` with your project ID. Project IDs can be found in Figma URLs or from team project listings.
+Replace `<project-id>` with your project ID. Project IDs can be found in Figma URLs or from team project listings.
 
 ```bash
-PROJECT_ID=12345 bash -c 'curl -s "https://api.figma.com/v1/projects/$PROJECT_ID/files" -H "Authorization: Bearer $FIGMA_TOKEN"' | jq '.files[] | {key, name, last_modified}'
+bash -c 'curl -s "https://api.figma.com/v1/projects/<project-id>/files" --header "Authorization: Bearer $FIGMA_TOKEN"' | jq '.files[] | {key, name, last_modified}'
 ```
 
 ---
@@ -181,10 +192,10 @@ PROJECT_ID=12345 bash -c 'curl -s "https://api.figma.com/v1/projects/$PROJECT_ID
 
 Get component sets (variants) in a file.
 
-> **Note:** Replace `my-file-key` with your file key.
+Replace `<file-key>` with your file key.
 
 ```bash
-FILE_KEY=my-file-key bash -c 'curl -s "https://api.figma.com/v1/files/$FILE_KEY/component_sets" -H "Authorization: Bearer $FIGMA_TOKEN"' | jq '.meta.component_sets[] | {key, name, description}'
+bash -c 'curl -s "https://api.figma.com/v1/files/<file-key>/component_sets" --header "Authorization: Bearer $FIGMA_TOKEN"' | jq '.meta.component_sets[] | {key, name, description}'
 ```
 
 ---
@@ -193,10 +204,10 @@ FILE_KEY=my-file-key bash -c 'curl -s "https://api.figma.com/v1/files/$FILE_KEY/
 
 Get metadata for a specific component.
 
-> **Note:** Replace `my-component-key` with your component key from the component sets output.
+Replace `<component-key>` with your component key from the component sets output.
 
 ```bash
-COMPONENT_KEY=my-component-key bash -c 'curl -s "https://api.figma.com/v1/components/$COMPONENT_KEY" -H "Authorization: Bearer $FIGMA_TOKEN"' | jq '{key, name, description, containing_frame}'
+bash -c 'curl -s "https://api.figma.com/v1/components/<component-key>" --header "Authorization: Bearer $FIGMA_TOKEN"' | jq '{key, name, description, containing_frame}'
 ```
 
 ---
