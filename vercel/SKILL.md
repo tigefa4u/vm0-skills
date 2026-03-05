@@ -153,7 +153,7 @@ Get build logs for a deployment:
 > **Note:** Replace `dpl_xxx` with an actual deployment ID. Use `limit=-1` to get all logs.
 
 ```bash
-DEPLOY_ID=dpl_xxx bash -c 'curl -s "https://api.vercel.com/v3/deployments/$DEPLOY_ID/events?limit=-1" -H "Authorization: Bearer $VERCEL_TOKEN"' | jq '.[] | select(.type == "command" or .type == "stdout" or .type == "stderr") | {type, text: .payload.text}'
+DEPLOY_ID=dpl_xxx bash -c 'curl -s "https://api.vercel.com/v3/deployments/$DEPLOY_ID/events?limit=-1" -H "Authorization: Bearer $VERCEL_TOKEN"' | jq '.[] | select(.type == "command" or .type == "stdout" or .type == "stderr") | {type, text}'
 ```
 
 ---
