@@ -80,6 +80,7 @@
 - [x] [Streak CRM](https://streak.readme.io/) - Gmail CRM
 - [x] [Linear](https://developers.linear.app/docs) - Issue Tracking & Project Management
 - [x] [Jira](https://developer.atlassian.com/cloud/jira/platform/rest/v3/) - Project Management & Issue Tracking
+- [x] [Asana](https://developers.asana.com/reference/rest-api-reference) - Work Management & Project Tracking
 - [ ] [Canny](https://developers.canny.io/api-reference) - Feature Request & Feedback
 - [ ] [Productlane](https://productlane.com/docs) - Public Roadmap & Helpdesk
 
