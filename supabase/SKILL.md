@@ -2,7 +2,7 @@
 name: supabase
 description: Supabase REST API via curl. Use this skill for database CRUD operations, filtering, pagination, and real-time data management.
 vm0_secrets:
-  - SUPABASE_SECRET_KEY
+  - SUPABASE_TOKEN
 vm0_vars:
   - SUPABASE_URL
   - SUPABASE_PUBLISHABLE_KEY
@@ -41,7 +41,7 @@ Use this skill when you need to:
 ```bash
 export SUPABASE_URL="https://your-project-ref.supabase.co"
 export SUPABASE_PUBLISHABLE_KEY="sb_publishable_..."
-export SUPABASE_SECRET_KEY="sb_secret_..."
+export SUPABASE_TOKEN="sb_secret_..."
 ```
 
 **API Keys:**
@@ -204,7 +204,7 @@ Write to `/tmp/supabase_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "${SUPABASE_URL}/rest/v1/users" -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Content-Type: application/json" -H "Prefer: return=representation" -d @/tmp/supabase_request.json'
+bash -c 'curl -s -X POST "${SUPABASE_URL}/rest/v1/users" -H "apikey: ${SUPABASE_TOKEN}" -H "Content-Type: application/json" -H "Prefer: return=representation" -d @/tmp/supabase_request.json'
 ```
 
 ---
@@ -223,7 +223,7 @@ Write to `/tmp/supabase_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "${SUPABASE_URL}/rest/v1/users" -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Content-Type: application/json" -H "Prefer: return=representation" -d @/tmp/supabase_request.json'
+bash -c 'curl -s -X POST "${SUPABASE_URL}/rest/v1/users" -H "apikey: ${SUPABASE_TOKEN}" -H "Content-Type: application/json" -H "Prefer: return=representation" -d @/tmp/supabase_request.json'
 ```
 
 ---
@@ -243,7 +243,7 @@ Write to `/tmp/supabase_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X PATCH "${SUPABASE_URL}/rest/v1/users?id=eq.1" -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Content-Type: application/json" -H "Prefer: return=representation" -d @/tmp/supabase_request.json'
+bash -c 'curl -s -X PATCH "${SUPABASE_URL}/rest/v1/users?id=eq.1" -H "apikey: ${SUPABASE_TOKEN}" -H "Content-Type: application/json" -H "Prefer: return=representation" -d @/tmp/supabase_request.json'
 ```
 
 ---
@@ -265,7 +265,7 @@ Write to `/tmp/supabase_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "${SUPABASE_URL}/rest/v1/users" -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Content-Type: application/json" -H "Prefer: resolution=merge-duplicates,return=representation" -d @/tmp/supabase_request.json'
+bash -c 'curl -s -X POST "${SUPABASE_URL}/rest/v1/users" -H "apikey: ${SUPABASE_TOKEN}" -H "Content-Type: application/json" -H "Prefer: resolution=merge-duplicates,return=representation" -d @/tmp/supabase_request.json'
 ```
 
 ---
@@ -275,7 +275,7 @@ bash -c 'curl -s -X POST "${SUPABASE_URL}/rest/v1/users" -H "apikey: ${SUPABASE_
 Delete rows matching a filter:
 
 ```bash
-bash -c 'curl -s -X DELETE "${SUPABASE_URL}/rest/v1/users?id=eq.1" -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Prefer: return=representation"'
+bash -c 'curl -s -X DELETE "${SUPABASE_URL}/rest/v1/users?id=eq.1" -H "apikey: ${SUPABASE_TOKEN}" -H "Prefer: return=representation"'
 ```
 
 ---
@@ -323,7 +323,7 @@ Write to `/tmp/supabase_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "${SUPABASE_URL}/rest/v1/rpc/my_function" -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Content-Type: application/json" -d @/tmp/supabase_request.json'
+bash -c 'curl -s -X POST "${SUPABASE_URL}/rest/v1/rpc/my_function" -H "apikey: ${SUPABASE_TOKEN}" -H "Content-Type: application/json" -d @/tmp/supabase_request.json'
 ```
 
 ---

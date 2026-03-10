@@ -2,7 +2,7 @@
 name: mercury
 description: Mercury Banking API via curl. Use this skill to manage bank accounts, transactions, transfers, and financial operations.
 vm0_secrets:
-  - MERCURY_API_TOKEN
+  - MERCURY_TOKEN
 ---
 
 # Mercury Banking API
@@ -35,7 +35,7 @@ Use this skill when you need to:
 Set environment variable:
 
 ```bash
-export MERCURY_API_TOKEN="your-api-token"
+export MERCURY_TOKEN="your-api-token"
 ```
 
 > **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
@@ -50,7 +50,7 @@ export MERCURY_API_TOKEN="your-api-token"
 ### List All Accounts
 
 ```bash
-bash -c 'curl -s "https://api.mercury.com/api/v1/accounts" --header "Authorization: Bearer $MERCURY_API_TOKEN"'
+bash -c 'curl -s "https://api.mercury.com/api/v1/accounts" --header "Authorization: Bearer $MERCURY_TOKEN"'
 ```
 
 ### Get Account by ID
@@ -58,7 +58,7 @@ bash -c 'curl -s "https://api.mercury.com/api/v1/accounts" --header "Authorizati
 Replace `<your-account-id>` with the actual account ID:
 
 ```bash
-bash -c 'curl -s "https://api.mercury.com/api/v1/account/<your-account-id>" --header "Authorization: Bearer $MERCURY_API_TOKEN"'
+bash -c 'curl -s "https://api.mercury.com/api/v1/account/<your-account-id>" --header "Authorization: Bearer $MERCURY_TOKEN"'
 ```
 
 ### Get Account Cards
@@ -66,7 +66,7 @@ bash -c 'curl -s "https://api.mercury.com/api/v1/account/<your-account-id>" --he
 Replace `<your-account-id>` with the actual account ID:
 
 ```bash
-bash -c 'curl -s "https://api.mercury.com/api/v1/account/<your-account-id>/cards" --header "Authorization: Bearer $MERCURY_API_TOKEN"'
+bash -c 'curl -s "https://api.mercury.com/api/v1/account/<your-account-id>/cards" --header "Authorization: Bearer $MERCURY_TOKEN"'
 ```
 
 ---
@@ -78,7 +78,7 @@ bash -c 'curl -s "https://api.mercury.com/api/v1/account/<your-account-id>/cards
 Replace `<your-account-id>` with the actual account ID:
 
 ```bash
-bash -c 'curl -s "https://api.mercury.com/api/v1/account/<your-account-id>/transactions" --header "Authorization: Bearer $MERCURY_API_TOKEN"'
+bash -c 'curl -s "https://api.mercury.com/api/v1/account/<your-account-id>/transactions" --header "Authorization: Bearer $MERCURY_TOKEN"'
 ```
 
 ### List Transactions with Filters
@@ -86,7 +86,7 @@ bash -c 'curl -s "https://api.mercury.com/api/v1/account/<your-account-id>/trans
 Filter by date range, status, or limit. Replace `<your-account-id>` with the actual account ID:
 
 ```bash
-bash -c 'curl -s "https://api.mercury.com/api/v1/account/<your-account-id>/transactions?limit=50&start=2024-01-01&end=2024-12-31" --header "Authorization: Bearer $MERCURY_API_TOKEN"'
+bash -c 'curl -s "https://api.mercury.com/api/v1/account/<your-account-id>/transactions?limit=50&start=2024-01-01&end=2024-12-31" --header "Authorization: Bearer $MERCURY_TOKEN"'
 ```
 
 ### Get Transaction by ID
@@ -94,7 +94,7 @@ bash -c 'curl -s "https://api.mercury.com/api/v1/account/<your-account-id>/trans
 Replace `<your-account-id>` and `<your-transaction-id>` with the actual IDs:
 
 ```bash
-bash -c 'curl -s "https://api.mercury.com/api/v1/account/<your-account-id>/transaction/<your-transaction-id>" --header "Authorization: Bearer $MERCURY_API_TOKEN"'
+bash -c 'curl -s "https://api.mercury.com/api/v1/account/<your-account-id>/transaction/<your-transaction-id>" --header "Authorization: Bearer $MERCURY_TOKEN"'
 ```
 
 ---
@@ -118,7 +118,7 @@ Write to `/tmp/mercury_request.json`:
 Then run. Replace `<your-account-id>` with the actual account ID:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.mercury.com/api/v1/account/<your-account-id>/internal-transfer" --header "Authorization: Bearer $MERCURY_API_TOKEN" --header "Content-Type: application/json" -d @/tmp/mercury_request.json'
+bash -c 'curl -s -X POST "https://api.mercury.com/api/v1/account/<your-account-id>/internal-transfer" --header "Authorization: Bearer $MERCURY_TOKEN" --header "Content-Type: application/json" -d @/tmp/mercury_request.json'
 ```
 
 ### Send Money Request
@@ -139,7 +139,7 @@ Write to `/tmp/mercury_request.json`:
 Then run. Replace `<your-account-id>` with the actual account ID:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.mercury.com/api/v1/account/<your-account-id>/send-money" --header "Authorization: Bearer $MERCURY_API_TOKEN" --header "Content-Type: application/json" -d @/tmp/mercury_request.json'
+bash -c 'curl -s -X POST "https://api.mercury.com/api/v1/account/<your-account-id>/send-money" --header "Authorization: Bearer $MERCURY_TOKEN" --header "Content-Type: application/json" -d @/tmp/mercury_request.json'
 ```
 
 ### Get Send Money Request Status
@@ -147,7 +147,7 @@ bash -c 'curl -s -X POST "https://api.mercury.com/api/v1/account/<your-account-i
 Replace `<your-request-id>` with the actual request ID:
 
 ```bash
-bash -c 'curl -s "https://api.mercury.com/api/v1/request-send-money/<your-request-id>" --header "Authorization: Bearer $MERCURY_API_TOKEN"'
+bash -c 'curl -s "https://api.mercury.com/api/v1/request-send-money/<your-request-id>" --header "Authorization: Bearer $MERCURY_TOKEN"'
 ```
 
 ---
@@ -157,7 +157,7 @@ bash -c 'curl -s "https://api.mercury.com/api/v1/request-send-money/<your-reques
 ### List All Recipients
 
 ```bash
-bash -c 'curl -s "https://api.mercury.com/api/v1/recipients" --header "Authorization: Bearer $MERCURY_API_TOKEN"'
+bash -c 'curl -s "https://api.mercury.com/api/v1/recipients" --header "Authorization: Bearer $MERCURY_TOKEN"'
 ```
 
 ### Get Recipient by ID
@@ -165,7 +165,7 @@ bash -c 'curl -s "https://api.mercury.com/api/v1/recipients" --header "Authoriza
 Replace `<your-recipient-id>` with the actual recipient ID:
 
 ```bash
-bash -c 'curl -s "https://api.mercury.com/api/v1/recipient/<your-recipient-id>" --header "Authorization: Bearer $MERCURY_API_TOKEN"'
+bash -c 'curl -s "https://api.mercury.com/api/v1/recipient/<your-recipient-id>" --header "Authorization: Bearer $MERCURY_TOKEN"'
 ```
 
 ### Create Recipient
@@ -189,7 +189,7 @@ Write to `/tmp/mercury_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.mercury.com/api/v1/recipients" --header "Authorization: Bearer $MERCURY_API_TOKEN" --header "Content-Type: application/json" -d @/tmp/mercury_request.json'
+bash -c 'curl -s -X POST "https://api.mercury.com/api/v1/recipients" --header "Authorization: Bearer $MERCURY_TOKEN" --header "Content-Type: application/json" -d @/tmp/mercury_request.json'
 ```
 
 ---
@@ -201,7 +201,7 @@ bash -c 'curl -s -X POST "https://api.mercury.com/api/v1/recipients" --header "A
 Replace `<your-account-id>` with the actual account ID:
 
 ```bash
-bash -c 'curl -s "https://api.mercury.com/api/v1/account/<your-account-id>/statements" --header "Authorization: Bearer $MERCURY_API_TOKEN"'
+bash -c 'curl -s "https://api.mercury.com/api/v1/account/<your-account-id>/statements" --header "Authorization: Bearer $MERCURY_TOKEN"'
 ```
 
 ### Download Statement PDF
@@ -209,7 +209,7 @@ bash -c 'curl -s "https://api.mercury.com/api/v1/account/<your-account-id>/state
 Replace `<your-account-id>` and `<your-statement-id>` with the actual IDs:
 
 ```bash
-bash -c 'curl -s "https://api.mercury.com/api/v1/account/<your-account-id>/statement/<your-statement-id>/pdf" --header "Authorization: Bearer $MERCURY_API_TOKEN"' > statement.pdf
+bash -c 'curl -s "https://api.mercury.com/api/v1/account/<your-account-id>/statement/<your-statement-id>/pdf" --header "Authorization: Bearer $MERCURY_TOKEN"' > statement.pdf
 ```
 
 ---
@@ -219,7 +219,7 @@ bash -c 'curl -s "https://api.mercury.com/api/v1/account/<your-account-id>/state
 ### Get Organization Info
 
 ```bash
-bash -c 'curl -s "https://api.mercury.com/api/v1/organization" --header "Authorization: Bearer $MERCURY_API_TOKEN"'
+bash -c 'curl -s "https://api.mercury.com/api/v1/organization" --header "Authorization: Bearer $MERCURY_TOKEN"'
 ```
 
 ---
@@ -229,7 +229,7 @@ bash -c 'curl -s "https://api.mercury.com/api/v1/organization" --header "Authori
 ### List Treasury Accounts
 
 ```bash
-bash -c 'curl -s "https://api.mercury.com/api/v1/treasury" --header "Authorization: Bearer $MERCURY_API_TOKEN"'
+bash -c 'curl -s "https://api.mercury.com/api/v1/treasury" --header "Authorization: Bearer $MERCURY_TOKEN"'
 ```
 
 ### Get Treasury Account by ID
@@ -237,7 +237,7 @@ bash -c 'curl -s "https://api.mercury.com/api/v1/treasury" --header "Authorizati
 Replace `<your-treasury-id>` with the actual treasury ID:
 
 ```bash
-bash -c 'curl -s "https://api.mercury.com/api/v1/treasury/<your-treasury-id>" --header "Authorization: Bearer $MERCURY_API_TOKEN"'
+bash -c 'curl -s "https://api.mercury.com/api/v1/treasury/<your-treasury-id>" --header "Authorization: Bearer $MERCURY_TOKEN"'
 ```
 
 ### List Treasury Transactions
@@ -245,7 +245,7 @@ bash -c 'curl -s "https://api.mercury.com/api/v1/treasury/<your-treasury-id>" --
 Replace `<your-treasury-id>` with the actual treasury ID:
 
 ```bash
-bash -c 'curl -s "https://api.mercury.com/api/v1/treasury/<your-treasury-id>/transactions" --header "Authorization: Bearer $MERCURY_API_TOKEN"'
+bash -c 'curl -s "https://api.mercury.com/api/v1/treasury/<your-treasury-id>/transactions" --header "Authorization: Bearer $MERCURY_TOKEN"'
 ```
 
 ---
@@ -255,7 +255,7 @@ bash -c 'curl -s "https://api.mercury.com/api/v1/treasury/<your-treasury-id>/tra
 ### List Users
 
 ```bash
-bash -c 'curl -s "https://api.mercury.com/api/v1/users" --header "Authorization: Bearer $MERCURY_API_TOKEN"'
+bash -c 'curl -s "https://api.mercury.com/api/v1/users" --header "Authorization: Bearer $MERCURY_TOKEN"'
 ```
 
 ---
@@ -265,7 +265,7 @@ bash -c 'curl -s "https://api.mercury.com/api/v1/users" --header "Authorization:
 ### List Credit Accounts
 
 ```bash
-bash -c 'curl -s "https://api.mercury.com/api/v1/credit" --header "Authorization: Bearer $MERCURY_API_TOKEN"'
+bash -c 'curl -s "https://api.mercury.com/api/v1/credit" --header "Authorization: Bearer $MERCURY_TOKEN"'
 ```
 
 ---
@@ -275,7 +275,7 @@ bash -c 'curl -s "https://api.mercury.com/api/v1/credit" --header "Authorization
 ### List Customers
 
 ```bash
-bash -c 'curl -s "https://api.mercury.com/api/v1/accounts-receivable/customers" --header "Authorization: Bearer $MERCURY_API_TOKEN"'
+bash -c 'curl -s "https://api.mercury.com/api/v1/accounts-receivable/customers" --header "Authorization: Bearer $MERCURY_TOKEN"'
 ```
 
 ### Create Customer
@@ -292,13 +292,13 @@ Write to `/tmp/mercury_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.mercury.com/api/v1/accounts-receivable/customers" --header "Authorization: Bearer $MERCURY_API_TOKEN" --header "Content-Type: application/json" -d @/tmp/mercury_request.json'
+bash -c 'curl -s -X POST "https://api.mercury.com/api/v1/accounts-receivable/customers" --header "Authorization: Bearer $MERCURY_TOKEN" --header "Content-Type: application/json" -d @/tmp/mercury_request.json'
 ```
 
 ### List Invoices
 
 ```bash
-bash -c 'curl -s "https://api.mercury.com/api/v1/accounts-receivable/invoices" --header "Authorization: Bearer $MERCURY_API_TOKEN"'
+bash -c 'curl -s "https://api.mercury.com/api/v1/accounts-receivable/invoices" --header "Authorization: Bearer $MERCURY_TOKEN"'
 ```
 
 ### Create Invoice
@@ -316,7 +316,7 @@ Write to `/tmp/mercury_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.mercury.com/api/v1/accounts-receivable/invoices" --header "Authorization: Bearer $MERCURY_API_TOKEN" --header "Content-Type: application/json" -d @/tmp/mercury_request.json'
+bash -c 'curl -s -X POST "https://api.mercury.com/api/v1/accounts-receivable/invoices" --header "Authorization: Bearer $MERCURY_TOKEN" --header "Content-Type: application/json" -d @/tmp/mercury_request.json'
 ```
 
 ### Download Invoice PDF
@@ -324,7 +324,7 @@ bash -c 'curl -s -X POST "https://api.mercury.com/api/v1/accounts-receivable/inv
 Replace `<your-invoice-id>` with the actual invoice ID:
 
 ```bash
-bash -c 'curl -s "https://api.mercury.com/api/v1/accounts-receivable/invoice/<your-invoice-id>/pdf" --header "Authorization: Bearer $MERCURY_API_TOKEN"' > invoice.pdf
+bash -c 'curl -s "https://api.mercury.com/api/v1/accounts-receivable/invoice/<your-invoice-id>/pdf" --header "Authorization: Bearer $MERCURY_TOKEN"' > invoice.pdf
 ```
 
 ---
