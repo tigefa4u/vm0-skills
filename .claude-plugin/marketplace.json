@@ -206,6 +206,13 @@
       "skills": ["./htmlcsstoimage"]
     },
     {
+      "name": "hugging-face",
+      "description": "Hugging Face Hub and Inference API via curl. Use this skill to search models, datasets, spaces, run serverless inference, and manage repositories.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./hugging-face"]
+    },
+    {
       "name": "imgur",
       "description": "Upload images to Imgur for free hosting. Use this skill when you need to upload images and get public URLs for sharing or embedding in articles.",
       "source": "./",
