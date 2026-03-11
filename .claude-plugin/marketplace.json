@@ -115,6 +115,13 @@
       "skills": ["./devto"]
     },
     {
+      "name": "dify",
+      "description": "Dify AI platform API via curl. Use this skill to run AI workflows, chat with AI apps, generate text completions, and manage knowledge bases.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./dify"]
+    },
+    {
       "name": "discord",
       "description": "Discord Bot API via curl. Use this skill to interact with channels, guilds, users, and messages using a bot token.",
       "source": "./",
