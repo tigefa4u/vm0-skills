@@ -87,11 +87,11 @@
       "skills": ["./deepseek"]
     },
     {
-      "name": "dev.to",
+      "name": "devto",
       "description": "Dev.to API via curl. Use this skill to publish and manage articles on Dev.to.",
       "source": "./",
       "strict": false,
-      "skills": ["./dev.to"]
+      "skills": ["./devto"]
     },
     {
       "name": "discord",
@@ -115,11 +115,11 @@
       "skills": ["./elevenlabs"]
     },
     {
-      "name": "fal.ai",
+      "name": "fal",
       "description": "fal.ai AI image generation. Use this skill when you need to use fal, fal.ai, or generate images from text prompts using AI text-to-image models.",
       "source": "./",
       "strict": false,
-      "skills": ["./fal.ai"]
+      "skills": ["./fal"]
     },
     {
       "name": "figma",

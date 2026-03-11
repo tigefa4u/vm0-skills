@@ -1,5 +1,5 @@
 ---
-name: dev.to
+name: devto
 description: Dev.to API via curl. Use this skill to publish and manage articles on Dev.to.
 vm0_secrets:
   - DEVTO_API_KEY

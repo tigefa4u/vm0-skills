@@ -1,5 +1,5 @@
 ---
-name: fal.ai
+name: fal
 description: fal.ai AI image generation. Use this skill when you need to use fal, fal.ai, or generate images from text prompts using AI text-to-image models.
 vm0_secrets:
   - FAL_KEY
