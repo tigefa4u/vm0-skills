@@ -227,6 +227,13 @@
       "skills": ["./hackernews"]
     },
     {
+      "name": "heygen",
+      "description": "HeyGen AI video generation API via curl. Use this skill to create avatar videos, manage avatars and voices, generate videos from templates, and translate videos.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./heygen"]
+    },
+    {
       "name": "htmlcsstoimage",
       "description": "HTMLCSStoImage API via curl. Use this skill to generate images from HTML/CSS or capture screenshots of web pages.",
       "source": "./",
