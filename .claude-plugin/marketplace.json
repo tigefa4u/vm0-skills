@@ -17,6 +17,13 @@
       "skills": ["./apify"]
     },
     {
+      "name": "atlassian",
+      "description": "Atlassian REST API via curl. Use this skill to manage Jira issues, Confluence pages, and other Atlassian Cloud products.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./atlassian"]
+    },
+    {
       "name": "axiom",
       "description": "Axiom observability platform for logs, events, and analytics via REST API",
       "source": "./",
