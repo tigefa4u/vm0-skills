@@ -472,6 +472,13 @@
       "skills": ["./resend"]
     },
     {
+      "name": "revenuecat",
+      "description": "RevenueCat REST API via curl. Use this skill to manage in-app subscriptions, customers, entitlements, offerings, and products.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./revenuecat"]
+    },
+    {
       "name": "rss-fetch",
       "description": "Fetch RSS/Atom feeds via curl. Use this skill to gather news and articles from RSS sources.",
       "source": "./",
