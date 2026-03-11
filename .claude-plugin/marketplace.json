@@ -171,6 +171,13 @@
       "skills": ["./firecrawl"]
     },
     {
+      "name": "fireflies",
+      "description": "Fireflies.ai GraphQL API via curl. Use this skill to transcribe meetings, fetch transcripts, search conversations, and analyze meeting data.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./fireflies"]
+    },
+    {
       "name": "github-automation",
       "description": "Automate GitHub operations using gh CLI - manage repositories, issues, pull requests, releases, and workflows. Use when working with GitHub, managing repos, creating issues/PRs, or when users mention GitHub operations, gh CLI, or repository management.",
       "source": "./",
