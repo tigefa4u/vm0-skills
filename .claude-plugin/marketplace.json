@@ -73,6 +73,13 @@
       "skills": ["./chatwoot"]
     },
     {
+      "name": "clickup",
+      "description": "ClickUp REST API via curl. Use this skill to manage tasks, lists, folders, spaces, and workspaces in ClickUp.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./clickup"]
+    },
+    {
       "name": "cloudinary",
       "description": "Upload images and videos to Cloudinary with CDN delivery and transformations. Use this skill for media hosting, optimization, resizing, format conversion, and video concatenation.",
       "source": "./",
