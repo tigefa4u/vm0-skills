@@ -2,7 +2,7 @@
 name: bright-data
 description: Bright Data Web Scraper API via curl. Use this skill for scraping social media (Twitter/X, Reddit, YouTube, Instagram, TikTok), account management, and usage monitoring.
 vm0_secrets:
-  - BRIGHTDATA_API_KEY
+  - BRIGHTDATA_TOKEN
 ---
 
 # Bright Data Web Scraper API
@@ -31,7 +31,7 @@ Use this skill when you need to:
 3. Create a Web Scraper dataset in the [Control Panel](https://brightdata.com/cp/datasets) to get your `dataset_id`
 
 ```bash
-export BRIGHTDATA_API_KEY="your-api-key"
+export BRIGHTDATA_TOKEN="your-api-key"
 ```
 
 ### Base URL
@@ -84,7 +84,7 @@ Then run (replace `<dataset-id>` with your actual dataset ID):
 
 ```bash
 bash -c 'curl -s -X POST "https://api.brightdata.com/datasets/v3/trigger?dataset_id=<dataset-id>" \
-  -H "Authorization: Bearer ${BRIGHTDATA_API_KEY}" \
+  -H "Authorization: Bearer ${BRIGHTDATA_TOKEN}" \
   -H "Content-Type: application/json" \
   -d @/tmp/brightdata_request.json'
 ```
@@ -114,7 +114,7 @@ Then run (replace `<dataset-id>` with your actual dataset ID):
 
 ```bash
 bash -c 'curl -s -X POST "https://api.brightdata.com/datasets/v3/scrape?dataset_id=<dataset-id>" \
-  -H "Authorization: Bearer ${BRIGHTDATA_API_KEY}" \
+  -H "Authorization: Bearer ${BRIGHTDATA_TOKEN}" \
   -H "Content-Type: application/json" \
   -d @/tmp/brightdata_request.json'
 ```
@@ -127,7 +127,7 @@ Check the status of a scraping job (replace `<snapshot-id>` with your actual sna
 
 ```bash
 bash -c 'curl -s "https://api.brightdata.com/datasets/v3/progress/<snapshot-id>" \
-  -H "Authorization: Bearer ${BRIGHTDATA_API_KEY}"'
+  -H "Authorization: Bearer ${BRIGHTDATA_TOKEN}"'
 ```
 
 **Response:**
@@ -149,7 +149,7 @@ Once status is `ready`, download the collected data (replace `<snapshot-id>` wit
 
 ```bash
 bash -c 'curl -s "https://api.brightdata.com/datasets/v3/snapshot/<snapshot-id>?format=json" \
-  -H "Authorization: Bearer ${BRIGHTDATA_API_KEY}"'
+  -H "Authorization: Bearer ${BRIGHTDATA_TOKEN}"'
 ```
 
 ---
@@ -160,7 +160,7 @@ Get all your snapshots:
 
 ```bash
 bash -c 'curl -s "https://api.brightdata.com/datasets/v3/snapshots" \
-  -H "Authorization: Bearer ${BRIGHTDATA_API_KEY}"' | jq '.[] | {snapshot_id, dataset_id, status}'
+  -H "Authorization: Bearer ${BRIGHTDATA_TOKEN}"' | jq '.[] | {snapshot_id, dataset_id, status}'
 ```
 
 ---
@@ -171,7 +171,7 @@ Cancel a running job (replace `<snapshot-id>` with your actual snapshot ID):
 
 ```bash
 bash -c 'curl -s -X POST "https://api.brightdata.com/datasets/v3/cancel?snapshot_id=<snapshot-id>" \
-  -H "Authorization: Bearer ${BRIGHTDATA_API_KEY}"'
+  -H "Authorization: Bearer ${BRIGHTDATA_TOKEN}"'
 ```
 
 ---
@@ -192,7 +192,7 @@ Then run (replace `<dataset-id>` with your actual dataset ID):
 
 ```bash
 bash -c 'curl -s -X POST "https://api.brightdata.com/datasets/v3/scrape?dataset_id=<dataset-id>" \
-  -H "Authorization: Bearer ${BRIGHTDATA_API_KEY}" \
+  -H "Authorization: Bearer ${BRIGHTDATA_TOKEN}" \
   -H "Content-Type: application/json" \
   -d @/tmp/brightdata_request.json'
 ```
@@ -213,7 +213,7 @@ Then run (replace `<dataset-id>` with your actual dataset ID):
 
 ```bash
 bash -c 'curl -s -X POST "https://api.brightdata.com/datasets/v3/scrape?dataset_id=<dataset-id>" \
-  -H "Authorization: Bearer ${BRIGHTDATA_API_KEY}" \
+  -H "Authorization: Bearer ${BRIGHTDATA_TOKEN}" \
   -H "Content-Type: application/json" \
   -d @/tmp/brightdata_request.json'
 ```
@@ -236,7 +236,7 @@ Then run (replace `<dataset-id>` with your actual dataset ID):
 
 ```bash
 bash -c 'curl -s -X POST "https://api.brightdata.com/datasets/v3/trigger?dataset_id=<dataset-id>" \
-  -H "Authorization: Bearer ${BRIGHTDATA_API_KEY}" \
+  -H "Authorization: Bearer ${BRIGHTDATA_TOKEN}" \
   -H "Content-Type: application/json" \
   -d @/tmp/brightdata_request.json'
 ```
@@ -259,7 +259,7 @@ Then run (replace `<dataset-id>` with your actual dataset ID):
 
 ```bash
 bash -c 'curl -s -X POST "https://api.brightdata.com/datasets/v3/scrape?dataset_id=<dataset-id>" \
-  -H "Authorization: Bearer ${BRIGHTDATA_API_KEY}" \
+  -H "Authorization: Bearer ${BRIGHTDATA_TOKEN}" \
   -H "Content-Type: application/json" \
   -d @/tmp/brightdata_request.json'
 ```
@@ -282,7 +282,7 @@ Then run (replace `<dataset-id>` with your actual dataset ID):
 
 ```bash
 bash -c 'curl -s -X POST "https://api.brightdata.com/datasets/v3/scrape?dataset_id=<dataset-id>" \
-  -H "Authorization: Bearer ${BRIGHTDATA_API_KEY}" \
+  -H "Authorization: Bearer ${BRIGHTDATA_TOKEN}" \
   -H "Content-Type: application/json" \
   -d @/tmp/brightdata_request.json'
 ```
@@ -303,7 +303,7 @@ Then run (replace `<dataset-id>` with your actual dataset ID):
 
 ```bash
 bash -c 'curl -s -X POST "https://api.brightdata.com/datasets/v3/trigger?dataset_id=<dataset-id>" \
-  -H "Authorization: Bearer ${BRIGHTDATA_API_KEY}" \
+  -H "Authorization: Bearer ${BRIGHTDATA_TOKEN}" \
   -H "Content-Type: application/json" \
   -d @/tmp/brightdata_request.json'
 ```
@@ -322,7 +322,7 @@ Then run (replace `<dataset-id>` with your actual dataset ID):
 
 ```bash
 bash -c 'curl -s -X POST "https://api.brightdata.com/datasets/v3/scrape?dataset_id=<dataset-id>" \
-  -H "Authorization: Bearer ${BRIGHTDATA_API_KEY}" \
+  -H "Authorization: Bearer ${BRIGHTDATA_TOKEN}" \
   -H "Content-Type: application/json" \
   -d @/tmp/brightdata_request.json'
 ```
@@ -345,7 +345,7 @@ Then run (replace `<dataset-id>` with your actual dataset ID):
 
 ```bash
 bash -c 'curl -s -X POST "https://api.brightdata.com/datasets/v3/scrape?dataset_id=<dataset-id>" \
-  -H "Authorization: Bearer ${BRIGHTDATA_API_KEY}" \
+  -H "Authorization: Bearer ${BRIGHTDATA_TOKEN}" \
   -H "Content-Type: application/json" \
   -d @/tmp/brightdata_request.json'
 ```
@@ -371,7 +371,7 @@ Then run (replace `<dataset-id>` with your actual dataset ID):
 
 ```bash
 bash -c 'curl -s -X POST "https://api.brightdata.com/datasets/v3/trigger?dataset_id=<dataset-id>" \
-  -H "Authorization: Bearer ${BRIGHTDATA_API_KEY}" \
+  -H "Authorization: Bearer ${BRIGHTDATA_TOKEN}" \
   -H "Content-Type: application/json" \
   -d @/tmp/brightdata_request.json'
 ```
@@ -384,7 +384,7 @@ bash -c 'curl -s -X POST "https://api.brightdata.com/datasets/v3/trigger?dataset
 
 ```bash
 bash -c 'curl -s "https://api.brightdata.com/status" \
-  -H "Authorization: Bearer ${BRIGHTDATA_API_KEY}"'
+  -H "Authorization: Bearer ${BRIGHTDATA_TOKEN}"'
 ```
 
 **Response:**
@@ -401,14 +401,14 @@ bash -c 'curl -s "https://api.brightdata.com/status" \
 
 ```bash
 bash -c 'curl -s "https://api.brightdata.com/zone/get_active_zones" \
-  -H "Authorization: Bearer ${BRIGHTDATA_API_KEY}"' | jq '.[] | {name, type}'
+  -H "Authorization: Bearer ${BRIGHTDATA_TOKEN}"' | jq '.[] | {name, type}'
 ```
 
 ### Get Bandwidth Usage
 
 ```bash
 bash -c 'curl -s "https://api.brightdata.com/customer/bw" \
-  -H "Authorization: Bearer ${BRIGHTDATA_API_KEY}"'
+  -H "Authorization: Bearer ${BRIGHTDATA_TOKEN}"'
 ```
 
 ---

@@ -2,7 +2,7 @@
 name: firecrawl
 description: Firecrawl web scraping API via curl. Use this skill to scrape webpages, crawl websites, discover URLs, search the web, or extract structured data.
 vm0_secrets:
-  - FIRECRAWL_API_KEY
+  - FIRECRAWL_TOKEN
 ---
 
 # Firecrawl
@@ -31,7 +31,7 @@ Use this skill when you need to:
 2. Get your API key from the dashboard
 
 ```bash
-export FIRECRAWL_API_KEY="fc-your-api-key"
+export FIRECRAWL_TOKEN="fc-your-api-key"
 ```
 
 ---
@@ -44,7 +44,7 @@ export FIRECRAWL_API_KEY="fc-your-api-key"
 
 ## How to Use
 
-All examples below assume you have `FIRECRAWL_API_KEY` set.
+All examples below assume you have `FIRECRAWL_TOKEN` set.
 
 Base URL: `https://api.firecrawl.dev/v1`
 
@@ -68,7 +68,7 @@ Write to `/tmp/firecrawl_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/scrape" -H "Authorization: Bearer ${FIRECRAWL_API_KEY}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json'
+bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/scrape" -H "Authorization: Bearer ${FIRECRAWL_TOKEN}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json'
 ```
 
 ### Scrape with Options
@@ -87,7 +87,7 @@ Write to `/tmp/firecrawl_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/scrape" -H "Authorization: Bearer ${FIRECRAWL_API_KEY}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.data.markdown'
+bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/scrape" -H "Authorization: Bearer ${FIRECRAWL_TOKEN}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.data.markdown'
 ```
 
 ### Get HTML Instead
@@ -104,7 +104,7 @@ Write to `/tmp/firecrawl_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/scrape" -H "Authorization: Bearer ${FIRECRAWL_API_KEY}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.data.html'
+bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/scrape" -H "Authorization: Bearer ${FIRECRAWL_TOKEN}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.data.html'
 ```
 
 ### Get Screenshot
@@ -121,7 +121,7 @@ Write to `/tmp/firecrawl_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/scrape" -H "Authorization: Bearer ${FIRECRAWL_API_KEY}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.data.screenshot'
+bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/scrape" -H "Authorization: Bearer ${FIRECRAWL_TOKEN}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.data.screenshot'
 ```
 
 **Scrape Parameters:**
@@ -154,7 +154,7 @@ Write to `/tmp/firecrawl_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/crawl" -H "Authorization: Bearer ${FIRECRAWL_API_KEY}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json'
+bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/crawl" -H "Authorization: Bearer ${FIRECRAWL_TOKEN}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json'
 ```
 
 **Response:**
@@ -171,7 +171,7 @@ bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/crawl" -H "Authorization:
 Replace `<job-id>` with the actual job ID returned from the crawl request:
 
 ```bash
-bash -c 'curl -s "https://api.firecrawl.dev/v1/crawl/<job-id>" -H "Authorization: Bearer ${FIRECRAWL_API_KEY}"' | jq '{status, completed, total}'
+bash -c 'curl -s "https://api.firecrawl.dev/v1/crawl/<job-id>" -H "Authorization: Bearer ${FIRECRAWL_TOKEN}"' | jq '{status, completed, total}'
 ```
 
 ### Get Crawl Results
@@ -179,7 +179,7 @@ bash -c 'curl -s "https://api.firecrawl.dev/v1/crawl/<job-id>" -H "Authorization
 Replace `<job-id>` with the actual job ID:
 
 ```bash
-bash -c 'curl -s "https://api.firecrawl.dev/v1/crawl/<job-id>" -H "Authorization: Bearer ${FIRECRAWL_API_KEY}"' | jq '.data[] | {url: .metadata.url, title: .metadata.title}'
+bash -c 'curl -s "https://api.firecrawl.dev/v1/crawl/<job-id>" -H "Authorization: Bearer ${FIRECRAWL_TOKEN}"' | jq '.data[] | {url: .metadata.url, title: .metadata.title}'
 ```
 
 ### Crawl with Path Filters
@@ -199,7 +199,7 @@ Write to `/tmp/firecrawl_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/crawl" -H "Authorization: Bearer ${FIRECRAWL_API_KEY}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json'
+bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/crawl" -H "Authorization: Bearer ${FIRECRAWL_TOKEN}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json'
 ```
 
 **Crawl Parameters:**
@@ -231,7 +231,7 @@ Write to `/tmp/firecrawl_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/map" -H "Authorization: Bearer ${FIRECRAWL_API_KEY}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.links[:10]'
+bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/map" -H "Authorization: Bearer ${FIRECRAWL_TOKEN}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.links[:10]'
 ```
 
 ### Map with Search Filter
@@ -249,7 +249,7 @@ Write to `/tmp/firecrawl_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/map" -H "Authorization: Bearer ${FIRECRAWL_API_KEY}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.links'
+bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/map" -H "Authorization: Bearer ${FIRECRAWL_TOKEN}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.links'
 ```
 
 **Map Parameters:**
@@ -280,7 +280,7 @@ Write to `/tmp/firecrawl_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/search" -H "Authorization: Bearer ${FIRECRAWL_API_KEY}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.data[] | {title: .metadata.title, url: .url}'
+bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/search" -H "Authorization: Bearer ${FIRECRAWL_TOKEN}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.data[] | {title: .metadata.title, url: .url}'
 ```
 
 ### Search with Full Content
@@ -300,7 +300,7 @@ Write to `/tmp/firecrawl_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/search" -H "Authorization: Bearer ${FIRECRAWL_API_KEY}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.data[] | {title: .metadata.title, content: .markdown[:500]}'
+bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/search" -H "Authorization: Bearer ${FIRECRAWL_TOKEN}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.data[] | {title: .metadata.title, content: .markdown[:500]}'
 ```
 
 **Search Parameters:**
@@ -331,7 +331,7 @@ Write to `/tmp/firecrawl_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/extract" -H "Authorization: Bearer ${FIRECRAWL_API_KEY}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.data'
+bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/extract" -H "Authorization: Bearer ${FIRECRAWL_TOKEN}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.data'
 ```
 
 ### Extract with Schema
@@ -357,7 +357,7 @@ Write to `/tmp/firecrawl_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/extract" -H "Authorization: Bearer ${FIRECRAWL_API_KEY}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.data'
+bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/extract" -H "Authorization: Bearer ${FIRECRAWL_TOKEN}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.data'
 ```
 
 ### Extract from Multiple URLs
@@ -377,7 +377,7 @@ Write to `/tmp/firecrawl_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/extract" -H "Authorization: Bearer ${FIRECRAWL_API_KEY}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.data'
+bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/extract" -H "Authorization: Bearer ${FIRECRAWL_TOKEN}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.data'
 ```
 
 **Extract Parameters:**
@@ -407,7 +407,7 @@ Write to `/tmp/firecrawl_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/scrape" -H "Authorization: Bearer ${FIRECRAWL_API_KEY}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq -r '.data.markdown' > python-tutorial.md
+bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/scrape" -H "Authorization: Bearer ${FIRECRAWL_TOKEN}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq -r '.data.markdown' > python-tutorial.md
 ```
 
 ### Find All Blog Posts
@@ -424,7 +424,7 @@ Write to `/tmp/firecrawl_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/map" -H "Authorization: Bearer ${FIRECRAWL_API_KEY}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq -r '.links[]'
+bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/map" -H "Authorization: Bearer ${FIRECRAWL_TOKEN}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq -r '.links[]'
 ```
 
 ### Research a Topic
@@ -442,7 +442,7 @@ Write to `/tmp/firecrawl_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/search" -H "Authorization: Bearer ${FIRECRAWL_API_KEY}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.data[] | {title: .metadata.title, url: .url}'
+bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/search" -H "Authorization: Bearer ${FIRECRAWL_TOKEN}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.data[] | {title: .metadata.title, url: .url}'
 ```
 
 ### Extract Pricing Data
@@ -459,7 +459,7 @@ Write to `/tmp/firecrawl_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/extract" -H "Authorization: Bearer ${FIRECRAWL_API_KEY}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.data'
+bash -c 'curl -s -X POST "https://api.firecrawl.dev/v1/extract" -H "Authorization: Bearer ${FIRECRAWL_TOKEN}" -H "Content-Type: application/json" -d @/tmp/firecrawl_request.json' | jq '.data'
 ```
 
 ### Poll Crawl Until Complete
@@ -468,7 +468,7 @@ Replace `<job-id>` with the actual job ID:
 
 ```bash
 while true; do
-  STATUS="$(bash -c 'curl -s "https://api.firecrawl.dev/v1/crawl/<job-id>" -H "Authorization: Bearer ${FIRECRAWL_API_KEY}"' | jq -r '.status')"
+  STATUS="$(bash -c 'curl -s "https://api.firecrawl.dev/v1/crawl/<job-id>" -H "Authorization: Bearer ${FIRECRAWL_TOKEN}"' | jq -r '.status')"
   echo "Status: $STATUS"
   [ "$STATUS" = "completed" ] && break
   sleep 5
