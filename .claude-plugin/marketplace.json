@@ -213,6 +213,13 @@
       "skills": ["./google-sheets"]
     },
     {
+      "name": "granola",
+      "description": "Granola AI meeting notes API via curl. Use this skill to access meeting notes, transcripts, summaries, and calendar event details.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./granola"]
+    },
+    {
       "name": "hackernews",
       "description": "Hacker News API via curl. Use this skill to fetch top stories, new posts, comments, and user profiles from Hacker News.",
       "source": "./",
