@@ -750,6 +750,15 @@
       ]
     },
     {
+      "name": "wrike",
+      "description": "Wrike REST API via curl. Use this skill to manage tasks, folders, projects, spaces, comments, timelogs, and workflows in Wrike.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./wrike"
+      ]
+    },
+    {
       "name": "youtube",
       "description": "YouTube Data API v3 via curl. Use this skill to search videos, get video/channel info, list playlists, and fetch comments.",
       "source": "./",
