@@ -10,6 +10,24 @@
   },
   "plugins": [
     {
+      "name": "agentmail",
+      "description": "AgentMail API via curl. Use this skill to create email inboxes for AI agents, send/receive/reply to emails, manage threads, drafts, webhooks, domains, and pods.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./agentmail"
+      ]
+    },
+    {
+      "name": "ahrefs",
+      "description": "Ahrefs SEO API for backlink analysis, keyword research, and domain metrics. Use this skill to check domain ratings, backlinks, organic keywords, and site health.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./ahrefs"
+      ]
+    },
+    {
       "name": "apify",
       "description": "Web scraping and automation platform with pre-built Actors for common tasks",
       "source": "./",
@@ -127,6 +145,15 @@
       ]
     },
     {
+      "name": "deel",
+      "description": "Deel API for managing contracts, people, and HR operations. Use this skill to list contracts, manage employees and contractors, handle time off, and access organization data.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./deel"
+      ]
+    },
+    {
       "name": "deepseek",
       "description": "DeepSeek AI large language model API via curl. Use this skill for chat completions, reasoning, and code generation with OpenAI-compatible endpoints.",
       "source": "./",
@@ -169,6 +196,15 @@
       "strict": false,
       "skills": [
         "./discord-webhook"
+      ]
+    },
+    {
+      "name": "dropbox",
+      "description": "Dropbox API for managing files and folders. Use this skill to list, upload, download, search, and manage files and folders in Dropbox.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./dropbox"
       ]
     },
     {
@@ -307,21 +343,21 @@
       ]
     },
     {
-      "name": "hume",
-      "description": "Hume AI API via curl. Use this skill to analyze emotions in media, generate expressive speech with text-to-speech, and manage EVI (speech-to-speech) configurations, prompts, and chats.",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./hume"
-      ]
-    },
-    {
       "name": "hugging-face",
       "description": "Hugging Face Hub and Inference API via curl. Use this skill to search models, datasets, spaces, run serverless inference, and manage repositories.",
       "source": "./",
       "strict": false,
       "skills": [
         "./hugging-face"
+      ]
+    },
+    {
+      "name": "hume",
+      "description": "Hume AI API via curl. Use this skill to analyze emotions in media, generate expressive speech with text-to-speech, and manage EVI (speech-to-speech) configurations, prompts, and chats.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./hume"
       ]
     },
     {
@@ -361,6 +397,15 @@
       ]
     },
     {
+      "name": "intervals-icu",
+      "description": "Intervals.icu API via curl. Use this skill to access training activities, wellness data, workouts, calendar events, and athlete profiles on Intervals.icu.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./intervals-icu"
+      ]
+    },
+    {
       "name": "jam",
       "description": "Jam bug reporting and debugging API via MCP. Use this skill to access bug reports, console logs, network requests, user events, screenshots, and video analysis for debugging.",
       "source": "./",
@@ -370,21 +415,21 @@
       ]
     },
     {
-      "name": "jotform",
-      "description": "Jotform REST API via curl. Use this skill to manage forms, submissions, questions, webhooks, and user account data.",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./jotform"
-      ]
-    },
-    {
       "name": "jira",
       "description": "Jira Cloud REST API via curl. Use this skill to create, update, search, and manage issues, projects, and workflows in Jira.",
       "source": "./",
       "strict": false,
       "skills": [
         "./jira"
+      ]
+    },
+    {
+      "name": "jotform",
+      "description": "Jotform REST API via curl. Use this skill to manage forms, submissions, questions, webhooks, and user account data.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./jotform"
       ]
     },
     {
@@ -421,6 +466,15 @@
       "strict": false,
       "skills": [
         "./linear"
+      ]
+    },
+    {
+      "name": "mailchimp",
+      "description": "Mailchimp Marketing API for managing audiences, campaigns, templates, and automations. Use this skill to create and send email campaigns, manage subscriber lists, and analyze campaign performance.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./mailchimp"
       ]
     },
     {
@@ -475,6 +529,15 @@
       "strict": false,
       "skills": [
         "./monday"
+      ]
+    },
+    {
+      "name": "neon",
+      "description": "Neon serverless Postgres API for managing projects, branches, databases, and endpoints. Use this skill to create and manage Neon Postgres projects, branches, and compute endpoints.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./neon"
       ]
     },
     {
@@ -550,12 +613,30 @@
       ]
     },
     {
+      "name": "posthog",
+      "description": "PostHog API via curl. Use this skill to manage product analytics, feature flags, experiments, insights, dashboards, and more in PostHog.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./posthog"
+      ]
+    },
+    {
       "name": "prisma-postgres",
       "description": "Prisma Postgres Management API via curl. Use this skill to manage projects, databases, connections, backups, and usage metrics on the Prisma Data Platform.",
       "source": "./",
       "strict": false,
       "skills": [
         "./prisma-postgres"
+      ]
+    },
+    {
+      "name": "productlane",
+      "description": "Productlane API via curl. Use this skill to manage feedback threads, companies, contacts, changelogs, roadmap projects, and documentation articles.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./productlane"
       ]
     },
     {
@@ -667,6 +748,15 @@
       ]
     },
     {
+      "name": "similarweb",
+      "description": "SimilarWeb API for website traffic analytics, competitive intelligence, and market insights. Use this skill to analyze website traffic, engagement metrics, traffic sources, keywords, and competitors.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./similarweb"
+      ]
+    },
+    {
       "name": "slack",
       "description": "Slack API for sending messages, reading channels, and managing conversations. Use this skill to post messages, upload files, and interact with Slack workspaces.",
       "source": "./",
@@ -682,6 +772,15 @@
       "strict": false,
       "skills": [
         "./slack-webhook"
+      ]
+    },
+    {
+      "name": "strava",
+      "description": "Strava API v3 via curl. Use this skill to query athlete activities, segments, clubs, gear, and routes on Strava. Use when users mention Strava, running/cycling activities, fitness tracking, or want to retrieve workout data.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./strava"
       ]
     },
     {
@@ -750,6 +849,15 @@
       ]
     },
     {
+      "name": "webflow",
+      "description": "Webflow REST API v2 for managing sites, pages, CMS collections, CMS items, assets, and forms. Use this skill to read site structure, manage CMS content, list assets, and retrieve form submissions.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./webflow"
+      ]
+    },
+    {
       "name": "wrike",
       "description": "Wrike REST API via curl. Use this skill to manage tasks, folders, projects, spaces, comments, timelogs, and workflows in Wrike.",
       "source": "./",
@@ -801,15 +909,6 @@
       "strict": false,
       "skills": [
         "./zeptomail"
-      ]
-    },
-    {
-      "name": "strava",
-      "description": "Strava API v3 via curl. Use this skill to query athlete activities, segments, clubs, gear, and routes on Strava. Use when users mention Strava, running/cycling activities, fitness tracking, or want to retrieve workout data.",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./strava"
       ]
     }
   ]
