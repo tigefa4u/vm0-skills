@@ -910,6 +910,55 @@
       "skills": [
         "./zeptomail"
       ]
+    },
+    {
+      "name": "finance-accounting",
+      "description": "Financial accounting toolkit — GAAP-compliant statements, journal entries, reconciliations, month-end close, variance analysis, and audit preparation.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./gaap-reporting", "./journal-entries", "./account-reconciliation", "./period-close", "./flux-analysis", "./audit-readiness"]
+    },
+    {
+      "name": "legal-compliance",
+      "description": "Legal operations toolkit — contract redlining, NDA screening, privacy compliance (GDPR/CCPA), risk scoring, and meeting briefings with action tracking.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./contract-redline", "./nda-screening", "./privacy-compliance", "./legal-risk-scoring", "./legal-briefing"]
+    },
+    {
+      "name": "marketing-content",
+      "description": "Marketing toolkit — copywriting across channels, brand voice guidelines, campaign strategy, performance analytics, and stakeholder communications.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./copywriting", "./brand-guidelines", "./campaign-strategy", "./marketing-analytics", "./status-updates"]
+    },
+    {
+      "name": "customer-support",
+      "description": "Customer support toolkit — issue triage and prioritization, customer reply drafting, response templates, escalation briefs, and knowledge base authoring.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./issue-triage", "./customer-reply", "./reply-templates", "./escalation-brief", "./kb-authoring"]
+    },
+    {
+      "name": "product-management",
+      "description": "Product management toolkit — PRD writing, roadmap planning with RICE/ICE scoring, product metrics and OKRs, and competitive analysis matrices.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./prd-writing", "./roadmap-planning", "./product-metrics", "./competitor-matrix"]
+    },
+    {
+      "name": "data-analysis",
+      "description": "Data analysis toolkit — multi-dialect SQL patterns, statistical methods, dataset profiling, and analysis quality assurance.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./sql-cookbook", "./stats-methods", "./data-profiling", "./analysis-qa"]
+    },
+    {
+      "name": "user-research",
+      "description": "User research toolkit — customer intelligence gathering with confidence scoring, and research synthesis for personas, themes, and opportunity prioritization.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./customer-intel", "./research-synthesis"]
     }
   ]
 }
