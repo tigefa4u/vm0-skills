@@ -32,22 +32,7 @@ Use this skill when you need to:
 
 ## Prerequisites
 
-#
-### Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/intercom-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "Authorization: Bearer $INTERCOM_TOKEN" "$@"
-EOF
-chmod +x /tmp/intercom-curl
-```
-
-**Usage:** All examples below use `/tmp/intercom-curl` instead of direct `curl` calls.
-
-## Getting Your Access Token
+### Getting Your Access Token
 
 1. Log in to your [Intercom workspace](https://app.intercom.com/)
 2. Navigate to **Settings** → **Developers** → **Developer Hub**
@@ -64,7 +49,7 @@ export INTERCOM_TOKEN="your_access_token"
 Test your token:
 
 ```bash
-/tmp/intercom-curl "https://api.intercom.io/admins" | jq '.admins[] | {id, name, email}'
+bash -c 'curl -s "https://api.intercom.io/admins" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Accept: application/json" -H "Intercom-Version: 2.14"' | jq '.admins[] | {id, name, email}'
 ```
 
 Expected response: List of admins in your workspace
@@ -79,6 +64,11 @@ Expected response: List of admins in your workspace
 
 ---
 
+
+> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
+> ```bash
+> bash -c 'curl -s "https://api.example.com" -H "Authorization: Bearer $API_KEY"' | jq .
+> ```
 
 ## How to Use
 
@@ -100,7 +90,7 @@ All examples assume `INTERCOM_TOKEN` is set.
 Get all admins/teammates in your workspace:
 
 ```bash
-/tmp/intercom-curl "https://api.intercom.io/admins" | jq '.admins[] | {id, name, email}'
+bash -c 'curl -s "https://api.intercom.io/admins" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Accept: application/json" -H "Intercom-Version: 2.14"' | jq '.admins[] | {id, name, email}'
 ```
 
 ---
@@ -122,7 +112,7 @@ Write to `/tmp/intercom_request.json`:
 Then run:
 
 ```bash
-/tmp/intercom-curl -X POST "https://api.intercom.io/contacts" -d @/tmp/intercom_request.json
+bash -c 'curl -s -X POST "https://api.intercom.io/contacts" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Content-Type: application/json" -H "Accept: application/json" -H "Intercom-Version: 2.14" -d @/tmp/intercom_request.json'
 ```
 
 With custom attributes:
@@ -143,7 +133,7 @@ Write to `/tmp/intercom_request.json`:
 Then run:
 
 ```bash
-/tmp/intercom-curl -X POST "https://api.intercom.io/contacts" -d @/tmp/intercom_request.json
+bash -c 'curl -s -X POST "https://api.intercom.io/contacts" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Content-Type: application/json" -H "Accept: application/json" -H "Intercom-Version: 2.14" -d @/tmp/intercom_request.json'
 ```
 
 ---
@@ -212,7 +202,7 @@ Write to `/tmp/intercom_request.json`:
 Then run:
 
 ```bash
-/tmp/intercom-curl -X POST "https://api.intercom.io/contacts/search" -d @/tmp/intercom_request.json | jq '.data[] | {id, email, name}'
+bash -c 'curl -s -X POST "https://api.intercom.io/contacts/search" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Content-Type: application/json" -H "Intercom-Version: 2.14" -d @/tmp/intercom_request.json' | jq '.data[] | {id, email, name}'
 ```
 
 Search with multiple filters:
@@ -242,7 +232,7 @@ Write to `/tmp/intercom_request.json`:
 Then run:
 
 ```bash
-/tmp/intercom-curl -X POST "https://api.intercom.io/contacts/search" -d @/tmp/intercom_request.json | jq '.data[] | {id, email, name}'
+bash -c 'curl -s -X POST "https://api.intercom.io/contacts/search" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Content-Type: application/json" -H "Intercom-Version: 2.14" -d @/tmp/intercom_request.json' | jq '.data[] | {id, email, name}'
 ```
 
 ---
@@ -252,7 +242,7 @@ Then run:
 Get all conversations:
 
 ```bash
-/tmp/intercom-curl "https://api.intercom.io/conversations?order=desc&sort=updated_at" | jq '.conversations[] | {id, state, created_at, updated_at}'
+bash -c 'curl -s "https://api.intercom.io/conversations?order=desc&sort=updated_at" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Accept: application/json" -H "Intercom-Version: 2.14"' | jq '.conversations[] | {id, state, created_at, updated_at}'
 ```
 
 ---
@@ -262,7 +252,7 @@ Get all conversations:
 Retrieve a specific conversation. Replace `<your-conversation-id>` with the actual conversation ID:
 
 ```bash
-/tmp/intercom-curl "https://api.intercom.io/conversations/<your-conversation-id>"
+bash -c 'curl -s "https://api.intercom.io/conversations/<your-conversation-id>" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Accept: application/json" -H "Intercom-Version: 2.14"'
 ```
 
 ---
@@ -291,7 +281,7 @@ Write to `/tmp/intercom_request.json`:
 Then run:
 
 ```bash
-/tmp/intercom-curl -X POST "https://api.intercom.io/conversations/search" -d @/tmp/intercom_request.json | jq '.conversations[] | {id, state, created_at}'
+bash -c 'curl -s -X POST "https://api.intercom.io/conversations/search" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Content-Type: application/json" -H "Intercom-Version: 2.14" -d @/tmp/intercom_request.json' | jq '.conversations[] | {id, state, created_at}'
 ```
 
 Search by assignee:
@@ -313,7 +303,7 @@ Write to `/tmp/intercom_request.json`:
 Then run:
 
 ```bash
-/tmp/intercom-curl -X POST "https://api.intercom.io/conversations/search" -d @/tmp/intercom_request.json | jq '.conversations[] | {id, state, created_at}'
+bash -c 'curl -s -X POST "https://api.intercom.io/conversations/search" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Content-Type: application/json" -H "Intercom-Version: 2.14" -d @/tmp/intercom_request.json' | jq '.conversations[] | {id, state, created_at}'
 ```
 
 ---
@@ -336,7 +326,7 @@ Write to `/tmp/intercom_request.json`:
 Then run:
 
 ```bash
-/tmp/intercom-curl -X POST "https://api.intercom.io/conversations/<your-conversation-id>/parts" -d @/tmp/intercom_request.json
+bash -c 'curl -s -X POST "https://api.intercom.io/conversations/<your-conversation-id>/parts" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Content-Type: application/json" -H "Intercom-Version: 2.14" -d @/tmp/intercom_request.json'
 ```
 
 ---
@@ -359,7 +349,7 @@ Write to `/tmp/intercom_request.json`:
 Then run:
 
 ```bash
-/tmp/intercom-curl -X POST "https://api.intercom.io/conversations/<your-conversation-id>/parts" -d @/tmp/intercom_request.json
+bash -c 'curl -s -X POST "https://api.intercom.io/conversations/<your-conversation-id>/parts" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Content-Type: application/json" -H "Intercom-Version: 2.14" -d @/tmp/intercom_request.json'
 ```
 
 ---
@@ -381,7 +371,7 @@ Write to `/tmp/intercom_request.json`:
 Then run:
 
 ```bash
-/tmp/intercom-curl -X POST "https://api.intercom.io/conversations/<your-conversation-id>/parts" -d @/tmp/intercom_request.json
+bash -c 'curl -s -X POST "https://api.intercom.io/conversations/<your-conversation-id>/parts" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Content-Type: application/json" -H "Intercom-Version: 2.14" -d @/tmp/intercom_request.json'
 ```
 
 ---
@@ -401,7 +391,7 @@ Write to `/tmp/intercom_request.json`:
 Then run:
 
 ```bash
-/tmp/intercom-curl -X POST "https://api.intercom.io/contacts/<your-contact-id>/notes" -d @/tmp/intercom_request.json
+bash -c 'curl -s -X POST "https://api.intercom.io/contacts/<your-contact-id>/notes" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Content-Type: application/json" -H "Intercom-Version: 2.14" -d @/tmp/intercom_request.json'
 ```
 
 ---
@@ -411,7 +401,7 @@ Then run:
 Get all tags:
 
 ```bash
-/tmp/intercom-curl "https://api.intercom.io/tags" | jq '.data[] | {id, name}'
+bash -c 'curl -s "https://api.intercom.io/tags" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Intercom-Version: 2.14"' | jq '.data[] | {id, name}'
 ```
 
 ---
@@ -431,7 +421,7 @@ Write to `/tmp/intercom_request.json`:
 Then run:
 
 ```bash
-/tmp/intercom-curl -X POST "https://api.intercom.io/tags" -d @/tmp/intercom_request.json
+bash -c 'curl -s -X POST "https://api.intercom.io/tags" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Content-Type: application/json" -H "Intercom-Version: 2.14" -d @/tmp/intercom_request.json'
 ```
 
 ---
@@ -451,7 +441,7 @@ Write to `/tmp/intercom_request.json`:
 Then run:
 
 ```bash
-/tmp/intercom-curl -X POST "https://api.intercom.io/contacts/<your-contact-id>/tags" -d @/tmp/intercom_request.json
+bash -c 'curl -s -X POST "https://api.intercom.io/contacts/<your-contact-id>/tags" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Content-Type: application/json" -H "Intercom-Version: 2.14" -d @/tmp/intercom_request.json'
 ```
 
 ---
@@ -471,7 +461,7 @@ curl -s -X DELETE "https://api.intercom.io/contacts/<your-contact-id>/tags/<your
 Get help center articles:
 
 ```bash
-/tmp/intercom-curl "https://api.intercom.io/articles" | jq '.data[] | {id, title, url}'
+bash -c 'curl -s "https://api.intercom.io/articles" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Intercom-Version: 2.14"' | jq '.data[] | {id, title, url}'
 ```
 
 ---
@@ -481,7 +471,7 @@ Get help center articles:
 Retrieve a specific article. Replace `<your-article-id>` with the actual article ID:
 
 ```bash
-/tmp/intercom-curl "https://api.intercom.io/articles/<your-article-id>"
+bash -c 'curl -s "https://api.intercom.io/articles/<your-article-id>" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Intercom-Version: 2.14"'
 ```
 
 ---
@@ -505,7 +495,7 @@ Write to `/tmp/intercom_request.json`:
 Then run:
 
 ```bash
-/tmp/intercom-curl -X POST "https://api.intercom.io/companies" -d @/tmp/intercom_request.json
+bash -c 'curl -s -X POST "https://api.intercom.io/companies" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Content-Type: application/json" -H "Intercom-Version: 2.14" -d @/tmp/intercom_request.json'
 ```
 
 ---
@@ -525,7 +515,7 @@ Write to `/tmp/intercom_request.json`:
 Then run:
 
 ```bash
-/tmp/intercom-curl -X POST "https://api.intercom.io/contacts/<your-contact-id>/companies" -d @/tmp/intercom_request.json
+bash -c 'curl -s -X POST "https://api.intercom.io/contacts/<your-contact-id>/companies" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Content-Type: application/json" -H "Intercom-Version: 2.14" -d @/tmp/intercom_request.json'
 ```
 
 ---
@@ -551,7 +541,7 @@ Write to `/tmp/intercom_request.json`:
 Then run:
 
 ```bash
-/tmp/intercom-curl -X POST "https://api.intercom.io/events" -d @/tmp/intercom_request.json
+bash -c 'curl -s -X POST "https://api.intercom.io/events" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Content-Type: application/json" -H "Intercom-Version: 2.14" -d @/tmp/intercom_request.json'
 ```
 
 ---
@@ -576,7 +566,7 @@ Then run:
 
 ```bash
 # Search for open conversations
-OPEN_CONVS="$(/tmp/intercom-curl -X POST "https://api.intercom.io/conversations/search" -d @/tmp/intercom_request.json)"
+OPEN_CONVS="$(bash -c 'curl -s -X POST "https://api.intercom.io/conversations/search" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Content-Type: application/json" -H "Intercom-Version: 2.14" -d @/tmp/intercom_request.json | jq -r ".conversations[0].id"')"
 
 # Replace <your-admin-id> with the actual admin ID
 ADMIN_ID="<your-admin-id>"
@@ -596,7 +586,7 @@ Write to `/tmp/intercom_request.json`:
 Then run:
 
 ```bash
-/tmp/intercom-curl -X POST "https://api.intercom.io/conversations/${OPEN_CONVS}/parts" -d @/tmp/intercom_request.json
+bash -c 'curl -s -X POST "https://api.intercom.io/conversations/${OPEN_CONVS}/parts" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Content-Type: application/json" -H "Intercom-Version: 2.14" -d @/tmp/intercom_request.json'
 ```
 
 ### Create Contact and Add to Company
@@ -614,7 +604,7 @@ Then run:
 
 ```bash
 # Create contact and extract ID
-CONTACT_ID=$(/tmp/intercom-curl -X POST "https://api.intercom.io/contacts" -d @/tmp/intercom_request.json)
+CONTACT_ID=$(bash -c 'curl -s -X POST "https://api.intercom.io/contacts" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Content-Type: application/json" -H "Intercom-Version: 2.14" -d @/tmp/intercom_request.json | jq -r ".id"')
 
 # Replace <your-company-id> with the actual company ID
 COMPANY_ID="<your-company-id>"
@@ -631,7 +621,7 @@ Write to `/tmp/intercom_request.json`:
 Then run:
 
 ```bash
-/tmp/intercom-curl -X POST "https://api.intercom.io/contacts/${CONTACT_ID}/companies" -d @/tmp/intercom_request.json
+bash -c 'curl -s -X POST "https://api.intercom.io/contacts/${CONTACT_ID}/companies" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Content-Type: application/json" -H "Intercom-Version: 2.14" -d @/tmp/intercom_request.json'
 ```
 
 ---
@@ -691,7 +681,7 @@ Write to `/tmp/intercom_request.json`:
 Then run:
 
 ```bash
-/tmp/intercom-curl -X POST "https://api.intercom.io/contacts/search" -d @/tmp/intercom_request.json | jq '.data[] | {id, email, name}'
+bash -c 'curl -s -X POST "https://api.intercom.io/contacts/search" -H "Authorization: Bearer ${INTERCOM_TOKEN}" -H "Content-Type: application/json" -H "Intercom-Version: 2.14" -d @/tmp/intercom_request.json' | jq '.data[] | {id, email, name}'
 ```
 
 ---

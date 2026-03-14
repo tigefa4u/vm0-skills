@@ -24,20 +24,7 @@ Access SEO data including backlink profiles, domain ratings, organic keywords, a
 
 Go to [vm0.ai](https://vm0.ai) **Settings > Connectors** and connect **Ahrefs**. vm0 will automatically inject the required `AHREFS_TOKEN` environment variable.
 
-
-### Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/ahrefs-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "Authorization: Bearer $AHREFS_TOKEN" "$@"
-EOF
-chmod +x /tmp/ahrefs-curl
-```
-
-**Usage:** All examples below use `/tmp/ahrefs-curl` instead of direct `curl` calls.
+> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
 
 ## Core APIs
 
@@ -46,7 +33,7 @@ chmod +x /tmp/ahrefs-curl
 Get the domain rating for a target. Replace `<target-domain>` with the actual domain (e.g., `ahrefs.com`):
 
 ```bash
-/tmp/ahrefs-curl "https://api.ahrefs.com/v3/site-explorer/domain-rating?target=<target-domain>&date=2026-03-01" | jq '{domain_rating, ahrefs_rank}'
+bash -c 'curl -s "https://api.ahrefs.com/v3/site-explorer/domain-rating?target=<target-domain>&date=2026-03-01" --header "Authorization: Bearer $AHREFS_TOKEN"' | jq '{domain_rating, ahrefs_rank}'
 ```
 
 Docs: https://docs.ahrefs.com/reference/domain-rating
@@ -58,7 +45,7 @@ Docs: https://docs.ahrefs.com/reference/domain-rating
 Replace `<target-domain>` with the actual domain:
 
 ```bash
-/tmp/ahrefs-curl "https://api.ahrefs.com/v3/site-explorer/backlinks-stats?target=<target-domain>&date=2026-03-01&mode=subdomains" | jq '{live, all_time, live_refdomains, all_time_refdomains}'
+bash -c 'curl -s "https://api.ahrefs.com/v3/site-explorer/backlinks-stats?target=<target-domain>&date=2026-03-01&mode=subdomains" --header "Authorization: Bearer $AHREFS_TOKEN"' | jq '{live, all_time, live_refdomains, all_time_refdomains}'
 ```
 
 ---
@@ -68,7 +55,7 @@ Replace `<target-domain>` with the actual domain:
 Get individual backlinks for a target. Replace `<target-domain>` with the actual domain:
 
 ```bash
-/tmp/ahrefs-curl "https://api.ahrefs.com/v3/site-explorer/all-backlinks?target=<target-domain>&date=2026-03-01&mode=subdomains&limit=10&select=url_from,url_to,ahrefs_rank,domain_rating_source,anchor,first_seen,last_seen" | jq '.backlinks[] | {url_from, url_to, anchor, domain_rating_source}'
+bash -c 'curl -s "https://api.ahrefs.com/v3/site-explorer/all-backlinks?target=<target-domain>&date=2026-03-01&mode=subdomains&limit=10&select=url_from,url_to,ahrefs_rank,domain_rating_source,anchor,first_seen,last_seen" --header "Authorization: Bearer $AHREFS_TOKEN"' | jq '.backlinks[] | {url_from, url_to, anchor, domain_rating_source}'
 ```
 
 Docs: https://docs.ahrefs.com/reference/all-backlinks
@@ -80,7 +67,7 @@ Docs: https://docs.ahrefs.com/reference/all-backlinks
 Replace `<target-domain>` with the actual domain:
 
 ```bash
-/tmp/ahrefs-curl "https://api.ahrefs.com/v3/site-explorer/refdomains?target=<target-domain>&date=2026-03-01&mode=subdomains&limit=10&select=domain,domain_rating,backlinks,first_seen,last_seen" | jq '.refdomains[] | {domain, domain_rating, backlinks}'
+bash -c 'curl -s "https://api.ahrefs.com/v3/site-explorer/refdomains?target=<target-domain>&date=2026-03-01&mode=subdomains&limit=10&select=domain,domain_rating,backlinks,first_seen,last_seen" --header "Authorization: Bearer $AHREFS_TOKEN"' | jq '.refdomains[] | {domain, domain_rating, backlinks}'
 ```
 
 ---
@@ -90,7 +77,7 @@ Replace `<target-domain>` with the actual domain:
 Get keywords a domain ranks for organically. Replace `<target-domain>` with the actual domain:
 
 ```bash
-/tmp/ahrefs-curl "https://api.ahrefs.com/v3/site-explorer/organic-keywords?target=<target-domain>&date=2026-03-01&country=us&mode=subdomains&limit=10&select=keyword,position,volume,url,traffic" | jq '.keywords[] | {keyword, position, volume, traffic, url}'
+bash -c 'curl -s "https://api.ahrefs.com/v3/site-explorer/organic-keywords?target=<target-domain>&date=2026-03-01&country=us&mode=subdomains&limit=10&select=keyword,position,volume,url,traffic" --header "Authorization: Bearer $AHREFS_TOKEN"' | jq '.keywords[] | {keyword, position, volume, traffic, url}'
 ```
 
 Docs: https://docs.ahrefs.com/reference/organic-keywords
@@ -102,7 +89,7 @@ Docs: https://docs.ahrefs.com/reference/organic-keywords
 Replace `<target-domain>` with the actual domain:
 
 ```bash
-/tmp/ahrefs-curl "https://api.ahrefs.com/v3/site-explorer/metrics?target=<target-domain>&date=2026-03-01&mode=subdomains" | jq '{organic_traffic, organic_keywords, organic_cost, paid_traffic, paid_keywords}'
+bash -c 'curl -s "https://api.ahrefs.com/v3/site-explorer/metrics?target=<target-domain>&date=2026-03-01&mode=subdomains" --header "Authorization: Bearer $AHREFS_TOKEN"' | jq '{organic_traffic, organic_keywords, organic_cost, paid_traffic, paid_keywords}'
 ```
 
 ---
@@ -112,7 +99,7 @@ Replace `<target-domain>` with the actual domain:
 Get URL rating for a specific page. Replace `<target-url>` with the full URL:
 
 ```bash
-/tmp/ahrefs-curl "https://api.ahrefs.com/v3/site-explorer/url-rating?target=<target-url>&date=2026-03-01" | jq '{url_rating, ahrefs_rank}'
+bash -c 'curl -s "https://api.ahrefs.com/v3/site-explorer/url-rating?target=<target-url>&date=2026-03-01" --header "Authorization: Bearer $AHREFS_TOKEN"' | jq '{url_rating, ahrefs_rank}'
 ```
 
 ---
@@ -122,7 +109,7 @@ Get URL rating for a specific page. Replace `<target-url>` with the full URL:
 Get top pages by organic traffic. Replace `<target-domain>` with the actual domain:
 
 ```bash
-/tmp/ahrefs-curl "https://api.ahrefs.com/v3/site-explorer/top-pages?target=<target-domain>&date=2026-03-01&country=us&mode=subdomains&limit=10&select=url,traffic,keywords,top_keyword,position" | jq '.pages[] | {url, traffic, keywords, top_keyword, position}'
+bash -c 'curl -s "https://api.ahrefs.com/v3/site-explorer/top-pages?target=<target-domain>&date=2026-03-01&country=us&mode=subdomains&limit=10&select=url,traffic,keywords,top_keyword,position" --header "Authorization: Bearer $AHREFS_TOKEN"' | jq '.pages[] | {url, traffic, keywords, top_keyword, position}'
 ```
 
 ---
@@ -141,7 +128,7 @@ Write to `/tmp/ahrefs_request.json`:
 ```
 
 ```bash
-/tmp/ahrefs-curl -X POST "https://api.ahrefs.com/v3/keywords-explorer/volume?select=keyword,volume,difficulty,cpc,global_volume" -d @/tmp/ahrefs_request.json | jq '.keywords[] | {keyword, volume, difficulty, cpc}'
+bash -c 'curl -s -X POST "https://api.ahrefs.com/v3/keywords-explorer/volume?select=keyword,volume,difficulty,cpc,global_volume" --header "Authorization: Bearer $AHREFS_TOKEN" --header "Content-Type: application/json" -d @/tmp/ahrefs_request.json' | jq '.keywords[] | {keyword, volume, difficulty, cpc}'
 ```
 
 ---
@@ -149,7 +136,7 @@ Write to `/tmp/ahrefs_request.json`:
 ### Get Limits (Check API Usage)
 
 ```bash
-/tmp/ahrefs-curl "https://api.ahrefs.com/v3/subscription-info" | jq '{rows_limit, rows_left, subscription}'
+bash -c 'curl -s "https://api.ahrefs.com/v3/subscription-info" --header "Authorization: Bearer $AHREFS_TOKEN"' | jq '{rows_limit, rows_left, subscription}'
 ```
 
 ---

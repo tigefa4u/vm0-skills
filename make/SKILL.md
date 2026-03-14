@@ -37,22 +37,7 @@ Use this skill when you need to:
 export MAKE_TOKEN="your-api-token"
 ```
 
-#
-### Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/make-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "Authorization: Bearer $MAKE_TOKEN" "$@"
-EOF
-chmod +x /tmp/make-curl
-```
-
-**Usage:** All examples below use `/tmp/make-curl` instead of direct `curl` calls.
-
-## API Base URLs
+### API Base URLs
 
 Your base URL depends on your Make zone. Check your Make dashboard URL to determine your zone.
 
@@ -67,6 +52,7 @@ All examples below use `https://eu1.make.com/api/v2`. Replace with your zone URL
 
 ---
 
+> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
 
 ## How to Use
 
@@ -79,7 +65,7 @@ All examples below assume you have `MAKE_TOKEN` set. Authentication uses `Token`
 Retrieve information about the authenticated user.
 
 ```bash
-/tmp/make-curl "https://eu1.make.com/api/v2/users/me" | jq .
+bash -c 'curl -s "https://eu1.make.com/api/v2/users/me" --header "Authorization: Token $MAKE_TOKEN"' | jq .
 ```
 
 ---
@@ -89,7 +75,7 @@ Retrieve information about the authenticated user.
 Retrieve all organizations the user belongs to.
 
 ```bash
-/tmp/make-curl "https://eu1.make.com/api/v2/organizations" | jq '.organizations'
+bash -c 'curl -s "https://eu1.make.com/api/v2/organizations" --header "Authorization: Token $MAKE_TOKEN"' | jq '.organizations'
 ```
 
 ---
@@ -99,7 +85,7 @@ Retrieve all organizations the user belongs to.
 Get all teams in an organization. Replace `ORG_ID` with the organization ID.
 
 ```bash
-/tmp/make-curl "https://eu1.make.com/api/v2/organizations/ORG_ID/teams" | jq '.teams'
+bash -c 'curl -s "https://eu1.make.com/api/v2/organizations/ORG_ID/teams" --header "Authorization: Token $MAKE_TOKEN"' | jq '.teams'
 ```
 
 ---
@@ -109,13 +95,13 @@ Get all teams in an organization. Replace `ORG_ID` with the organization ID.
 Retrieve all scenarios for a team. Replace `TEAM_ID` with the team ID.
 
 ```bash
-/tmp/make-curl "https://eu1.make.com/api/v2/scenarios?teamId=TEAM_ID" | jq '.scenarios[] | {id, name, isEnabled, scheduling}'
+bash -c 'curl -s "https://eu1.make.com/api/v2/scenarios?teamId=TEAM_ID" --header "Authorization: Token $MAKE_TOKEN"' | jq '.scenarios[] | {id, name, isEnabled, scheduling}'
 ```
 
 Paginate with `pg[offset]` and `pg[limit]`:
 
 ```bash
-/tmp/make-curl "https://eu1.make.com/api/v2/scenarios?teamId=TEAM_ID&pg%5Boffset%5D=0&pg%5Blimit%5D=20" | jq '.scenarios[] | {id, name}'
+bash -c 'curl -s "https://eu1.make.com/api/v2/scenarios?teamId=TEAM_ID&pg%5Boffset%5D=0&pg%5Blimit%5D=20" --header "Authorization: Token $MAKE_TOKEN"' | jq '.scenarios[] | {id, name}'
 ```
 
 ---
@@ -125,7 +111,7 @@ Paginate with `pg[offset]` and `pg[limit]`:
 Retrieve details of a specific scenario. Replace `SCENARIO_ID` with the scenario ID.
 
 ```bash
-/tmp/make-curl "https://eu1.make.com/api/v2/scenarios/SCENARIO_ID" | jq '.scenario'
+bash -c 'curl -s "https://eu1.make.com/api/v2/scenarios/SCENARIO_ID" --header "Authorization: Token $MAKE_TOKEN"' | jq '.scenario'
 ```
 
 ---
@@ -147,7 +133,7 @@ Write to `/tmp/make_request.json`:
 Then run:
 
 ```bash
-/tmp/make-curl -X POST "https://eu1.make.com/api/v2/scenarios" -d @/tmp/make_request.json | jq .
+bash -c 'curl -s -X POST "https://eu1.make.com/api/v2/scenarios" --header "Content-Type: application/json" --header "Authorization: Token $MAKE_TOKEN" -d @/tmp/make_request.json' | jq .
 ```
 
 ---
@@ -167,7 +153,7 @@ Write to `/tmp/make_request.json`:
 Then run:
 
 ```bash
-/tmp/make-curl -X PATCH "https://eu1.make.com/api/v2/scenarios/SCENARIO_ID" -d @/tmp/make_request.json | jq .
+bash -c 'curl -s -X PATCH "https://eu1.make.com/api/v2/scenarios/SCENARIO_ID" --header "Content-Type: application/json" --header "Authorization: Token $MAKE_TOKEN" -d @/tmp/make_request.json' | jq .
 ```
 
 ---
@@ -177,7 +163,7 @@ Then run:
 Activate a scenario so it runs on its schedule.
 
 ```bash
-/tmp/make-curl -X POST "https://eu1.make.com/api/v2/scenarios/SCENARIO_ID/start" | jq .
+bash -c 'curl -s -X POST "https://eu1.make.com/api/v2/scenarios/SCENARIO_ID/start" --header "Authorization: Token $MAKE_TOKEN"' | jq .
 ```
 
 ---
@@ -187,7 +173,7 @@ Activate a scenario so it runs on its schedule.
 Deactivate a running scenario.
 
 ```bash
-/tmp/make-curl -X POST "https://eu1.make.com/api/v2/scenarios/SCENARIO_ID/stop" | jq .
+bash -c 'curl -s -X POST "https://eu1.make.com/api/v2/scenarios/SCENARIO_ID/stop" --header "Authorization: Token $MAKE_TOKEN"' | jq .
 ```
 
 ---
@@ -197,7 +183,7 @@ Deactivate a running scenario.
 Execute a scenario immediately. The scenario must be active.
 
 ```bash
-/tmp/make-curl -X POST "https://eu1.make.com/api/v2/scenarios/SCENARIO_ID/run""'"'{}'"'"'' | jq .
+bash -c 'curl -s -X POST "https://eu1.make.com/api/v2/scenarios/SCENARIO_ID/run" --header "Content-Type: application/json" --header "Authorization: Token $MAKE_TOKEN" -d '"'"'{}'"'"'' | jq .
 ```
 
 Run with input data:
@@ -216,7 +202,7 @@ Write to `/tmp/make_request.json`:
 Then run:
 
 ```bash
-/tmp/make-curl -X POST "https://eu1.make.com/api/v2/scenarios/SCENARIO_ID/run" -d @/tmp/make_request.json | jq .
+bash -c 'curl -s -X POST "https://eu1.make.com/api/v2/scenarios/SCENARIO_ID/run" --header "Content-Type: application/json" --header "Authorization: Token $MAKE_TOKEN" -d @/tmp/make_request.json' | jq .
 ```
 
 ---
@@ -237,7 +223,7 @@ Write to `/tmp/make_request.json`:
 Then run:
 
 ```bash
-/tmp/make-curl -X POST "https://eu1.make.com/api/v2/scenarios/SCENARIO_ID/clone" -d @/tmp/make_request.json | jq .
+bash -c 'curl -s -X POST "https://eu1.make.com/api/v2/scenarios/SCENARIO_ID/clone" --header "Content-Type: application/json" --header "Authorization: Token $MAKE_TOKEN" -d @/tmp/make_request.json' | jq .
 ```
 
 ---
@@ -247,7 +233,7 @@ Then run:
 Remove a scenario permanently.
 
 ```bash
-/tmp/make-curl -X DELETE "https://eu1.make.com/api/v2/scenarios/SCENARIO_ID" | jq .
+bash -c 'curl -s -X DELETE "https://eu1.make.com/api/v2/scenarios/SCENARIO_ID" --header "Authorization: Token $MAKE_TOKEN"' | jq .
 ```
 
 ---
@@ -257,7 +243,7 @@ Remove a scenario permanently.
 Retrieve 30-day usage analytics (operations, data transfer, centicredits).
 
 ```bash
-/tmp/make-curl "https://eu1.make.com/api/v2/scenarios/SCENARIO_ID/usage" | jq .
+bash -c 'curl -s "https://eu1.make.com/api/v2/scenarios/SCENARIO_ID/usage" --header "Authorization: Token $MAKE_TOKEN"' | jq .
 ```
 
 ---
@@ -267,7 +253,7 @@ Retrieve 30-day usage analytics (operations, data transfer, centicredits).
 Retrieve execution logs for a scenario.
 
 ```bash
-/tmp/make-curl "https://eu1.make.com/api/v2/scenarios/SCENARIO_ID/logs" | jq '.scenarioLogs[] | {id, status, duration, operations}'
+bash -c 'curl -s "https://eu1.make.com/api/v2/scenarios/SCENARIO_ID/logs" --header "Authorization: Token $MAKE_TOKEN"' | jq '.scenarioLogs[] | {id, status, duration, operations}'
 ```
 
 ---
@@ -277,7 +263,7 @@ Retrieve execution logs for a scenario.
 Retrieve all connections for a team.
 
 ```bash
-/tmp/make-curl "https://eu1.make.com/api/v2/connections?teamId=TEAM_ID" | jq '.connections[] | {id, name, accountName, accountType}'
+bash -c 'curl -s "https://eu1.make.com/api/v2/connections?teamId=TEAM_ID" --header "Authorization: Token $MAKE_TOKEN"' | jq '.connections[] | {id, name, accountName, accountType}'
 ```
 
 ---
@@ -287,7 +273,7 @@ Retrieve all connections for a team.
 Get all webhooks for a team.
 
 ```bash
-/tmp/make-curl "https://eu1.make.com/api/v2/hooks?teamId=TEAM_ID" | jq '.hooks[] | {id, name, url, enabled}'
+bash -c 'curl -s "https://eu1.make.com/api/v2/hooks?teamId=TEAM_ID" --header "Authorization: Token $MAKE_TOKEN"' | jq '.hooks[] | {id, name, url, enabled}'
 ```
 
 ---
@@ -297,7 +283,7 @@ Get all webhooks for a team.
 Get all data stores for a team.
 
 ```bash
-/tmp/make-curl "https://eu1.make.com/api/v2/data-stores?teamId=TEAM_ID" | jq '.dataStores[] | {id, name, records, size}'
+bash -c 'curl -s "https://eu1.make.com/api/v2/data-stores?teamId=TEAM_ID" --header "Authorization: Token $MAKE_TOKEN"' | jq '.dataStores[] | {id, name, records, size}'
 ```
 
 ---
@@ -307,7 +293,7 @@ Get all data stores for a team.
 Retrieve records from a data store.
 
 ```bash
-/tmp/make-curl "https://eu1.make.com/api/v2/data-stores/DATASTORE_ID/data" | jq '.records'
+bash -c 'curl -s "https://eu1.make.com/api/v2/data-stores/DATASTORE_ID/data" --header "Authorization: Token $MAKE_TOKEN"' | jq '.records'
 ```
 
 ---
@@ -331,7 +317,7 @@ Write to `/tmp/make_request.json`:
 Then run:
 
 ```bash
-/tmp/make-curl -X POST "https://eu1.make.com/api/v2/data-stores/DATASTORE_ID/data" -d @/tmp/make_request.json | jq .
+bash -c 'curl -s -X POST "https://eu1.make.com/api/v2/data-stores/DATASTORE_ID/data" --header "Content-Type: application/json" --header "Authorization: Token $MAKE_TOKEN" -d @/tmp/make_request.json' | jq .
 ```
 
 ---
@@ -341,7 +327,7 @@ Then run:
 Get all scenario folders for a team.
 
 ```bash
-/tmp/make-curl "https://eu1.make.com/api/v2/scenarios-folders?teamId=TEAM_ID" | jq '.scenariosFolders[] | {id, name}'
+bash -c 'curl -s "https://eu1.make.com/api/v2/scenarios-folders?teamId=TEAM_ID" --header "Authorization: Token $MAKE_TOKEN"' | jq '.scenariosFolders[] | {id, name}'
 ```
 
 ---

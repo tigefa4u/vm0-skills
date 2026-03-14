@@ -44,20 +44,7 @@ export PODCHASER_CLIENT_SECRET="your-client-secret"
 
 ---
 
-
-### Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/podchaser-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "Authorization: Bearer $PODCHASER_CLIENT_SECRET" "$@"
-EOF
-chmod +x /tmp/podchaser-curl
-```
-
-**Usage:** All examples below use `/tmp/podchaser-curl` instead of direct `curl` calls.
+> **Important:** Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly. Wrap the command containing `$VAR` in `bash -c '...'`, keep `jq` outside.
 
 ## How to Use
 
@@ -78,7 +65,7 @@ Replace `<your-client-id>` and `<your-client-secret>` with your actual credentia
 Then run:
 
 ```bash
-/tmp/podchaser-curl -X POST "https://api.podchaser.com/graphql" -d @/tmp/podchaser_request.json | jq -r '.data.requestAccessToken.access_token' > /tmp/podchaser_token.txt
+bash -c 'curl -s -X POST "https://api.podchaser.com/graphql" --header "Content-Type: application/json" -d @/tmp/podchaser_request.json' | jq -r '.data.requestAccessToken.access_token' > /tmp/podchaser_token.txt
 ```
 
 Store the token for use in subsequent requests.
@@ -104,7 +91,7 @@ Write to `/tmp/podchaser_request.json`:
 Then run:
 
 ```bash
-/tmp/podchaser-curl -X POST "https://api.podchaser.com/graphql" -d @/tmp/podchaser_request.json
+bash -c 'curl -s -X POST "https://api.podchaser.com/graphql" --header "Content-Type: application/json" --header "Authorization: Bearer $(cat /tmp/podchaser_token.txt)" -d @/tmp/podchaser_request.json'
 ```
 
 ### 3. Get Podcast Details
@@ -124,7 +111,7 @@ Write to `/tmp/podchaser_request.json`:
 Then run:
 
 ```bash
-/tmp/podchaser-curl -X POST "https://api.podchaser.com/graphql" -d @/tmp/podchaser_request.json
+bash -c 'curl -s -X POST "https://api.podchaser.com/graphql" --header "Content-Type: application/json" --header "Authorization: Bearer $(cat /tmp/podchaser_token.txt)" -d @/tmp/podchaser_request.json'
 ```
 
 ### 4. Search Episodes
@@ -142,7 +129,7 @@ Write to `/tmp/podchaser_request.json`:
 Then run:
 
 ```bash
-/tmp/podchaser-curl -X POST "https://api.podchaser.com/graphql" -d @/tmp/podchaser_request.json
+bash -c 'curl -s -X POST "https://api.podchaser.com/graphql" --header "Content-Type: application/json" --header "Authorization: Bearer $(cat /tmp/podchaser_token.txt)" -d @/tmp/podchaser_request.json'
 ```
 
 ### 5. Get Podcast Episodes
@@ -160,7 +147,7 @@ Write to `/tmp/podchaser_request.json`:
 Then run:
 
 ```bash
-/tmp/podchaser-curl -X POST "https://api.podchaser.com/graphql" -d @/tmp/podchaser_request.json
+bash -c 'curl -s -X POST "https://api.podchaser.com/graphql" --header "Content-Type: application/json" --header "Authorization: Bearer $(cat /tmp/podchaser_token.txt)" -d @/tmp/podchaser_request.json'
 ```
 
 ### 6. Get Episode Details
@@ -178,7 +165,7 @@ Write to `/tmp/podchaser_request.json`:
 Then run:
 
 ```bash
-/tmp/podchaser-curl -X POST "https://api.podchaser.com/graphql" -d @/tmp/podchaser_request.json
+bash -c 'curl -s -X POST "https://api.podchaser.com/graphql" --header "Content-Type: application/json" --header "Authorization: Bearer $(cat /tmp/podchaser_token.txt)" -d @/tmp/podchaser_request.json'
 ```
 
 ### 7. Get Podcast Categories
@@ -196,7 +183,7 @@ Write to `/tmp/podchaser_request.json`:
 Then run:
 
 ```bash
-/tmp/podchaser-curl -X POST "https://api.podchaser.com/graphql" -d @/tmp/podchaser_request.json
+bash -c 'curl -s -X POST "https://api.podchaser.com/graphql" --header "Content-Type: application/json" --header "Authorization: Bearer $(cat /tmp/podchaser_token.txt)" -d @/tmp/podchaser_request.json'
 ```
 
 ### 8. Filter Podcasts by Category
@@ -214,7 +201,7 @@ Write to `/tmp/podchaser_request.json`:
 Then run:
 
 ```bash
-/tmp/podchaser-curl -X POST "https://api.podchaser.com/graphql" -d @/tmp/podchaser_request.json
+bash -c 'curl -s -X POST "https://api.podchaser.com/graphql" --header "Content-Type: application/json" --header "Authorization: Bearer $(cat /tmp/podchaser_token.txt)" -d @/tmp/podchaser_request.json'
 ```
 
 ### 9. Get Chart Rankings
@@ -232,7 +219,7 @@ Write to `/tmp/podchaser_request.json`:
 Then run:
 
 ```bash
-/tmp/podchaser-curl -X POST "https://api.podchaser.com/graphql" -d @/tmp/podchaser_request.json
+bash -c 'curl -s -X POST "https://api.podchaser.com/graphql" --header "Content-Type: application/json" --header "Authorization: Bearer $(cat /tmp/podchaser_token.txt)" -d @/tmp/podchaser_request.json'
 ```
 
 ### 10. Get Creator/Host Information
@@ -250,7 +237,7 @@ Write to `/tmp/podchaser_request.json`:
 Then run:
 
 ```bash
-/tmp/podchaser-curl -X POST "https://api.podchaser.com/graphql" -d @/tmp/podchaser_request.json
+bash -c 'curl -s -X POST "https://api.podchaser.com/graphql" --header "Content-Type: application/json" --header "Authorization: Bearer $(cat /tmp/podchaser_token.txt)" -d @/tmp/podchaser_request.json'
 ```
 
 ### 11. Preview Query Cost
@@ -268,7 +255,7 @@ Write to `/tmp/podchaser_request.json`:
 Then run:
 
 ```bash
-/tmp/podchaser-curl -X POST "https://api.podchaser.com/graphql/cost" -d @/tmp/podchaser_request.json
+bash -c 'curl -s -X POST "https://api.podchaser.com/graphql/cost" --header "Content-Type: application/json" --header "Authorization: Bearer $(cat /tmp/podchaser_token.txt)" -d @/tmp/podchaser_request.json'
 ```
 
 ---

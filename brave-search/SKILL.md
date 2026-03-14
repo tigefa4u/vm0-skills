@@ -36,22 +36,7 @@ Use this skill when you need to:
 export BRAVE_API_KEY="your-api-key"
 ```
 
-#
-### Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/brave-search-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "Authorization: Bearer $BRAVE_API_KEY" "$@"
-EOF
-chmod +x /tmp/brave-search-curl
-```
-
-**Usage:** All examples below use `/tmp/brave-search-curl` instead of direct `curl` calls.
-
-## Pricing
+### Pricing
 
 | Plan | Price | Rate Limit | Monthly Cap |
 |------|-------|------------|-------------|
@@ -61,6 +46,11 @@ chmod +x /tmp/brave-search-curl
 
 ---
 
+
+> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
+> ```bash
+> bash -c 'curl -s "https://api.example.com" -H "Authorization: Bearer $API_KEY"'
+> ```
 
 ## How to Use
 
@@ -79,7 +69,7 @@ Authentication uses the `X-Subscription-Token` header.
 Search the web with a query:
 
 ```bash
-/tmp/brave-search-curl "https://api.search.brave.com/res/v1/web/search?q=artificial+intelligence" | jq '.web.results[:3] | .[] | {title, url, description}
+bash -c 'curl -s "https://api.search.brave.com/res/v1/web/search?q=artificial+intelligence" -H "Accept: application/json" -H "X-Subscription-Token: ${BRAVE_API_KEY}"' | jq '.web.results[:3] | .[] | {title, url, description}
 ```
 
 ---
@@ -95,7 +85,7 @@ best restaurants
 ```
 
 ```bash
-/tmp/brave-search-curl "https://api.search.brave.com/res/v1/web/search" | jq '.web.results[] | {title, url}'
+bash -c 'curl -s "https://api.search.brave.com/res/v1/web/search" -H "Accept: application/json" -H "X-Subscription-Token: ${BRAVE_API_KEY}" -G --data-urlencode "q@/tmp/brave_query.txt" -d "country=us" -d "search_lang=en" -d "count=5"' | jq '.web.results[] | {title, url}'
 ```
 
 **Parameters:**
@@ -119,7 +109,7 @@ programming tutorials
 ```
 
 ```bash
-/tmp/brave-search-curl "https://api.search.brave.com/res/v1/web/search" | jq '.web.results[:3] | .[] | {title, url}
+bash -c 'curl -s "https://api.search.brave.com/res/v1/web/search" -H "Accept: application/json" -H "X-Subscription-Token: ${BRAVE_API_KEY}" -G --data-urlencode "q@/tmp/brave_query.txt" -d "safesearch=strict"' | jq '.web.results[:3] | .[] | {title, url}
 ```
 
 **Options:** `off`, `strict` (Note: Image/Video search only supports `off` and `strict`)
@@ -137,7 +127,7 @@ tech news
 ```
 
 ```bash
-/tmp/brave-search-curl "https://api.search.brave.com/res/v1/web/search" | jq '.web.results[:3] | .[] | {title, url, age}
+bash -c 'curl -s "https://api.search.brave.com/res/v1/web/search" -H "Accept: application/json" -H "X-Subscription-Token: ${BRAVE_API_KEY}" -G --data-urlencode "q@/tmp/brave_query.txt" -d "freshness=pd"' | jq '.web.results[:3] | .[] | {title, url, age}
 ```
 
 **Options:**
@@ -161,7 +151,7 @@ sunset beach
 ```
 
 ```bash
-/tmp/brave-search-curl "https://api.search.brave.com/res/v1/images/search" | jq '.results[] | {title, url: .properties.url, thumbnail: .thumbnail.src}
+bash -c 'curl -s "https://api.search.brave.com/res/v1/images/search" -H "Accept: application/json" -H "X-Subscription-Token: ${BRAVE_API_KEY}" -G --data-urlencode "q@/tmp/brave_query.txt" -d "count=5" -d "safesearch=strict"' | jq '.results[] | {title, url: .properties.url, thumbnail: .thumbnail.src}
 ```
 
 Image search supports up to 200 results per request.
@@ -179,7 +169,7 @@ learn python
 ```
 
 ```bash
-/tmp/brave-search-curl "https://api.search.brave.com/res/v1/videos/search" | jq '.results[] | {title, url, duration}
+bash -c 'curl -s "https://api.search.brave.com/res/v1/videos/search" -H "Accept: application/json" -H "X-Subscription-Token: ${BRAVE_API_KEY}" -G --data-urlencode "q@/tmp/brave_query.txt" -d "count=5"' | jq '.results[] | {title, url, duration}
 ```
 
 Video search supports up to 50 results per request.
@@ -197,7 +187,7 @@ technology
 ```
 
 ```bash
-/tmp/brave-search-curl "https://api.search.brave.com/res/v1/news/search" | jq '.results[:3] | .[] | {title, url, age}
+bash -c 'curl -s "https://api.search.brave.com/res/v1/news/search" -H "Accept: application/json" -H "X-Subscription-Token: ${BRAVE_API_KEY}" -G --data-urlencode "q@/tmp/brave_query.txt" -d "count=3"' | jq '.results[:3] | .[] | {title, url, age}
 ```
 
 News search defaults to past day (`pd`) freshness.
@@ -215,7 +205,7 @@ machine learning
 ```
 
 ```bash
-/tmp/brave-search-curl "https://api.search.brave.com/res/v1/web/search" | jq '.web.results[] | {title, url}
+bash -c 'curl -s "https://api.search.brave.com/res/v1/web/search" -H "Accept: application/json" -H "X-Subscription-Token: ${BRAVE_API_KEY}" -G --data-urlencode "q@/tmp/brave_query.txt" -d "count=10" -d "offset=1"' | jq '.web.results[] | {title, url}
 ```
 
 `offset=1` skips the first page of results.
@@ -227,7 +217,7 @@ machine learning
 View the full response structure:
 
 ```bash
-/tmp/brave-search-curl "https://api.search.brave.com/res/v1/web/search?q=test" | jq 'keys'
+bash -c 'curl -s "https://api.search.brave.com/res/v1/web/search?q=test" -H "Accept: application/json" -H "X-Subscription-Token: ${BRAVE_API_KEY}"' | jq 'keys'
 ```
 
 Response includes: `query`, `mixed`, `type`, `web`, `videos`, `news`, etc.

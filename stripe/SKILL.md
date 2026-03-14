@@ -25,21 +25,6 @@ Manage payments, customers, subscriptions, and billing with the Stripe API.
 
 Go to [vm0.ai](https://vm0.ai) **Settings > Connectors** and connect **Stripe**. vm0 will automatically inject the required `STRIPE_TOKEN` environment variable.
 
-
-### Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/stripe-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "Authorization: Bearer $STRIPE_TOKEN" "$@"
-EOF
-chmod +x /tmp/stripe-curl
-```
-
-**Usage:** All examples below use `/tmp/stripe-curl` instead of direct `curl` calls.
-
 ## Important: Stripe Uses Form-Encoded Bodies
 
 Stripe API accepts `application/x-www-form-urlencoded` for POST requests, **not JSON**. Write request bodies to a `.txt` file using `key=value&key=value` format. Nested params use bracket syntax: `items[0][price]=price_xxx`.
@@ -49,7 +34,7 @@ Stripe API accepts `application/x-www-form-urlencoded` for POST requests, **not 
 ### Get Account Info
 
 ```bash
-/tmp/stripe-curl "https://api.stripe.com/v1/account" | jq '{id, business_profile, charges_enabled, payouts_enabled}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" "https://api.stripe.com/v1/account"' | jq '{id, business_profile, charges_enabled, payouts_enabled}'
 ```
 
 Docs: https://docs.stripe.com/api/accounts/retrieve
@@ -59,7 +44,7 @@ Docs: https://docs.stripe.com/api/accounts/retrieve
 ### List Customers
 
 ```bash
-/tmp/stripe-curl "https://api.stripe.com/v1/customers?limit=10" | jq '.data[] | {id, name, email}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" "https://api.stripe.com/v1/customers?limit=10"' | jq '.data[] | {id, name, email}'
 ```
 
 Docs: https://docs.stripe.com/api/customers/list
@@ -67,7 +52,7 @@ Docs: https://docs.stripe.com/api/customers/list
 ### Get Customer
 
 ```bash
-/tmp/stripe-curl "https://api.stripe.com/v1/customers/<customer-id>" | jq '{id, name, email, created}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" "https://api.stripe.com/v1/customers/<customer-id>"' | jq '{id, name, email, created}'
 ```
 
 ### Create Customer
@@ -79,7 +64,7 @@ name=John Doe&email=john@example.com
 ```
 
 ```bash
-/tmp/stripe-curl -X POST "https://api.stripe.com/v1/customers" -d @/tmp/stripe_request.txt | jq '{id, name, email}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" -X POST "https://api.stripe.com/v1/customers" -d @/tmp/stripe_request.txt' | jq '{id, name, email}'
 ```
 
 Docs: https://docs.stripe.com/api/customers/create
@@ -93,13 +78,13 @@ name=Jane Doe
 ```
 
 ```bash
-/tmp/stripe-curl -X POST "https://api.stripe.com/v1/customers/<customer-id>" -d @/tmp/stripe_request.txt | jq '{id, name, email}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" -X POST "https://api.stripe.com/v1/customers/<customer-id>" -d @/tmp/stripe_request.txt' | jq '{id, name, email}'
 ```
 
 ### Delete Customer
 
 ```bash
-/tmp/stripe-curl -X DELETE "https://api.stripe.com/v1/customers/<customer-id>" | jq '{id, deleted}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" -X DELETE "https://api.stripe.com/v1/customers/<customer-id>"' | jq '{id, deleted}'
 ```
 
 Docs: https://docs.stripe.com/api/customers/delete
@@ -109,7 +94,7 @@ Docs: https://docs.stripe.com/api/customers/delete
 ### List Products
 
 ```bash
-/tmp/stripe-curl "https://api.stripe.com/v1/products?limit=10" | jq '.data[] | {id, name, active}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" "https://api.stripe.com/v1/products?limit=10"' | jq '.data[] | {id, name, active}'
 ```
 
 Docs: https://docs.stripe.com/api/products/list
@@ -117,7 +102,7 @@ Docs: https://docs.stripe.com/api/products/list
 ### Get Product
 
 ```bash
-/tmp/stripe-curl "https://api.stripe.com/v1/products/<product-id>" | jq '{id, name, description, active}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" "https://api.stripe.com/v1/products/<product-id>"' | jq '{id, name, description, active}'
 ```
 
 ### Create Product
@@ -129,7 +114,7 @@ name=Premium Plan&description=Full access to all features
 ```
 
 ```bash
-/tmp/stripe-curl -X POST "https://api.stripe.com/v1/products" -d @/tmp/stripe_request.txt | jq '{id, name, description}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" -X POST "https://api.stripe.com/v1/products" -d @/tmp/stripe_request.txt' | jq '{id, name, description}'
 ```
 
 Docs: https://docs.stripe.com/api/products/create
@@ -139,7 +124,7 @@ Docs: https://docs.stripe.com/api/products/create
 ### List Prices
 
 ```bash
-/tmp/stripe-curl "https://api.stripe.com/v1/prices?limit=10" | jq '.data[] | {id, product, unit_amount, currency, recurring}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" "https://api.stripe.com/v1/prices?limit=10"' | jq '.data[] | {id, product, unit_amount, currency, recurring}'
 ```
 
 Docs: https://docs.stripe.com/api/prices/list
@@ -153,7 +138,7 @@ unit_amount=2000&currency=usd&recurring[interval]=month&product=<product-id>
 ```
 
 ```bash
-/tmp/stripe-curl -X POST "https://api.stripe.com/v1/prices" -d @/tmp/stripe_request.txt | jq '{id, unit_amount, currency, recurring}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" -X POST "https://api.stripe.com/v1/prices" -d @/tmp/stripe_request.txt' | jq '{id, unit_amount, currency, recurring}'
 ```
 
 Docs: https://docs.stripe.com/api/prices/create
@@ -163,7 +148,7 @@ Docs: https://docs.stripe.com/api/prices/create
 ### List Subscriptions
 
 ```bash
-/tmp/stripe-curl "https://api.stripe.com/v1/subscriptions?limit=10" | jq '.data[] | {id, customer, status, items: .items.data[0].price.id}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" "https://api.stripe.com/v1/subscriptions?limit=10"' | jq '.data[] | {id, customer, status, items: .items.data[0].price.id}'
 ```
 
 Docs: https://docs.stripe.com/api/subscriptions/list
@@ -171,7 +156,7 @@ Docs: https://docs.stripe.com/api/subscriptions/list
 ### Get Subscription
 
 ```bash
-/tmp/stripe-curl "https://api.stripe.com/v1/subscriptions/<subscription-id>" | jq '{id, customer, status, current_period_start, current_period_end}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" "https://api.stripe.com/v1/subscriptions/<subscription-id>"' | jq '{id, customer, status, current_period_start, current_period_end}'
 ```
 
 ### Create Subscription
@@ -183,7 +168,7 @@ customer=<customer-id>&items[0][price]=<price-id>
 ```
 
 ```bash
-/tmp/stripe-curl -X POST "https://api.stripe.com/v1/subscriptions" -d @/tmp/stripe_request.txt | jq '{id, customer, status}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" -X POST "https://api.stripe.com/v1/subscriptions" -d @/tmp/stripe_request.txt' | jq '{id, customer, status}'
 ```
 
 Docs: https://docs.stripe.com/api/subscriptions/create
@@ -191,7 +176,7 @@ Docs: https://docs.stripe.com/api/subscriptions/create
 ### Cancel Subscription
 
 ```bash
-/tmp/stripe-curl -X DELETE "https://api.stripe.com/v1/subscriptions/<subscription-id>" | jq '{id, status}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" -X DELETE "https://api.stripe.com/v1/subscriptions/<subscription-id>"' | jq '{id, status}'
 ```
 
 Docs: https://docs.stripe.com/api/subscriptions/cancel
@@ -201,7 +186,7 @@ Docs: https://docs.stripe.com/api/subscriptions/cancel
 ### List Invoices
 
 ```bash
-/tmp/stripe-curl "https://api.stripe.com/v1/invoices?limit=10" | jq '.data[] | {id, customer, status, amount_due, currency}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" "https://api.stripe.com/v1/invoices?limit=10"' | jq '.data[] | {id, customer, status, amount_due, currency}'
 ```
 
 Docs: https://docs.stripe.com/api/invoices/list
@@ -209,7 +194,7 @@ Docs: https://docs.stripe.com/api/invoices/list
 ### Get Invoice
 
 ```bash
-/tmp/stripe-curl "https://api.stripe.com/v1/invoices/<invoice-id>" | jq '{id, customer, status, amount_due, amount_paid}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" "https://api.stripe.com/v1/invoices/<invoice-id>"' | jq '{id, customer, status, amount_due, amount_paid}'
 ```
 
 ---
@@ -217,7 +202,7 @@ Docs: https://docs.stripe.com/api/invoices/list
 ### List Payment Intents
 
 ```bash
-/tmp/stripe-curl "https://api.stripe.com/v1/payment_intents?limit=10" | jq '.data[] | {id, amount, currency, status}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" "https://api.stripe.com/v1/payment_intents?limit=10"' | jq '.data[] | {id, amount, currency, status}'
 ```
 
 Docs: https://docs.stripe.com/api/payment_intents/list
@@ -231,7 +216,7 @@ amount=2000&currency=usd&payment_method_types[]=card
 ```
 
 ```bash
-/tmp/stripe-curl -X POST "https://api.stripe.com/v1/payment_intents" -d @/tmp/stripe_request.txt | jq '{id, amount, currency, status}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" -X POST "https://api.stripe.com/v1/payment_intents" -d @/tmp/stripe_request.txt' | jq '{id, amount, currency, status}'
 ```
 
 Docs: https://docs.stripe.com/api/payment_intents/create
@@ -239,7 +224,7 @@ Docs: https://docs.stripe.com/api/payment_intents/create
 ### Get Payment Intent
 
 ```bash
-/tmp/stripe-curl "https://api.stripe.com/v1/payment_intents/<payment-intent-id>" | jq '{id, amount, currency, status}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" "https://api.stripe.com/v1/payment_intents/<payment-intent-id>"' | jq '{id, amount, currency, status}'
 ```
 
 ---
@@ -247,7 +232,7 @@ Docs: https://docs.stripe.com/api/payment_intents/create
 ### List Charges
 
 ```bash
-/tmp/stripe-curl "https://api.stripe.com/v1/charges?limit=10" | jq '.data[] | {id, amount, currency, status, customer}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" "https://api.stripe.com/v1/charges?limit=10"' | jq '.data[] | {id, amount, currency, status, customer}'
 ```
 
 Docs: https://docs.stripe.com/api/charges/list
@@ -255,7 +240,7 @@ Docs: https://docs.stripe.com/api/charges/list
 ### Get Charge
 
 ```bash
-/tmp/stripe-curl "https://api.stripe.com/v1/charges/<charge-id>" | jq '{id, amount, currency, status, paid}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" "https://api.stripe.com/v1/charges/<charge-id>"' | jq '{id, amount, currency, status, paid}'
 ```
 
 ---
@@ -263,7 +248,7 @@ Docs: https://docs.stripe.com/api/charges/list
 ### Get Balance
 
 ```bash
-/tmp/stripe-curl "https://api.stripe.com/v1/balance" | jq '{available, pending}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" "https://api.stripe.com/v1/balance"' | jq '{available, pending}'
 ```
 
 Docs: https://docs.stripe.com/api/balance/balance_retrieve
@@ -271,7 +256,7 @@ Docs: https://docs.stripe.com/api/balance/balance_retrieve
 ### List Balance Transactions
 
 ```bash
-/tmp/stripe-curl "https://api.stripe.com/v1/balance_transactions?limit=10" | jq '.data[] | {id, amount, currency, type, status}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" "https://api.stripe.com/v1/balance_transactions?limit=10"' | jq '.data[] | {id, amount, currency, type, status}'
 ```
 
 Docs: https://docs.stripe.com/api/balance_transactions/list
@@ -281,7 +266,7 @@ Docs: https://docs.stripe.com/api/balance_transactions/list
 ### List Events
 
 ```bash
-/tmp/stripe-curl "https://api.stripe.com/v1/events?limit=10" | jq '.data[] | {id, type, created}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" "https://api.stripe.com/v1/events?limit=10"' | jq '.data[] | {id, type, created}'
 ```
 
 Docs: https://docs.stripe.com/api/events/list
@@ -289,7 +274,7 @@ Docs: https://docs.stripe.com/api/events/list
 ### Get Event
 
 ```bash
-/tmp/stripe-curl "https://api.stripe.com/v1/events/<event-id>" | jq '{id, type, data: .data.object.id}'
+bash -c 'curl -s -u "$STRIPE_TOKEN:" "https://api.stripe.com/v1/events/<event-id>"' | jq '{id, type, data: .data.object.id}'
 ```
 
 Docs: https://docs.stripe.com/api/events/retrieve

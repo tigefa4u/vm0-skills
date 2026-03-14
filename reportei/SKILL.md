@@ -36,22 +36,7 @@ Use this skill when you need to:
 export REPORTEI_TOKEN="your-api-token"
 ```
 
-#
-### Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/reportei-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "Authorization: Bearer $REPORTEI_TOKEN" "$@"
-EOF
-chmod +x /tmp/reportei-curl
-```
-
-**Usage:** All examples below use `/tmp/reportei-curl` instead of direct `curl` calls.
-
-## Base URL
+### Base URL
 
 ```
 https://app.reportei.com/api/v1
@@ -59,6 +44,11 @@ https://app.reportei.com/api/v1
 
 ---
 
+
+> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
+> ```bash
+> bash -c 'curl -s "https://api.example.com" -H "Authorization: Bearer $API_KEY"'
+> ```
 
 ## How to Use
 
@@ -69,7 +59,7 @@ https://app.reportei.com/api/v1
 Retrieve details of your company associated with the token:
 
 ```bash
-/tmp/reportei-curl -X GET "https://app.reportei.com/api/v1/me"
+bash -c 'curl -s -X GET "https://app.reportei.com/api/v1/me" -H "Authorization: Bearer ${REPORTEI_TOKEN}"'
 ```
 
 Response:
@@ -94,7 +84,7 @@ Response:
 Retrieve all report templates in your company:
 
 ```bash
-/tmp/reportei-curl -X GET "https://app.reportei.com/api/v1/templates" | jq '.data[] | {id, title, used_count}'
+bash -c 'curl -s -X GET "https://app.reportei.com/api/v1/templates" -H "Authorization: Bearer ${REPORTEI_TOKEN}"' | jq '.data[] | {id, title, used_count}'
 ```
 
 ---
@@ -104,7 +94,7 @@ Retrieve all report templates in your company:
 Retrieve all client projects:
 
 ```bash
-/tmp/reportei-curl -X GET "https://app.reportei.com/api/v1/clients"
+bash -c 'curl -s -X GET "https://app.reportei.com/api/v1/clients" -H "Authorization: Bearer ${REPORTEI_TOKEN}"'
 ```
 
 ---
@@ -114,7 +104,7 @@ Retrieve all client projects:
 Retrieve details of a specific client. Replace `<your-client-id>` with the actual client ID:
 
 ```bash
-/tmp/reportei-curl -X GET "https://app.reportei.com/api/v1/clients/<your-client-id>"
+bash -c 'curl -s -X GET "https://app.reportei.com/api/v1/clients/<your-client-id>" -H "Authorization: Bearer ${REPORTEI_TOKEN}"'
 ```
 
 ---
@@ -124,7 +114,7 @@ Retrieve details of a specific client. Replace `<your-client-id>` with the actua
 Get all reports for a specific client. Replace `<your-client-id>` with the actual client ID:
 
 ```bash
-/tmp/reportei-curl -X GET "https://app.reportei.com/api/v1/clients/<your-client-id>/reports"
+bash -c 'curl -s -X GET "https://app.reportei.com/api/v1/clients/<your-client-id>/reports" -H "Authorization: Bearer ${REPORTEI_TOKEN}"'
 ```
 
 ---
@@ -134,7 +124,7 @@ Get all reports for a specific client. Replace `<your-client-id>` with the actua
 Retrieve details of a specific report. Replace `<your-report-id>` with the actual report ID:
 
 ```bash
-/tmp/reportei-curl -X GET "https://app.reportei.com/api/v1/reports/<your-report-id>"
+bash -c 'curl -s -X GET "https://app.reportei.com/api/v1/reports/<your-report-id>" -H "Authorization: Bearer ${REPORTEI_TOKEN}"'
 ```
 
 ---
@@ -144,7 +134,7 @@ Retrieve details of a specific report. Replace `<your-report-id>` with the actua
 Get all integrations for a specific client. Replace `<your-client-id>` with the actual client ID:
 
 ```bash
-/tmp/reportei-curl -X GET "https://app.reportei.com/api/v1/clients/<your-client-id>/integrations"
+bash -c 'curl -s -X GET "https://app.reportei.com/api/v1/clients/<your-client-id>/integrations" -H "Authorization: Bearer ${REPORTEI_TOKEN}"'
 ```
 
 ---
@@ -154,7 +144,7 @@ Get all integrations for a specific client. Replace `<your-client-id>` with the 
 Retrieve details of a specific integration. Replace `<your-integration-id>` with the actual integration ID:
 
 ```bash
-/tmp/reportei-curl -X GET "https://app.reportei.com/api/v1/integrations/<your-integration-id>"
+bash -c 'curl -s -X GET "https://app.reportei.com/api/v1/integrations/<your-integration-id>" -H "Authorization: Bearer ${REPORTEI_TOKEN}"'
 ```
 
 ---
@@ -164,7 +154,7 @@ Retrieve details of a specific integration. Replace `<your-integration-id>` with
 List available widgets for an integration. Replace `<your-integration-id>` with the actual integration ID:
 
 ```bash
-/tmp/reportei-curl -X GET "https://app.reportei.com/api/v1/integrations/<your-integration-id>/widgets"
+bash -c 'curl -s -X GET "https://app.reportei.com/api/v1/integrations/<your-integration-id>/widgets" -H "Authorization: Bearer ${REPORTEI_TOKEN}"'
 ```
 
 ---
@@ -186,7 +176,7 @@ Write to `/tmp/reportei_request.json`:
 Then run (replace `<your-integration-id>` with the actual integration ID):
 
 ```bash
-/tmp/reportei-curl -X POST "https://app.reportei.com/api/v1/integrations/<your-integration-id>/widgets/value" -d @/tmp/reportei_request.json
+bash -c 'curl -s -X POST "https://app.reportei.com/api/v1/integrations/<your-integration-id>/widgets/value" -H "Authorization: Bearer ${REPORTEI_TOKEN}" -H "Content-Type: application/json" -d @/tmp/reportei_request.json'
 ```
 
 ---
@@ -209,7 +199,7 @@ Write to `/tmp/reportei_request.json`:
 Then run:
 
 ```bash
-/tmp/reportei-curl -X POST "https://app.reportei.com/api/v1/create_report" -d @/tmp/reportei_request.json
+bash -c 'curl -s -X POST "https://app.reportei.com/api/v1/create_report" -H "Authorization: Bearer ${REPORTEI_TOKEN}" -H "Content-Type: application/json" -d @/tmp/reportei_request.json'
 ```
 
 ---
@@ -230,7 +220,7 @@ Write to `/tmp/reportei_request.json`:
 Then run:
 
 ```bash
-/tmp/reportei-curl -X POST "https://app.reportei.com/api/v1/create_dashboard" -d @/tmp/reportei_request.json
+bash -c 'curl -s -X POST "https://app.reportei.com/api/v1/create_dashboard" -H "Authorization: Bearer ${REPORTEI_TOKEN}" -H "Content-Type: application/json" -d @/tmp/reportei_request.json'
 ```
 
 ---
@@ -252,7 +242,7 @@ Write to `/tmp/reportei_request.json`:
 Then run:
 
 ```bash
-/tmp/reportei-curl -X POST "https://app.reportei.com/api/v1/add_to_timeline" -d @/tmp/reportei_request.json
+bash -c 'curl -s -X POST "https://app.reportei.com/api/v1/add_to_timeline" -H "Authorization: Bearer ${REPORTEI_TOKEN}" -H "Content-Type: application/json" -d @/tmp/reportei_request.json'
 ```
 
 ---
@@ -262,7 +252,7 @@ Then run:
 Get available webhook event types:
 
 ```bash
-/tmp/reportei-curl -X GET "https://app.reportei.com/api/v1/webhook/events"
+bash -c 'curl -s -X GET "https://app.reportei.com/api/v1/webhook/events" -H "Authorization: Bearer ${REPORTEI_TOKEN}"'
 ```
 
 ---
@@ -283,7 +273,7 @@ Write to `/tmp/reportei_request.json`:
 Then run:
 
 ```bash
-/tmp/reportei-curl -X POST "https://app.reportei.com/api/v1/webhooks/subscribe" -d @/tmp/reportei_request.json
+bash -c 'curl -s -X POST "https://app.reportei.com/api/v1/webhooks/subscribe" -H "Authorization: Bearer ${REPORTEI_TOKEN}" -H "Content-Type: application/json" -d @/tmp/reportei_request.json'
 ```
 
 ---
@@ -303,7 +293,7 @@ Write to `/tmp/reportei_request.json`:
 Then run:
 
 ```bash
-/tmp/reportei-curl -X POST "https://app.reportei.com/api/v1/webhooks/unsubscribe" -d @/tmp/reportei_request.json
+bash -c 'curl -s -X POST "https://app.reportei.com/api/v1/webhooks/unsubscribe" -H "Authorization: Bearer ${REPORTEI_TOKEN}" -H "Content-Type: application/json" -d @/tmp/reportei_request.json'
 ```
 
 ---

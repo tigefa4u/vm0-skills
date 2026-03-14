@@ -47,19 +47,10 @@ export KOMMO_API_KEY="your-long-lived-token"
 ---
 
 
-### Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/kommo-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "Authorization: Bearer $KOMMO_API_KEY" "$@"
-EOF
-chmod +x /tmp/kommo-curl
-```
-
-**Usage:** All examples below use `/tmp/kommo-curl` instead of direct `curl` calls.
+> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
+> ```bash
+> bash -c 'curl -s "https://api.example.com" -H "Authorization: Bearer $API_KEY"'
+> ```
 
 ## How to Use
 
@@ -78,13 +69,13 @@ Authentication uses Bearer token in the `Authorization` header.
 Get all leads in your account:
 
 ```bash
-/tmp/kommo-curl "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/leads" | jq '.["_embedded"]["leads"][] | {id, name, price}'
+bash -c 'curl -s "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/leads" -H "Accept: application/json" -H "Authorization: Bearer ${KOMMO_API_KEY}"' | jq '.["_embedded"]["leads"][] | {id, name, price}'
 ```
 
 With filters:
 
 ```bash
-/tmp/kommo-curl "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/leads?limit=10&page=1" | jq '.["_embedded"]["leads"]'
+bash -c 'curl -s "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/leads?limit=10&page=1" -H "Accept: application/json" -H "Authorization: Bearer ${KOMMO_API_KEY}"' | jq '.["_embedded"]["leads"]'
 ```
 
 ---
@@ -96,7 +87,7 @@ Get a specific lead:
 Replace `<your-lead-id>` with the actual lead ID:
 
 ```bash
-/tmp/kommo-curl "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/leads/<your-lead-id>"
+bash -c 'curl -s "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/leads/<your-lead-id>" -H "Accept: application/json" -H "Authorization: Bearer ${KOMMO_API_KEY}"'
 ```
 
 ---
@@ -117,7 +108,7 @@ Write to `/tmp/kommo_request.json`:
 Then run:
 
 ```bash
-/tmp/kommo-curl -X POST "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/leads" -d @/tmp/kommo_request.json
+bash -c 'curl -s "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/leads" -X POST -H "Content-Type: application/json" -H "Authorization: Bearer ${KOMMO_API_KEY}" -d @/tmp/kommo_request.json'
 ```
 
 ---
@@ -147,7 +138,7 @@ Write to `/tmp/kommo_request.json`:
 Then run:
 
 ```bash
-/tmp/kommo-curl -X POST "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/leads/complex" -d @/tmp/kommo_request.json
+bash -c 'curl -s "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/leads/complex" -X POST -H "Content-Type: application/json" -H "Authorization: Bearer ${KOMMO_API_KEY}" -d @/tmp/kommo_request.json'
 ```
 
 ---
@@ -170,7 +161,7 @@ Then run:
 Replace `<your-lead-id>` with the actual lead ID:
 
 ```bash
-/tmp/kommo-curl -X PATCH "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/leads/<your-lead-id>" -d @/tmp/kommo_request.json
+bash -c 'curl -s "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/leads/<your-lead-id>" -X PATCH -H "Content-Type: application/json" -H "Authorization: Bearer ${KOMMO_API_KEY}" -d @/tmp/kommo_request.json'
 ```
 
 ---
@@ -180,7 +171,7 @@ Replace `<your-lead-id>` with the actual lead ID:
 Get all contacts:
 
 ```bash
-/tmp/kommo-curl "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/contacts" | jq '.["_embedded"]["contacts"][] | {id, name}'
+bash -c 'curl -s "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/contacts" -H "Accept: application/json" -H "Authorization: Bearer ${KOMMO_API_KEY}"' | jq '.["_embedded"]["contacts"][] | {id, name}'
 ```
 
 ---
@@ -192,7 +183,7 @@ Get a specific contact:
 Replace `<your-contact-id>` with the actual contact ID:
 
 ```bash
-/tmp/kommo-curl "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/contacts/<your-contact-id>"
+bash -c 'curl -s "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/contacts/<your-contact-id>" -H "Accept: application/json" -H "Authorization: Bearer ${KOMMO_API_KEY}"'
 ```
 
 ---
@@ -213,7 +204,7 @@ Write to `/tmp/kommo_request.json`:
 Then run:
 
 ```bash
-/tmp/kommo-curl -X POST "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/contacts" -d @/tmp/kommo_request.json
+bash -c 'curl -s "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/contacts" -X POST -H "Content-Type: application/json" -H "Authorization: Bearer ${KOMMO_API_KEY}" -d @/tmp/kommo_request.json'
 ```
 
 ---
@@ -223,7 +214,7 @@ Then run:
 Get all companies:
 
 ```bash
-/tmp/kommo-curl "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/companies" | jq '.["_embedded"]["companies"][] | {id, name}'
+bash -c 'curl -s "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/companies" -H "Accept: application/json" -H "Authorization: Bearer ${KOMMO_API_KEY}"' | jq '.["_embedded"]["companies"][] | {id, name}'
 ```
 
 ---
@@ -243,7 +234,7 @@ Write to `/tmp/kommo_request.json`:
 Then run:
 
 ```bash
-/tmp/kommo-curl -X POST "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/companies" -d @/tmp/kommo_request.json
+bash -c 'curl -s "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/companies" -X POST -H "Content-Type: application/json" -H "Authorization: Bearer ${KOMMO_API_KEY}" -d @/tmp/kommo_request.json'
 ```
 
 ---
@@ -253,7 +244,7 @@ Then run:
 Get all tasks:
 
 ```bash
-/tmp/kommo-curl "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/tasks" | jq '.["_embedded"]["tasks"][] | {id, text, complete_till}'
+bash -c 'curl -s "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/tasks" -H "Accept: application/json" -H "Authorization: Bearer ${KOMMO_API_KEY}"' | jq '.["_embedded"]["tasks"][] | {id, text, complete_till}'
 ```
 
 ---
@@ -275,7 +266,7 @@ Write to `/tmp/kommo_request.json`:
 Then run:
 
 ```bash
-/tmp/kommo-curl -X POST "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/tasks" -d @/tmp/kommo_request.json
+bash -c 'curl -s "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/tasks" -X POST -H "Content-Type: application/json" -H "Authorization: Bearer ${KOMMO_API_KEY}" -d @/tmp/kommo_request.json'
 ```
 
 **Task types:** `1` = Follow-up, `2` = Meeting
@@ -287,7 +278,7 @@ Then run:
 Get all sales pipelines:
 
 ```bash
-/tmp/kommo-curl "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/leads/pipelines" | jq '.["_embedded"]["pipelines"][] | {id, name}'
+bash -c 'curl -s "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/leads/pipelines" -H "Accept: application/json" -H "Authorization: Bearer ${KOMMO_API_KEY}"' | jq '.["_embedded"]["pipelines"][] | {id, name}'
 ```
 
 ---
@@ -299,7 +290,7 @@ Get stages for a specific pipeline:
 Replace `<your-pipeline-id>` with the actual pipeline ID:
 
 ```bash
-/tmp/kommo-curl "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/leads/pipelines/<your-pipeline-id>" | jq '.["_embedded"]["statuses"][] | {id, name}'
+bash -c 'curl -s "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/leads/pipelines/<your-pipeline-id>" -H "Accept: application/json" -H "Authorization: Bearer ${KOMMO_API_KEY}"' | jq '.["_embedded"]["statuses"][] | {id, name}'
 ```
 
 ---
@@ -309,7 +300,7 @@ Replace `<your-pipeline-id>` with the actual pipeline ID:
 Get account information:
 
 ```bash
-/tmp/kommo-curl "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/account" | jq '{id, name, subdomain, currency}'
+bash -c 'curl -s "https://${KOMMO_SUBDOMAIN}.kommo.com/api/v4/account" -H "Accept: application/json" -H "Authorization: Bearer ${KOMMO_API_KEY}"' | jq '{id, name, subdomain, currency}'
 ```
 
 ---

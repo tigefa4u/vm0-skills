@@ -128,68 +128,54 @@ Set environment variable:
 export AGENTMAIL_TOKEN="your-api-key"
 ```
 
+> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
 
 > **Placeholders:** Values in `{curly-braces}` like `{inbox-id}` are placeholders. Replace them with actual values when executing.
 
 ---
-
-
-### Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/agentmail-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "Authorization: Bearer $AGENTMAIL_TOKEN" "$@"
-EOF
-chmod +x /tmp/agentmail-curl
-```
-
-**Usage:** All examples below use `/tmp/agentmail-curl` instead of direct `curl` calls.
 
 ## Inboxes
 
 ### Create Inbox
 
 ```bash
-/tmp/agentmail-curl -X POST "https://api.agentmail.to/v0/inboxes""'"'{"username": "my-agent", "display_name": "My Agent"}'"'"'' | jq .
+bash -c 'curl -s -X POST "https://api.agentmail.to/v0/inboxes" --header "Authorization: Bearer $AGENTMAIL_TOKEN" --header "Content-Type: application/json" -d '"'"'{"username": "my-agent", "display_name": "My Agent"}'"'"'' | jq .
 ```
 
 Create with idempotent `client_id` (safe to retry without creating duplicates):
 
 ```bash
-/tmp/agentmail-curl -X POST "https://api.agentmail.to/v0/inboxes""'"'{"username": "my-agent", "display_name": "My Agent", "client_id": "my-agent-inbox"}'"'"'' | jq .
+bash -c 'curl -s -X POST "https://api.agentmail.to/v0/inboxes" --header "Authorization: Bearer $AGENTMAIL_TOKEN" --header "Content-Type: application/json" -d '"'"'{"username": "my-agent", "display_name": "My Agent", "client_id": "my-agent-inbox"}'"'"'' | jq .
 ```
 
 ### List Inboxes
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/inboxes" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/inboxes" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 With pagination:
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/inboxes?limit=10" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/inboxes?limit=10" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 ### Get Inbox
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/inboxes/{inbox-id}" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/inboxes/{inbox-id}" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 ### Update Inbox
 
 ```bash
-/tmp/agentmail-curl -X PATCH "https://api.agentmail.to/v0/inboxes/{inbox-id}""'"'{"display_name": "New Name"}'"'"'' | jq .
+bash -c 'curl -s -X PATCH "https://api.agentmail.to/v0/inboxes/{inbox-id}" --header "Authorization: Bearer $AGENTMAIL_TOKEN" --header "Content-Type: application/json" -d '"'"'{"display_name": "New Name"}'"'"'' | jq .
 ```
 
 ### Delete Inbox
 
 ```bash
-/tmp/agentmail-curl -X DELETE "https://api.agentmail.to/v0/inboxes/{inbox-id}"
+bash -c 'curl -s -X DELETE "https://api.agentmail.to/v0/inboxes/{inbox-id}" --header "Authorization: Bearer $AGENTMAIL_TOKEN"'
 ```
 
 ---
@@ -212,7 +198,7 @@ Write to `/tmp/agentmail_request.json`:
 Then run:
 
 ```bash
-/tmp/agentmail-curl -X POST "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages/send" -d @/tmp/agentmail_request.json | jq .
+bash -c 'curl -s -X POST "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages/send" --header "Authorization: Bearer $AGENTMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/agentmail_request.json' | jq .
 ```
 
 ### Send Email with CC/BCC
@@ -233,7 +219,7 @@ Write to `/tmp/agentmail_request.json`:
 Then run:
 
 ```bash
-/tmp/agentmail-curl -X POST "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages/send" -d @/tmp/agentmail_request.json | jq .
+bash -c 'curl -s -X POST "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages/send" --header "Authorization: Bearer $AGENTMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/agentmail_request.json' | jq .
 ```
 
 ### Send Email with Labels
@@ -252,7 +238,7 @@ Write to `/tmp/agentmail_request.json`:
 Then run:
 
 ```bash
-/tmp/agentmail-curl -X POST "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages/send" -d @/tmp/agentmail_request.json | jq .
+bash -c 'curl -s -X POST "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages/send" --header "Authorization: Bearer $AGENTMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/agentmail_request.json' | jq .
 ```
 
 ### Send Email with Attachment
@@ -277,7 +263,7 @@ Write to `/tmp/agentmail_request.json`:
 Then run:
 
 ```bash
-/tmp/agentmail-curl -X POST "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages/send" -d @/tmp/agentmail_request.json | jq .
+bash -c 'curl -s -X POST "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages/send" --header "Authorization: Bearer $AGENTMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/agentmail_request.json' | jq .
 ```
 
 To base64 encode a file:
@@ -300,7 +286,7 @@ Write to `/tmp/agentmail_request.json`:
 Then run:
 
 ```bash
-/tmp/agentmail-curl -X POST "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages/{message-id}/reply" -d @/tmp/agentmail_request.json | jq .
+bash -c 'curl -s -X POST "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages/{message-id}/reply" --header "Authorization: Bearer $AGENTMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/agentmail_request.json' | jq .
 ```
 
 ### Reply All
@@ -318,25 +304,25 @@ Write to `/tmp/agentmail_request.json`:
 Then run:
 
 ```bash
-/tmp/agentmail-curl -X POST "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages/{message-id}/reply" -d @/tmp/agentmail_request.json | jq .
+bash -c 'curl -s -X POST "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages/{message-id}/reply" --header "Authorization: Bearer $AGENTMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/agentmail_request.json' | jq .
 ```
 
 ### List Messages
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 With filters:
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages?labels=unreplied&limit=10" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages?labels=unreplied&limit=10" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 ### Get Message
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages/{message-id}" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages/{message-id}" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 ### Update Message Labels
@@ -353,13 +339,13 @@ Write to `/tmp/agentmail_request.json`:
 Then run:
 
 ```bash
-/tmp/agentmail-curl -X PATCH "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages/{message-id}" -d @/tmp/agentmail_request.json | jq .
+bash -c 'curl -s -X PATCH "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages/{message-id}" --header "Authorization: Bearer $AGENTMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/agentmail_request.json' | jq .
 ```
 
 ### Get Message Attachment
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages/{message-id}/attachments/{attachment-id}" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/inboxes/{inbox-id}/messages/{message-id}/attachments/{attachment-id}" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 Returns a `download_url` (temporary pre-signed URL) and `expires_at`. Download the file:
@@ -375,13 +361,13 @@ curl -s -o attachment.bin "{download-url}"
 ### List Threads
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/inboxes/{inbox-id}/threads" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/inboxes/{inbox-id}/threads" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 With filters:
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/inboxes/{inbox-id}/threads?labels=unreplied&after=2025-01-01T00:00:00Z&limit=10" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/inboxes/{inbox-id}/threads?labels=unreplied&after=2025-01-01T00:00:00Z&limit=10" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 ### Get Thread
@@ -389,19 +375,19 @@ With filters:
 Returns thread with all messages ordered by timestamp ascending:
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/inboxes/{inbox-id}/threads/{thread-id}" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/inboxes/{inbox-id}/threads/{thread-id}" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 ### Get Thread Attachment
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/inboxes/{inbox-id}/threads/{thread-id}/attachments/{attachment-id}" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/inboxes/{inbox-id}/threads/{thread-id}/attachments/{attachment-id}" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 ### Delete Thread
 
 ```bash
-/tmp/agentmail-curl -X DELETE "https://api.agentmail.to/v0/inboxes/{inbox-id}/threads/{thread-id}"
+bash -c 'curl -s -X DELETE "https://api.agentmail.to/v0/inboxes/{inbox-id}/threads/{thread-id}" --header "Authorization: Bearer $AGENTMAIL_TOKEN"'
 ```
 
 ---
@@ -424,7 +410,7 @@ Write to `/tmp/agentmail_request.json`:
 Then run:
 
 ```bash
-/tmp/agentmail-curl -X POST "https://api.agentmail.to/v0/inboxes/{inbox-id}/drafts" -d @/tmp/agentmail_request.json | jq .
+bash -c 'curl -s -X POST "https://api.agentmail.to/v0/inboxes/{inbox-id}/drafts" --header "Authorization: Bearer $AGENTMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/agentmail_request.json' | jq .
 ```
 
 ### Create Scheduled Draft
@@ -443,19 +429,19 @@ Write to `/tmp/agentmail_request.json`:
 Then run:
 
 ```bash
-/tmp/agentmail-curl -X POST "https://api.agentmail.to/v0/inboxes/{inbox-id}/drafts" -d @/tmp/agentmail_request.json | jq .
+bash -c 'curl -s -X POST "https://api.agentmail.to/v0/inboxes/{inbox-id}/drafts" --header "Authorization: Bearer $AGENTMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/agentmail_request.json' | jq .
 ```
 
 ### List Drafts
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/inboxes/{inbox-id}/drafts" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/inboxes/{inbox-id}/drafts" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 ### Get Draft
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/inboxes/{inbox-id}/drafts/{draft-id}" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/inboxes/{inbox-id}/drafts/{draft-id}" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 ### Update Draft
@@ -472,19 +458,19 @@ Write to `/tmp/agentmail_request.json`:
 Then run:
 
 ```bash
-/tmp/agentmail-curl -X PATCH "https://api.agentmail.to/v0/inboxes/{inbox-id}/drafts/{draft-id}" -d @/tmp/agentmail_request.json | jq .
+bash -c 'curl -s -X PATCH "https://api.agentmail.to/v0/inboxes/{inbox-id}/drafts/{draft-id}" --header "Authorization: Bearer $AGENTMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/agentmail_request.json' | jq .
 ```
 
 ### Send Draft
 
 ```bash
-/tmp/agentmail-curl -X POST "https://api.agentmail.to/v0/inboxes/{inbox-id}/drafts/{draft-id}/send""'"'{}'"'"'' | jq .
+bash -c 'curl -s -X POST "https://api.agentmail.to/v0/inboxes/{inbox-id}/drafts/{draft-id}/send" --header "Authorization: Bearer $AGENTMAIL_TOKEN" --header "Content-Type: application/json" -d '"'"'{}'"'"'' | jq .
 ```
 
 ### Delete Draft
 
 ```bash
-/tmp/agentmail-curl -X DELETE "https://api.agentmail.to/v0/inboxes/{inbox-id}/drafts/{draft-id}"
+bash -c 'curl -s -X DELETE "https://api.agentmail.to/v0/inboxes/{inbox-id}/drafts/{draft-id}" --header "Authorization: Bearer $AGENTMAIL_TOKEN"'
 ```
 
 ---
@@ -506,7 +492,7 @@ Write to `/tmp/agentmail_request.json`:
 Then run:
 
 ```bash
-/tmp/agentmail-curl -X POST "https://api.agentmail.to/v0/webhooks" -d @/tmp/agentmail_request.json | jq .
+bash -c 'curl -s -X POST "https://api.agentmail.to/v0/webhooks" --header "Authorization: Bearer $AGENTMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/agentmail_request.json' | jq .
 ```
 
 Supported event types: `message.received`, `message.sent`, `message.delivered`, `message.bounced`, `message.complained`, `message.rejected`, `domain.verified`
@@ -527,19 +513,19 @@ Write to `/tmp/agentmail_request.json`:
 Then run:
 
 ```bash
-/tmp/agentmail-curl -X POST "https://api.agentmail.to/v0/webhooks" -d @/tmp/agentmail_request.json | jq .
+bash -c 'curl -s -X POST "https://api.agentmail.to/v0/webhooks" --header "Authorization: Bearer $AGENTMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/agentmail_request.json' | jq .
 ```
 
 ### List Webhooks
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/webhooks" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/webhooks" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 ### Get Webhook
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/webhooks/{webhook-id}" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/webhooks/{webhook-id}" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 ### Update Webhook (Add/Remove Inboxes)
@@ -556,13 +542,13 @@ Write to `/tmp/agentmail_request.json`:
 Then run:
 
 ```bash
-/tmp/agentmail-curl -X PATCH "https://api.agentmail.to/v0/webhooks/{webhook-id}" -d @/tmp/agentmail_request.json | jq .
+bash -c 'curl -s -X PATCH "https://api.agentmail.to/v0/webhooks/{webhook-id}" --header "Authorization: Bearer $AGENTMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/agentmail_request.json' | jq .
 ```
 
 ### Delete Webhook
 
 ```bash
-/tmp/agentmail-curl -X DELETE "https://api.agentmail.to/v0/webhooks/{webhook-id}"
+bash -c 'curl -s -X DELETE "https://api.agentmail.to/v0/webhooks/{webhook-id}" --header "Authorization: Bearer $AGENTMAIL_TOKEN"'
 ```
 
 ---
@@ -572,7 +558,7 @@ Then run:
 ### Create Domain
 
 ```bash
-/tmp/agentmail-curl -X POST "https://api.agentmail.to/v0/domains""'"'{"domain": "yourdomain.com", "feedback_enabled": true}'"'"'' | jq .
+bash -c 'curl -s -X POST "https://api.agentmail.to/v0/domains" --header "Authorization: Bearer $AGENTMAIL_TOKEN" --header "Content-Type: application/json" -d '"'"'{"domain": "yourdomain.com", "feedback_enabled": true}'"'"'' | jq .
 ```
 
 Returns DNS records (TXT, CNAME, MX) that must be added to your DNS provider.
@@ -580,13 +566,13 @@ Returns DNS records (TXT, CNAME, MX) that must be added to your DNS provider.
 ### List Domains
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/domains" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/domains" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 ### Get Domain
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/domains/{domain-id}" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/domains/{domain-id}" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 ### Verify Domain
@@ -594,7 +580,7 @@ Returns DNS records (TXT, CNAME, MX) that must be added to your DNS provider.
 Trigger DNS verification after adding records:
 
 ```bash
-/tmp/agentmail-curl -X POST "https://api.agentmail.to/v0/domains/{domain-id}/verify"
+bash -c 'curl -s -X POST "https://api.agentmail.to/v0/domains/{domain-id}/verify" --header "Authorization: Bearer $AGENTMAIL_TOKEN"'
 ```
 
 Domain status values: `NOT_STARTED`, `PENDING`, `INVALID`, `FAILED`, `VERIFYING`, `VERIFIED`
@@ -602,7 +588,7 @@ Domain status values: `NOT_STARTED`, `PENDING`, `INVALID`, `FAILED`, `VERIFYING`
 ### Delete Domain
 
 ```bash
-/tmp/agentmail-curl -X DELETE "https://api.agentmail.to/v0/domains/{domain-id}"
+bash -c 'curl -s -X DELETE "https://api.agentmail.to/v0/domains/{domain-id}" --header "Authorization: Bearer $AGENTMAIL_TOKEN"'
 ```
 
 ---
@@ -614,25 +600,25 @@ Pods are organizational groups for inboxes.
 ### Create Pod
 
 ```bash
-/tmp/agentmail-curl -X POST "https://api.agentmail.to/v0/pods""'"'{"name": "Support Team", "client_id": "support-pod"}'"'"'' | jq .
+bash -c 'curl -s -X POST "https://api.agentmail.to/v0/pods" --header "Authorization: Bearer $AGENTMAIL_TOKEN" --header "Content-Type: application/json" -d '"'"'{"name": "Support Team", "client_id": "support-pod"}'"'"'' | jq .
 ```
 
 ### List Pods
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/pods" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/pods" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 ### Get Pod
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/pods/{pod-id}" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/pods/{pod-id}" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 ### Delete Pod
 
 ```bash
-/tmp/agentmail-curl -X DELETE "https://api.agentmail.to/v0/pods/{pod-id}"
+bash -c 'curl -s -X DELETE "https://api.agentmail.to/v0/pods/{pod-id}" --header "Authorization: Bearer $AGENTMAIL_TOKEN"'
 ```
 
 ---
@@ -642,13 +628,13 @@ Pods are organizational groups for inboxes.
 ### Get Delivery Metrics
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/metrics?start_timestamp=2025-01-01T00:00:00Z&end_timestamp=2025-12-31T23:59:59Z" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/metrics?start_timestamp=2025-01-01T00:00:00Z&end_timestamp=2025-12-31T23:59:59Z" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 Filter by event type:
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/metrics?start_timestamp=2025-01-01T00:00:00Z&end_timestamp=2025-12-31T23:59:59Z&event_types=message.sent&event_types=message.bounced" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/metrics?start_timestamp=2025-01-01T00:00:00Z&end_timestamp=2025-12-31T23:59:59Z&event_types=message.sent&event_types=message.bounced" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 Supported event types: `message.sent`, `message.delivered`, `message.bounced`, `message.delayed`, `message.rejected`, `message.complained`, `message.received`
@@ -660,13 +646,13 @@ Supported event types: `message.sent`, `message.delivered`, `message.bounced`, `
 ### List API Keys
 
 ```bash
-/tmp/agentmail-curl "https://api.agentmail.to/v0/api-keys" | jq .
+bash -c 'curl -s "https://api.agentmail.to/v0/api-keys" --header "Authorization: Bearer $AGENTMAIL_TOKEN"' | jq .
 ```
 
 ### Create API Key
 
 ```bash
-/tmp/agentmail-curl -X POST "https://api.agentmail.to/v0/api-keys""'"'{"name": "production-key"}'"'"'' | jq .
+bash -c 'curl -s -X POST "https://api.agentmail.to/v0/api-keys" --header "Authorization: Bearer $AGENTMAIL_TOKEN" --header "Content-Type: application/json" -d '"'"'{"name": "production-key"}'"'"'' | jq .
 ```
 
 The `api_key` value is only returned once at creation time. Save it immediately.
@@ -674,7 +660,7 @@ The `api_key` value is only returned once at creation time. Save it immediately.
 ### Delete API Key
 
 ```bash
-/tmp/agentmail-curl -X DELETE "https://api.agentmail.to/v0/api-keys/{api-key}"
+bash -c 'curl -s -X DELETE "https://api.agentmail.to/v0/api-keys/{api-key}" --header "Authorization: Bearer $AGENTMAIL_TOKEN"'
 ```
 
 ---

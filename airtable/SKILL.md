@@ -25,33 +25,20 @@ Manage bases, tables, records, and comments in Airtable.
 
 Go to [vm0.ai](https://vm0.ai) **Settings > Connectors** and connect **Airtable**. vm0 will automatically inject the required `AIRTABLE_TOKEN` environment variable.
 
-
-### Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/airtable-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "Authorization: Bearer $AIRTABLE_TOKEN" "$@"
-EOF
-chmod +x /tmp/airtable-curl
-```
-
-**Usage:** All examples below use `/tmp/airtable-curl` instead of direct `curl` calls.
+> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
 
 ## Core APIs
 
 ### Get Current User
 
 ```bash
-/tmp/airtable-curl "https://api.airtable.com/v0/meta/whoami" | jq .
+bash -c 'curl -s "https://api.airtable.com/v0/meta/whoami" --header "Authorization: Bearer $AIRTABLE_TOKEN"' | jq .
 ```
 
 ### List Bases
 
 ```bash
-/tmp/airtable-curl "https://api.airtable.com/v0/meta/bases" | jq '.bases[] | {id, name, permissionLevel}'
+bash -c 'curl -s "https://api.airtable.com/v0/meta/bases" --header "Authorization: Bearer $AIRTABLE_TOKEN"' | jq '.bases[] | {id, name, permissionLevel}'
 ```
 
 ### Get Base Schema (List Tables)
@@ -59,7 +46,7 @@ chmod +x /tmp/airtable-curl
 Replace `<base-id>` with your actual base ID (starts with `app`):
 
 ```bash
-/tmp/airtable-curl "https://api.airtable.com/v0/meta/bases/<base-id>/tables" | jq '.tables[] | {id, name, fields: [.fields[] | {id, name, type}]}'
+bash -c 'curl -s "https://api.airtable.com/v0/meta/bases/<base-id>/tables" --header "Authorization: Bearer $AIRTABLE_TOKEN"' | jq '.tables[] | {id, name, fields: [.fields[] | {id, name, type}]}'
 ```
 
 ### List Records
@@ -67,19 +54,19 @@ Replace `<base-id>` with your actual base ID (starts with `app`):
 Replace `<base-id>` and `<table-id-or-name>` with actual values. Table name must be URL-encoded if it contains spaces.
 
 ```bash
-/tmp/airtable-curl "https://api.airtable.com/v0/<base-id>/<table-id-or-name>?maxRecords=10" | jq '.records[] | {id, fields, createdTime}'
+bash -c 'curl -s "https://api.airtable.com/v0/<base-id>/<table-id-or-name>?maxRecords=10" --header "Authorization: Bearer $AIRTABLE_TOKEN"' | jq '.records[] | {id, fields, createdTime}'
 ```
 
 ### List Records with Field Selection
 
 ```bash
-/tmp/airtable-curl "https://api.airtable.com/v0/<base-id>/<table-id-or-name>?maxRecords=10&fields%5B%5D=Name&fields%5B%5D=Status" | jq '.records[] | {id, fields}'
+bash -c 'curl -s "https://api.airtable.com/v0/<base-id>/<table-id-or-name>?maxRecords=10&fields%5B%5D=Name&fields%5B%5D=Status" --header "Authorization: Bearer $AIRTABLE_TOKEN"' | jq '.records[] | {id, fields}'
 ```
 
 ### Get a Single Record
 
 ```bash
-/tmp/airtable-curl "https://api.airtable.com/v0/<base-id>/<table-id-or-name>/<record-id>" | jq .
+bash -c 'curl -s "https://api.airtable.com/v0/<base-id>/<table-id-or-name>/<record-id>" --header "Authorization: Bearer $AIRTABLE_TOKEN"' | jq .
 ```
 
 ### Create Records
@@ -99,7 +86,7 @@ cat > /tmp/request.json << 'BODY'
   ]
 }
 BODY
-/tmp/airtable-curl -X POST "https://api.airtable.com/v0/<base-id>/<table-id-or-name>" -d @/tmp/request.json | jq '.records[] | {id, fields}'
+bash -c 'curl -s -X POST "https://api.airtable.com/v0/<base-id>/<table-id-or-name>" --header "Authorization: Bearer $AIRTABLE_TOKEN" --header "Content-Type: application/json" -d @/tmp/request.json' | jq '.records[] | {id, fields}'
 ```
 
 ### Update Records (PATCH)
@@ -119,19 +106,19 @@ cat > /tmp/request.json << 'BODY'
   ]
 }
 BODY
-/tmp/airtable-curl -X PATCH "https://api.airtable.com/v0/<base-id>/<table-id-or-name>" -d @/tmp/request.json | jq '.records[] | {id, fields}'
+bash -c 'curl -s -X PATCH "https://api.airtable.com/v0/<base-id>/<table-id-or-name>" --header "Authorization: Bearer $AIRTABLE_TOKEN" --header "Content-Type: application/json" -d @/tmp/request.json' | jq '.records[] | {id, fields}'
 ```
 
 ### Delete Records
 
 ```bash
-/tmp/airtable-curl -X DELETE "https://api.airtable.com/v0/<base-id>/<table-id-or-name>?records%5B%5D=<record-id>" | jq .
+bash -c 'curl -s -X DELETE "https://api.airtable.com/v0/<base-id>/<table-id-or-name>?records%5B%5D=<record-id>" --header "Authorization: Bearer $AIRTABLE_TOKEN"' | jq .
 ```
 
 ### List Record Comments
 
 ```bash
-/tmp/airtable-curl "https://api.airtable.com/v0/<base-id>/<table-id-or-name>/<record-id>/comments" | jq '.comments[] | {id, author, text, createdTime}'
+bash -c 'curl -s "https://api.airtable.com/v0/<base-id>/<table-id-or-name>/<record-id>/comments" --header "Authorization: Bearer $AIRTABLE_TOKEN"' | jq '.comments[] | {id, author, text, createdTime}'
 ```
 
 ### Add a Comment to a Record
@@ -142,7 +129,7 @@ cat > /tmp/request.json << 'BODY'
   "text": "This is a comment added via the API."
 }
 BODY
-/tmp/airtable-curl -X POST "https://api.airtable.com/v0/<base-id>/<table-id-or-name>/<record-id>/comments" -d @/tmp/request.json | jq .
+bash -c 'curl -s -X POST "https://api.airtable.com/v0/<base-id>/<table-id-or-name>/<record-id>/comments" --header "Authorization: Bearer $AIRTABLE_TOKEN" --header "Content-Type: application/json" -d @/tmp/request.json' | jq .
 ```
 
 ### Create a Table
@@ -158,7 +145,7 @@ cat > /tmp/request.json << 'BODY'
   ]
 }
 BODY
-/tmp/airtable-curl -X POST "https://api.airtable.com/v0/meta/bases/<base-id>/tables" -d @/tmp/request.json | jq '{id, name, fields: [.fields[] | {id, name, type}]}'
+bash -c 'curl -s -X POST "https://api.airtable.com/v0/meta/bases/<base-id>/tables" --header "Authorization: Bearer $AIRTABLE_TOKEN" --header "Content-Type: application/json" -d @/tmp/request.json' | jq '{id, name, fields: [.fields[] | {id, name, type}]}'
 ```
 
 ## Guidelines

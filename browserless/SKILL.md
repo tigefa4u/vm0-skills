@@ -41,19 +41,10 @@ export BROWSERLESS_TOKEN="your-api-token-here"
 ---
 
 
-### Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/browserless-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "Authorization: Bearer $BROWSERLESS_TOKEN" "$@"
-EOF
-chmod +x /tmp/browserless-curl
-```
-
-**Usage:** All examples below use `/tmp/browserless-curl` instead of direct `curl` calls.
+> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
+> ```bash
+> bash -c 'curl -s "https://api.example.com" -H "Authorization: Bearer $API_KEY"' | jq '.data[0]'
+> ```
 
 ## How to Use
 
@@ -76,7 +67,7 @@ Write to `/tmp/browserless_request.json`:
 Then run:
 
 ```bash
-/tmp/browserless-curl -X POST "https://production-sfo.browserless.io/scrape?token=${BROWSERLESS_TOKEN}" -d @/tmp/browserless_request.json
+bash -c 'curl -s -X POST "https://production-sfo.browserless.io/scrape?token=${BROWSERLESS_TOKEN}" --header "Content-Type: application/json" -d @/tmp/browserless_request.json'
 ```
 
 **With wait options:**
@@ -97,7 +88,7 @@ Write to `/tmp/browserless_request.json`:
 Then run:
 
 ```bash
-/tmp/browserless-curl -X POST "https://production-sfo.browserless.io/scrape?token=${BROWSERLESS_TOKEN}" -d @/tmp/browserless_request.json | jq '.data[0].results[:3]'
+bash -c 'curl -s -X POST "https://production-sfo.browserless.io/scrape?token=${BROWSERLESS_TOKEN}" --header "Content-Type: application/json" -d @/tmp/browserless_request.json' | jq '.data[0].results[:3]'
 ```
 
 ### 2. Take Screenshots
@@ -230,7 +221,7 @@ export default async ({ page }) => {
 Then run:
 
 ```bash
-/tmp/browserless-curl -X POST "https://production-sfo.browserless.io/function?token=${BROWSERLESS_TOKEN}" -d @/tmp/browserless_function.js
+bash -c 'curl -s -X POST "https://production-sfo.browserless.io/function?token=${BROWSERLESS_TOKEN}" -H "Content-Type: application/javascript" -d @/tmp/browserless_function.js'
 ```
 
 **Type into input:**
@@ -250,7 +241,7 @@ export default async ({ page }) => {
 Then run:
 
 ```bash
-/tmp/browserless-curl -X POST "https://production-sfo.browserless.io/function?token=${BROWSERLESS_TOKEN}" -d @/tmp/browserless_function.js
+bash -c 'curl -s -X POST "https://production-sfo.browserless.io/function?token=${BROWSERLESS_TOKEN}" -H "Content-Type: application/javascript" -d @/tmp/browserless_function.js'
 ```
 
 **Form submission:**
@@ -270,7 +261,7 @@ export default async ({ page }) => {
 Then run:
 
 ```bash
-/tmp/browserless-curl -X POST "https://production-sfo.browserless.io/function?token=${BROWSERLESS_TOKEN}" -d @/tmp/browserless_function.js
+bash -c 'curl -s -X POST "https://production-sfo.browserless.io/function?token=${BROWSERLESS_TOKEN}" -H "Content-Type: application/javascript" -d @/tmp/browserless_function.js'
 ```
 
 **Extract data with custom script:**
@@ -288,7 +279,7 @@ export default async ({ page }) => {
 Then run:
 
 ```bash
-/tmp/browserless-curl -X POST "https://production-sfo.browserless.io/function?token=${BROWSERLESS_TOKEN}" -d @/tmp/browserless_function.js
+bash -c 'curl -s -X POST "https://production-sfo.browserless.io/function?token=${BROWSERLESS_TOKEN}" -H "Content-Type: application/javascript" -d @/tmp/browserless_function.js'
 ```
 
 ### 6. Unblock Protected Sites
@@ -310,7 +301,7 @@ Write to `/tmp/browserless_request.json`:
 Then run:
 
 ```bash
-/tmp/browserless-curl -X POST "https://production-sfo.browserless.io/unblock?token=${BROWSERLESS_TOKEN}" -d @/tmp/browserless_request.json
+bash -c 'curl -s -X POST "https://production-sfo.browserless.io/unblock?token=${BROWSERLESS_TOKEN}" --header "Content-Type: application/json" -d @/tmp/browserless_request.json'
 ```
 
 ### 7. Stealth Mode
@@ -329,7 +320,7 @@ Write to `/tmp/browserless_request.json`:
 Then run:
 
 ```bash
-/tmp/browserless-curl -X POST "https://production-sfo.browserless.io/scrape?token=${BROWSERLESS_TOKEN}&stealth=true" -d @/tmp/browserless_request.json
+bash -c 'curl -s -X POST "https://production-sfo.browserless.io/scrape?token=${BROWSERLESS_TOKEN}&stealth=true" --header "Content-Type: application/json" -d @/tmp/browserless_request.json'
 ```
 
 ### 8. Export Page with Resources
@@ -386,7 +377,7 @@ Write to `/tmp/browserless_request.json`:
 Then run:
 
 ```bash
-/tmp/browserless-curl -X POST "https://production-sfo.browserless.io/performance?token=${BROWSERLESS_TOKEN}" -d @/tmp/browserless_request.json | jq '.data.categories | to_entries[] | {category: .key, score: .value.score}'
+bash -c 'curl -s -X POST "https://production-sfo.browserless.io/performance?token=${BROWSERLESS_TOKEN}" --header "Content-Type: application/json" -d @/tmp/browserless_request.json' | jq '.data.categories | to_entries[] | {category: .key, score: .value.score}'
 ```
 
 **Specific category (accessibility, performance, seo, best-practices, pwa):**
@@ -408,7 +399,7 @@ Write to `/tmp/browserless_request.json`:
 Then run:
 
 ```bash
-/tmp/browserless-curl -X POST "https://production-sfo.browserless.io/performance?token=${BROWSERLESS_TOKEN}" -d @/tmp/browserless_request.json | jq '.data.audits | to_entries[:5][] | {audit: .key, score: .value.score, display: .value.displayValue}'
+bash -c 'curl -s -X POST "https://production-sfo.browserless.io/performance?token=${BROWSERLESS_TOKEN}" --header "Content-Type: application/json" -d @/tmp/browserless_request.json' | jq '.data.audits | to_entries[:5][] | {audit: .key, score: .value.score, display: .value.displayValue}'
 ```
 
 **Specific audit (e.g., unminified-css, first-contentful-paint):**
@@ -430,7 +421,7 @@ Write to `/tmp/browserless_request.json`:
 Then run:
 
 ```bash
-/tmp/browserless-curl -X POST "https://production-sfo.browserless.io/performance?token=${BROWSERLESS_TOKEN}" -d @/tmp/browserless_request.json | jq '.data.audits'
+bash -c 'curl -s -X POST "https://production-sfo.browserless.io/performance?token=${BROWSERLESS_TOKEN}" --header "Content-Type: application/json" -d @/tmp/browserless_request.json' | jq '.data.audits'
 ```
 
 ### 10. Create Persistent Session

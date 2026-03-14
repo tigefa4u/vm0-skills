@@ -38,20 +38,7 @@ export ZAPIER_TOKEN="your-zapier-api-key"
 
 ---
 
-
-### Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/zapier-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "api-key: $ZAPIER_TOKEN" "$@"
-EOF
-chmod +x /tmp/zapier-curl
-```
-
-**Usage:** All examples below use `/tmp/zapier-curl` instead of direct `curl` calls.
+> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
 
 ## How to Use
 
@@ -64,7 +51,7 @@ All examples below assume you have `ZAPIER_TOKEN` set. Authentication uses the `
 Verify that your API key is valid.
 
 ```bash
-/tmp/zapier-curl "https://actions.zapier.com/api/v2/check/" | jq .
+bash -c 'curl -s "https://actions.zapier.com/api/v2/check/" --header "x-api-key: $ZAPIER_TOKEN"' | jq .
 ```
 
 ---
@@ -74,7 +61,7 @@ Verify that your API key is valid.
 Retrieve all actions you have configured and exposed in your Zapier AI Actions dashboard.
 
 ```bash
-/tmp/zapier-curl "https://actions.zapier.com/api/v1/exposed/" | jq '.results[] | {id, description, params}'
+bash -c 'curl -s "https://actions.zapier.com/api/v1/exposed/" --header "x-api-key: $ZAPIER_TOKEN"' | jq '.results[] | {id, description, params}'
 ```
 
 ---
@@ -84,7 +71,7 @@ Retrieve all actions you have configured and exposed in your Zapier AI Actions d
 Execute a configured action using natural language instructions. Replace `ACTION_ID` with the action ID from the list above.
 
 ```bash
-/tmp/zapier-curl -X POST "https://actions.zapier.com/api/v2/ai-actions/ACTION_ID/execute/""'"'{"instructions": "Send a message saying hello to the #general channel"}'"'"'' | jq .
+bash -c 'curl -s -X POST "https://actions.zapier.com/api/v2/ai-actions/ACTION_ID/execute/" --header "Content-Type: application/json" --header "x-api-key: $ZAPIER_TOKEN" -d '"'"'{"instructions": "Send a message saying hello to the #general channel"}'"'"'' | jq .
 ```
 
 ---
@@ -114,7 +101,7 @@ Write to `/tmp/zapier_request.json`:
 Then run:
 
 ```bash
-/tmp/zapier-curl -X POST "https://actions.zapier.com/api/v2/ai-actions/ACTION_ID/execute/" -d @/tmp/zapier_request.json | jq .
+bash -c 'curl -s -X POST "https://actions.zapier.com/api/v2/ai-actions/ACTION_ID/execute/" --header "Content-Type: application/json" --header "x-api-key: $ZAPIER_TOKEN" -d @/tmp/zapier_request.json' | jq .
 ```
 
 ---
@@ -124,7 +111,7 @@ Then run:
 Preview what the action would do without actually executing it. Add `preview_only=true` as a query parameter.
 
 ```bash
-/tmp/zapier-curl -X POST "https://actions.zapier.com/api/v2/ai-actions/ACTION_ID/execute/?preview_only=true""'"'{"instructions": "Create a new row in the Sales spreadsheet with name John and amount 500"}'"'"'' | jq .
+bash -c 'curl -s -X POST "https://actions.zapier.com/api/v2/ai-actions/ACTION_ID/execute/?preview_only=true" --header "Content-Type: application/json" --header "x-api-key: $ZAPIER_TOKEN" -d '"'"'{"instructions": "Create a new row in the Sales spreadsheet with name John and amount 500"}'"'"'' | jq .
 ```
 
 ---
@@ -134,7 +121,7 @@ Preview what the action would do without actually executing it. Add `preview_onl
 Execute an action using the V1 endpoint. Replace `ACTION_ID` with the exposed action ID.
 
 ```bash
-/tmp/zapier-curl -X POST "https://actions.zapier.com/api/v1/dynamic/exposed/ACTION_ID/execute/""'"'{"instructions": "Send a Slack message to #dev saying deployment complete"}'"'"'' | jq .
+bash -c 'curl -s -X POST "https://actions.zapier.com/api/v1/dynamic/exposed/ACTION_ID/execute/" --header "Content-Type: application/json" --header "x-api-key: $ZAPIER_TOKEN" -d '"'"'{"instructions": "Send a Slack message to #dev saying deployment complete"}'"'"'' | jq .
 ```
 
 ---

@@ -54,20 +54,10 @@ export CLOUDFLARE_ACCOUNT_ID="your-account-id"
 
 ---
 
-
-### Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/cloudflare-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "Authorization: Bearer $CLOUDFLARE_TOKEN" "$@"
-EOF
-chmod +x /tmp/cloudflare-curl
-```
-
-**Usage:** All examples below use `/tmp/cloudflare-curl` instead of direct `curl` calls.
+> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
+> ```bash
+> bash -c 'curl -s "https://api.cloudflare.com/client/v4/zones" --header "Authorization: Bearer $CLOUDFLARE_TOKEN"' | jq .
+> ```
 
 ## How to Use
 
@@ -78,25 +68,25 @@ All API requests use: `https://api.cloudflare.com/client/v4`
 ### 1. Verify Token
 
 ```bash
-/tmp/cloudflare-curl "https://api.cloudflare.com/client/v4/user/tokens/verify" | jq .
+bash -c 'curl -s "https://api.cloudflare.com/client/v4/user/tokens/verify" --header "Authorization: Bearer $CLOUDFLARE_TOKEN"' | jq .
 ```
 
 ### 2. List Zones
 
 ```bash
-/tmp/cloudflare-curl "https://api.cloudflare.com/client/v4/zones" | jq .
+bash -c 'curl -s "https://api.cloudflare.com/client/v4/zones" --header "Authorization: Bearer $CLOUDFLARE_TOKEN"' | jq .
 ```
 
 ### 3. Get Zone Details
 
 ```bash
-/tmp/cloudflare-curl "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID" | jq .
+bash -c 'curl -s "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID" --header "Authorization: Bearer $CLOUDFLARE_TOKEN"' | jq .
 ```
 
 ### 4. List DNS Records
 
 ```bash
-/tmp/cloudflare-curl "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID/dns_records" | jq .
+bash -c 'curl -s "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID/dns_records" --header "Authorization: Bearer $CLOUDFLARE_TOKEN"' | jq .
 ```
 
 ### 5. Create DNS Record
@@ -116,7 +106,7 @@ Write to `/tmp/cloudflare_request.json`:
 Then run:
 
 ```bash
-/tmp/cloudflare-curl -X POST "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID/dns_records" -d @/tmp/cloudflare_request.json | jq .
+bash -c 'curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID/dns_records" --header "Authorization: Bearer $CLOUDFLARE_TOKEN" --header "Content-Type: application/json" -d @/tmp/cloudflare_request.json' | jq .
 ```
 
 ### 6. Update DNS Record
@@ -136,31 +126,31 @@ Write to `/tmp/cloudflare_request.json`:
 Then run:
 
 ```bash
-/tmp/cloudflare-curl -X PUT "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID/dns_records/RECORD_ID" -d @/tmp/cloudflare_request.json | jq .
+bash -c 'curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID/dns_records/RECORD_ID" --header "Authorization: Bearer $CLOUDFLARE_TOKEN" --header "Content-Type: application/json" -d @/tmp/cloudflare_request.json' | jq .
 ```
 
 ### 7. Delete DNS Record
 
 ```bash
-/tmp/cloudflare-curl -X DELETE "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID/dns_records/RECORD_ID" | jq .
+bash -c 'curl -s -X DELETE "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID/dns_records/RECORD_ID" --header "Authorization: Bearer $CLOUDFLARE_TOKEN"' | jq .
 ```
 
 ### 8. List Workers Scripts
 
 ```bash
-/tmp/cloudflare-curl "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts" | jq .
+bash -c 'curl -s "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts" --header "Authorization: Bearer $CLOUDFLARE_TOKEN"' | jq .
 ```
 
 ### 9. List KV Namespaces
 
 ```bash
-/tmp/cloudflare-curl "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/storage/kv/namespaces" | jq .
+bash -c 'curl -s "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/storage/kv/namespaces" --header "Authorization: Bearer $CLOUDFLARE_TOKEN"' | jq .
 ```
 
 ### 10. List R2 Buckets
 
 ```bash
-/tmp/cloudflare-curl "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/r2/buckets" | jq .
+bash -c 'curl -s "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/r2/buckets" --header "Authorization: Bearer $CLOUDFLARE_TOKEN"' | jq .
 ```
 
 ### 11. Purge Zone Cache
@@ -176,19 +166,19 @@ Write to `/tmp/cloudflare_request.json`:
 Then run:
 
 ```bash
-/tmp/cloudflare-curl -X POST "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID/purge_cache" -d @/tmp/cloudflare_request.json | jq .
+bash -c 'curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID/purge_cache" --header "Authorization: Bearer $CLOUDFLARE_TOKEN" --header "Content-Type: application/json" -d @/tmp/cloudflare_request.json' | jq .
 ```
 
 ### 12. List Firewall Rules
 
 ```bash
-/tmp/cloudflare-curl "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID/firewall/rules" | jq .
+bash -c 'curl -s "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID/firewall/rules" --header "Authorization: Bearer $CLOUDFLARE_TOKEN"' | jq .
 ```
 
 ### 13. Get Zone Analytics
 
 ```bash
-/tmp/cloudflare-curl "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID/analytics/dashboard?since=-1440&continuous=true" | jq .
+bash -c 'curl -s "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID/analytics/dashboard?since=-1440&continuous=true" --header "Authorization: Bearer $CLOUDFLARE_TOKEN"' | jq .
 ```
 
 ---

@@ -32,20 +32,7 @@ Go to [vm0.ai](https://vm0.ai) **Settings > Connectors** and connect **tl;dv**. 
 
 ---
 
-
-### Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/tldv-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "api-key: $TLDV_TOKEN" "$@"
-EOF
-chmod +x /tmp/tldv-curl
-```
-
-**Usage:** All examples below use `/tmp/tldv-curl` instead of direct `curl` calls.
+> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
 
 ## How to Use
 
@@ -64,7 +51,7 @@ Authentication uses the `x-api-key` header (not Bearer).
 ### Verify API Connectivity
 
 ```bash
-/tmp/tldv-curl "https://pasta.tldv.io/v1alpha1/health" | jq .
+bash -c 'curl -s "https://pasta.tldv.io/v1alpha1/health" --header "x-api-key: $TLDV_TOKEN"' | jq .
 ```
 
 ---
@@ -74,19 +61,19 @@ Authentication uses the `x-api-key` header (not Bearer).
 ### List Meetings
 
 ```bash
-/tmp/tldv-curl "https://pasta.tldv.io/v1alpha1/meetings" | jq '.results[] | {id, name, happenedAt, duration, organizer: .organizer.name}'
+bash -c 'curl -s "https://pasta.tldv.io/v1alpha1/meetings" --header "x-api-key: $TLDV_TOKEN"' | jq '.results[] | {id, name, happenedAt, duration, organizer: .organizer.name}'
 ```
 
 ### List Meetings with Pagination
 
 ```bash
-/tmp/tldv-curl "https://pasta.tldv.io/v1alpha1/meetings?page=1&pageSize=10" | jq '{page, pages, total, meetings: [.results[] | {id, name, happenedAt}]}'
+bash -c 'curl -s "https://pasta.tldv.io/v1alpha1/meetings?page=1&pageSize=10" --header "x-api-key: $TLDV_TOKEN"' | jq '{page, pages, total, meetings: [.results[] | {id, name, happenedAt}]}'
 ```
 
 ### Get Meeting by ID
 
 ```bash
-/tmp/tldv-curl "https://pasta.tldv.io/v1alpha1/meetings/<meeting_id>" | jq '{id, name, happenedAt, duration, url, organizer, invitees}'
+bash -c 'curl -s "https://pasta.tldv.io/v1alpha1/meetings/<meeting_id>" --header "x-api-key: $TLDV_TOKEN"' | jq '{id, name, happenedAt, duration, url, organizer, invitees}'
 ```
 
 ### Download Meeting Recording
@@ -94,13 +81,13 @@ Authentication uses the `x-api-key` header (not Bearer).
 Returns a 302 redirect to a signed download URL (expires after 6 hours). Use `-L` to follow the redirect, or omit it to inspect the URL:
 
 ```bash
-/tmp/tldv-curl "https://pasta.tldv.io/v1alpha1/meetings/<meeting_id>/download" | grep -i location
+bash -c 'curl -s -I "https://pasta.tldv.io/v1alpha1/meetings/<meeting_id>/download" --header "x-api-key: $TLDV_TOKEN"' | grep -i location
 ```
 
 To download the recording directly:
 
 ```bash
-/tmp/tldv-curl "https://pasta.tldv.io/v1alpha1/meetings/<meeting_id>/download"
+bash -c 'curl -s -L -o /tmp/tldv_recording.mp4 "https://pasta.tldv.io/v1alpha1/meetings/<meeting_id>/download" --header "x-api-key: $TLDV_TOKEN"'
 ```
 
 ### Import a Meeting
@@ -114,7 +101,7 @@ Write to `/tmp/tldv_request.json`:
 ```
 
 ```bash
-/tmp/tldv-curl -X POST "https://pasta.tldv.io/v1alpha1/meetings/import" -d @/tmp/tldv_request.json | jq .
+bash -c 'curl -s -X POST "https://pasta.tldv.io/v1alpha1/meetings/import" --header "x-api-key: $TLDV_TOKEN" --header "Content-Type: application/json" -d @/tmp/tldv_request.json' | jq .
 ```
 
 ---
@@ -124,13 +111,13 @@ Write to `/tmp/tldv_request.json`:
 ### Get Meeting Transcript
 
 ```bash
-/tmp/tldv-curl "https://pasta.tldv.io/v1alpha1/meetings/<meeting_id>/transcript" | jq '.data[] | {speaker, text, startTime, endTime}'
+bash -c 'curl -s "https://pasta.tldv.io/v1alpha1/meetings/<meeting_id>/transcript" --header "x-api-key: $TLDV_TOKEN"' | jq '.data[] | {speaker, text, startTime, endTime}'
 ```
 
 ### Get Full Transcript as Plain Text
 
 ```bash
-/tmp/tldv-curl "https://pasta.tldv.io/v1alpha1/meetings/<meeting_id>/transcript" | jq -r '.data[] | "\(.speaker): \(.text)"'
+bash -c 'curl -s "https://pasta.tldv.io/v1alpha1/meetings/<meeting_id>/transcript" --header "x-api-key: $TLDV_TOKEN"' | jq -r '.data[] | "\(.speaker): \(.text)"'
 ```
 
 ---
@@ -140,13 +127,13 @@ Write to `/tmp/tldv_request.json`:
 ### Get Meeting Highlights
 
 ```bash
-/tmp/tldv-curl "https://pasta.tldv.io/v1alpha1/meetings/<meeting_id>/highlights" | jq '.data[] | {text, startTime, source, topic: .topic.title, summary: .topic.summary}'
+bash -c 'curl -s "https://pasta.tldv.io/v1alpha1/meetings/<meeting_id>/highlights" --header "x-api-key: $TLDV_TOKEN"' | jq '.data[] | {text, startTime, source, topic: .topic.title, summary: .topic.summary}'
 ```
 
 ### Get Topic Summaries Only
 
 ```bash
-/tmp/tldv-curl "https://pasta.tldv.io/v1alpha1/meetings/<meeting_id>/highlights" | jq '[.data[] | .topic | select(. != null)] | unique_by(.title) | .[] | {title, summary}'
+bash -c 'curl -s "https://pasta.tldv.io/v1alpha1/meetings/<meeting_id>/highlights" --header "x-api-key: $TLDV_TOKEN"' | jq '[.data[] | .topic | select(. != null)] | unique_by(.title) | .[] | {title, summary}'
 ```
 
 ---

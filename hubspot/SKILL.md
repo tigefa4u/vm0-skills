@@ -24,27 +24,14 @@ Manage contacts, companies, deals, tickets, and their associations with the HubS
 
 Go to [vm0.ai](https://vm0.ai) **Settings > Connectors** and connect **HubSpot**. vm0 will automatically inject the required `HUBSPOT_TOKEN` environment variable.
 
-
-### Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/hubspot-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "Authorization: Bearer $HUBSPOT_TOKEN" "$@"
-EOF
-chmod +x /tmp/hubspot-curl
-```
-
-**Usage:** All examples below use `/tmp/hubspot-curl` instead of direct `curl` calls.
+> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
 
 ## Core APIs
 
 ### List Contacts
 
 ```bash
-/tmp/hubspot-curl "https://api.hubapi.com/crm/v3/objects/contacts?limit=10&properties=firstname,lastname,email" | jq '.results[] | {id, properties: {firstname: .properties.firstname, lastname: .properties.lastname, email: .properties.email}}'
+bash -c 'curl -s "https://api.hubapi.com/crm/v3/objects/contacts?limit=10&properties=firstname,lastname,email" --header "Authorization: Bearer $HUBSPOT_TOKEN"' | jq '.results[] | {id, properties: {firstname: .properties.firstname, lastname: .properties.lastname, email: .properties.email}}'
 ```
 
 Docs: https://developers.hubspot.com/docs/api/crm/contacts
@@ -56,7 +43,7 @@ Docs: https://developers.hubspot.com/docs/api/crm/contacts
 Replace `<contact-id>` with the actual contact ID:
 
 ```bash
-/tmp/hubspot-curl "https://api.hubapi.com/crm/v3/objects/contacts/<contact-id>?properties=firstname,lastname,email,phone,company" | jq '{id, properties}'
+bash -c 'curl -s "https://api.hubapi.com/crm/v3/objects/contacts/<contact-id>?properties=firstname,lastname,email,phone,company" --header "Authorization: Bearer $HUBSPOT_TOKEN"' | jq '{id, properties}'
 ```
 
 ---
@@ -78,7 +65,7 @@ Write to `/tmp/hubspot_request.json`:
 ```
 
 ```bash
-/tmp/hubspot-curl -X POST "https://api.hubapi.com/crm/v3/objects/contacts" -d @/tmp/hubspot_request.json | jq '{id, properties: {firstname: .properties.firstname, lastname: .properties.lastname, email: .properties.email}}'
+bash -c 'curl -s -X POST "https://api.hubapi.com/crm/v3/objects/contacts" --header "Authorization: Bearer $HUBSPOT_TOKEN" --header "Content-Type: application/json" -d @/tmp/hubspot_request.json' | jq '{id, properties: {firstname: .properties.firstname, lastname: .properties.lastname, email: .properties.email}}'
 ```
 
 Docs: https://developers.hubspot.com/docs/api/crm/contacts
@@ -101,7 +88,7 @@ Write to `/tmp/hubspot_request.json`:
 ```
 
 ```bash
-/tmp/hubspot-curl -X PATCH "https://api.hubapi.com/crm/v3/objects/contacts/<contact-id>" -d @/tmp/hubspot_request.json | jq '{id, properties}'
+bash -c 'curl -s -X PATCH "https://api.hubapi.com/crm/v3/objects/contacts/<contact-id>" --header "Authorization: Bearer $HUBSPOT_TOKEN" --header "Content-Type: application/json" -d @/tmp/hubspot_request.json' | jq '{id, properties}'
 ```
 
 ---
@@ -129,7 +116,7 @@ Write to `/tmp/hubspot_request.json`:
 ```
 
 ```bash
-/tmp/hubspot-curl -X POST "https://api.hubapi.com/crm/v3/objects/contacts/search" -d @/tmp/hubspot_request.json | jq '.results[] | {id, properties}'
+bash -c 'curl -s -X POST "https://api.hubapi.com/crm/v3/objects/contacts/search" --header "Authorization: Bearer $HUBSPOT_TOKEN" --header "Content-Type: application/json" -d @/tmp/hubspot_request.json' | jq '.results[] | {id, properties}'
 ```
 
 Docs: https://developers.hubspot.com/docs/api/crm/search
@@ -141,7 +128,7 @@ Docs: https://developers.hubspot.com/docs/api/crm/search
 Replace `<contact-id>` with the actual contact ID:
 
 ```bash
-/tmp/hubspot-curl -X DELETE "https://api.hubapi.com/crm/v3/objects/contacts/<contact-id>"
+bash -c 'curl -s -X DELETE "https://api.hubapi.com/crm/v3/objects/contacts/<contact-id>" --header "Authorization: Bearer $HUBSPOT_TOKEN" -w "\nHTTP Status: %{http_code}\n"'
 ```
 
 ---
@@ -149,7 +136,7 @@ Replace `<contact-id>` with the actual contact ID:
 ### List Companies
 
 ```bash
-/tmp/hubspot-curl "https://api.hubapi.com/crm/v3/objects/companies?limit=10&properties=name,domain,industry" | jq '.results[] | {id, properties: {name: .properties.name, domain: .properties.domain, industry: .properties.industry}}'
+bash -c 'curl -s "https://api.hubapi.com/crm/v3/objects/companies?limit=10&properties=name,domain,industry" --header "Authorization: Bearer $HUBSPOT_TOKEN"' | jq '.results[] | {id, properties: {name: .properties.name, domain: .properties.domain, industry: .properties.industry}}'
 ```
 
 ---
@@ -169,7 +156,7 @@ Write to `/tmp/hubspot_request.json`:
 ```
 
 ```bash
-/tmp/hubspot-curl -X POST "https://api.hubapi.com/crm/v3/objects/companies" -d @/tmp/hubspot_request.json | jq '{id, properties: {name: .properties.name, domain: .properties.domain}}'
+bash -c 'curl -s -X POST "https://api.hubapi.com/crm/v3/objects/companies" --header "Authorization: Bearer $HUBSPOT_TOKEN" --header "Content-Type: application/json" -d @/tmp/hubspot_request.json' | jq '{id, properties: {name: .properties.name, domain: .properties.domain}}'
 ```
 
 ---
@@ -177,7 +164,7 @@ Write to `/tmp/hubspot_request.json`:
 ### List Deals
 
 ```bash
-/tmp/hubspot-curl "https://api.hubapi.com/crm/v3/objects/deals?limit=10&properties=dealname,amount,dealstage,closedate" | jq '.results[] | {id, properties: {dealname: .properties.dealname, amount: .properties.amount, dealstage: .properties.dealstage}}'
+bash -c 'curl -s "https://api.hubapi.com/crm/v3/objects/deals?limit=10&properties=dealname,amount,dealstage,closedate" --header "Authorization: Bearer $HUBSPOT_TOKEN"' | jq '.results[] | {id, properties: {dealname: .properties.dealname, amount: .properties.amount, dealstage: .properties.dealstage}}'
 ```
 
 ---
@@ -198,7 +185,7 @@ Write to `/tmp/hubspot_request.json`:
 ```
 
 ```bash
-/tmp/hubspot-curl -X POST "https://api.hubapi.com/crm/v3/objects/deals" -d @/tmp/hubspot_request.json | jq '{id, properties: {dealname: .properties.dealname, amount: .properties.amount, dealstage: .properties.dealstage}}'
+bash -c 'curl -s -X POST "https://api.hubapi.com/crm/v3/objects/deals" --header "Authorization: Bearer $HUBSPOT_TOKEN" --header "Content-Type: application/json" -d @/tmp/hubspot_request.json' | jq '{id, properties: {dealname: .properties.dealname, amount: .properties.amount, dealstage: .properties.dealstage}}'
 ```
 
 ---
@@ -206,7 +193,7 @@ Write to `/tmp/hubspot_request.json`:
 ### List Tickets
 
 ```bash
-/tmp/hubspot-curl "https://api.hubapi.com/crm/v3/objects/tickets?limit=10&properties=subject,content,hs_pipeline_stage" | jq '.results[] | {id, properties: {subject: .properties.subject, stage: .properties.hs_pipeline_stage}}'
+bash -c 'curl -s "https://api.hubapi.com/crm/v3/objects/tickets?limit=10&properties=subject,content,hs_pipeline_stage" --header "Authorization: Bearer $HUBSPOT_TOKEN"' | jq '.results[] | {id, properties: {subject: .properties.subject, stage: .properties.hs_pipeline_stage}}'
 ```
 
 ---
@@ -227,7 +214,7 @@ Write to `/tmp/hubspot_request.json`:
 ```
 
 ```bash
-/tmp/hubspot-curl -X POST "https://api.hubapi.com/crm/v3/objects/tickets" -d @/tmp/hubspot_request.json | jq '{id, properties: {subject: .properties.subject}}'
+bash -c 'curl -s -X POST "https://api.hubapi.com/crm/v3/objects/tickets" --header "Authorization: Bearer $HUBSPOT_TOKEN" --header "Content-Type: application/json" -d @/tmp/hubspot_request.json' | jq '{id, properties: {subject: .properties.subject}}'
 ```
 
 ---
@@ -235,7 +222,7 @@ Write to `/tmp/hubspot_request.json`:
 ### Get Deal Pipelines
 
 ```bash
-/tmp/hubspot-curl "https://api.hubapi.com/crm/v3/pipelines/deals" | jq '.results[] | {id, label, stages: [.stages[] | {id, label, displayOrder}]}'
+bash -c 'curl -s "https://api.hubapi.com/crm/v3/pipelines/deals" --header "Authorization: Bearer $HUBSPOT_TOKEN"' | jq '.results[] | {id, label, stages: [.stages[] | {id, label, displayOrder}]}'
 ```
 
 ---
@@ -243,7 +230,7 @@ Write to `/tmp/hubspot_request.json`:
 ### Get Ticket Pipelines
 
 ```bash
-/tmp/hubspot-curl "https://api.hubapi.com/crm/v3/pipelines/tickets" | jq '.results[] | {id, label, stages: [.stages[] | {id, label}]}'
+bash -c 'curl -s "https://api.hubapi.com/crm/v3/pipelines/tickets" --header "Authorization: Bearer $HUBSPOT_TOKEN"' | jq '.results[] | {id, label, stages: [.stages[] | {id, label}]}'
 ```
 
 ---
@@ -264,7 +251,7 @@ Write to `/tmp/hubspot_request.json`:
 ```
 
 ```bash
-/tmp/hubspot-curl -X PUT "https://api.hubapi.com/crm/v4/objects/contacts/<contact-id>/associations/companies/<company-id>" -d @/tmp/hubspot_request.json | jq '{fromObjectTypeId, fromObjectId, toObjectTypeId, toObjectId}'
+bash -c 'curl -s -X PUT "https://api.hubapi.com/crm/v4/objects/contacts/<contact-id>/associations/companies/<company-id>" --header "Authorization: Bearer $HUBSPOT_TOKEN" --header "Content-Type: application/json" -d @/tmp/hubspot_request.json' | jq '{fromObjectTypeId, fromObjectId, toObjectTypeId, toObjectId}'
 ```
 
 Common association type IDs: 1 (contact→company), 3 (deal→contact), 5 (deal→company)
@@ -274,7 +261,7 @@ Common association type IDs: 1 (contact→company), 3 (deal→contact), 5 (deal�
 ### Get Account Info
 
 ```bash
-/tmp/hubspot-curl "https://api.hubapi.com/account-info/v3/details" | jq '{portalId, accountType, timeZone, companyCurrency}'
+bash -c 'curl -s "https://api.hubapi.com/account-info/v3/details" --header "Authorization: Bearer $HUBSPOT_TOKEN"' | jq '{portalId, accountType, timeZone, companyCurrency}'
 ```
 
 ---

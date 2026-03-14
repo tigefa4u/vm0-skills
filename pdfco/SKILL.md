@@ -42,34 +42,10 @@ export PDFCO_API_KEY="your-email@example.com_your-api-key"
 ---
 
 
-#
-### Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/pdfco-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "api-key: $PDFCO_API_KEY" "$@"
-EOF
-chmod +x /tmp/pdfco-curl
-```
-
-**Usage:** All examples below use `/tmp/pdfco-curl` instead of direct `curl` calls.
-
-## Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/pdfco-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "api-key: $PDFCO_API_KEY" "$@"
-EOF
-chmod +x /tmp/pdfco-curl
-```
-
-**Usage:** All examples below use `/tmp/pdfco-curl` instead of direct `curl` calls.
+> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
+> ```bash
+> bash -c 'curl -s "https://api.example.com" -H "Authorization: Bearer $API_KEY"'
+> ```
 
 ## How to Use
 
@@ -230,7 +206,7 @@ Upload a local file first, then use the returned URL:
 **Step 1: Get presigned upload URL**
 
 ```bash
-/tmp/pdfco-curl "https://api.pdf.co/v1/file/upload/get-presigned-url?name=myfile.pdf&contenttype=application/pdf" | jq -r '.presignedUrl, .url'
+bash -c 'curl -s "https://api.pdf.co/v1/file/upload/get-presigned-url?name=myfile.pdf&contenttype=application/pdf" --header "x-api-key: ${PDFCO_API_KEY}"' | jq -r '.presignedUrl, .url'
 ```
 
 Copy the presigned URL and file URL from the response.
@@ -276,7 +252,7 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-/tmp/pdfco-curl "https://api.pdf.co/v1/pdf/convert/to/text" -d @/tmp/request.json | jq -r '.jobId'
+bash -c 'curl -s --location --request POST "https://api.pdf.co/v1/pdf/convert/to/text" --header "x-api-key: ${PDFCO_API_KEY}" --header "Content-Type: application/json" -d @/tmp/request.json' | jq -r '.jobId'
 ```
 
 Copy the job ID from the response.

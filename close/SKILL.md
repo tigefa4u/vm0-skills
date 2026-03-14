@@ -25,39 +25,26 @@ Manage leads, contacts, opportunities, tasks, and activities in Close CRM.
 
 Go to [vm0.ai](https://vm0.ai) **Settings > Connectors** and connect **Close**. vm0 will automatically inject the required `CLOSE_TOKEN` environment variable.
 
-
-### Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/close-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "Authorization: Bearer $CLOSE_TOKEN" "$@"
-EOF
-chmod +x /tmp/close-curl
-```
-
-**Usage:** All examples below use `/tmp/close-curl` instead of direct `curl` calls.
+> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
 
 ## Core APIs
 
 ### Get Current User
 
 ```bash
-/tmp/close-curl "https://api.close.com/api/v1/me/" | jq '{id, email, first_name, last_name}'
+bash -c 'curl -s "https://api.close.com/api/v1/me/" --header "Authorization: Bearer $CLOSE_TOKEN"' | jq '{id, email, first_name, last_name}'
 ```
 
 ### Get Organization Info
 
 ```bash
-/tmp/close-curl "https://api.close.com/api/v1/organization/" | jq '.data[0] | {id, name}'
+bash -c 'curl -s "https://api.close.com/api/v1/organization/" --header "Authorization: Bearer $CLOSE_TOKEN"' | jq '.data[0] | {id, name}'
 ```
 
 ### List Users
 
 ```bash
-/tmp/close-curl "https://api.close.com/api/v1/user/" | jq '.data[] | {id, email, first_name, last_name}'
+bash -c 'curl -s "https://api.close.com/api/v1/user/" --header "Authorization: Bearer $CLOSE_TOKEN"' | jq '.data[] | {id, email, first_name, last_name}'
 ```
 
 ## Leads
@@ -65,13 +52,13 @@ chmod +x /tmp/close-curl
 ### List Leads
 
 ```bash
-/tmp/close-curl "https://api.close.com/api/v1/lead/?_limit=10" | jq '.data[] | {id, display_name, status_label, created_by_name}'
+bash -c 'curl -s "https://api.close.com/api/v1/lead/?_limit=10" --header "Authorization: Bearer $CLOSE_TOKEN"' | jq '.data[] | {id, display_name, status_label, created_by_name}'
 ```
 
 ### Get a Lead
 
 ```bash
-/tmp/close-curl "https://api.close.com/api/v1/lead/<lead-id>/" | jq '{id, display_name, status_label, contacts, opportunities}'
+bash -c 'curl -s "https://api.close.com/api/v1/lead/<lead-id>/" --header "Authorization: Bearer $CLOSE_TOKEN"' | jq '{id, display_name, status_label, contacts, opportunities}'
 ```
 
 ### Create a Lead
@@ -102,7 +89,7 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-/tmp/close-curl -X POST "https://api.close.com/api/v1/lead/" -d @/tmp/request.json | jq '{id, display_name}'
+bash -c 'curl -s -X POST "https://api.close.com/api/v1/lead/" --header "Authorization: Bearer $CLOSE_TOKEN" --header "Content-Type: application/json" -d @/tmp/request.json' | jq '{id, display_name}'
 ```
 
 ### Update a Lead
@@ -116,13 +103,13 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-/tmp/close-curl -X PUT "https://api.close.com/api/v1/lead/<lead-id>/" -d @/tmp/request.json | jq '{id, display_name}'
+bash -c 'curl -s -X PUT "https://api.close.com/api/v1/lead/<lead-id>/" --header "Authorization: Bearer $CLOSE_TOKEN" --header "Content-Type: application/json" -d @/tmp/request.json' | jq '{id, display_name}'
 ```
 
 ### Delete a Lead
 
 ```bash
-/tmp/close-curl -X DELETE "https://api.close.com/api/v1/lead/<lead-id>/"
+bash -c 'curl -s -X DELETE "https://api.close.com/api/v1/lead/<lead-id>/" --header "Authorization: Bearer $CLOSE_TOKEN"'
 ```
 
 ## Contacts
@@ -130,13 +117,13 @@ Write to `/tmp/request.json`:
 ### List Contacts
 
 ```bash
-/tmp/close-curl "https://api.close.com/api/v1/contact/?_limit=10" | jq '.data[] | {id, name, lead_id, emails, phones}'
+bash -c 'curl -s "https://api.close.com/api/v1/contact/?_limit=10" --header "Authorization: Bearer $CLOSE_TOKEN"' | jq '.data[] | {id, name, lead_id, emails, phones}'
 ```
 
 ### Get a Contact
 
 ```bash
-/tmp/close-curl "https://api.close.com/api/v1/contact/<contact-id>/" | jq '{id, name, title, lead_id, emails, phones}'
+bash -c 'curl -s "https://api.close.com/api/v1/contact/<contact-id>/" --header "Authorization: Bearer $CLOSE_TOKEN"' | jq '{id, name, title, lead_id, emails, phones}'
 ```
 
 ### Create a Contact
@@ -164,7 +151,7 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-/tmp/close-curl -X POST "https://api.close.com/api/v1/contact/" -d @/tmp/request.json | jq '{id, name, lead_id}'
+bash -c 'curl -s -X POST "https://api.close.com/api/v1/contact/" --header "Authorization: Bearer $CLOSE_TOKEN" --header "Content-Type: application/json" -d @/tmp/request.json' | jq '{id, name, lead_id}'
 ```
 
 ### Update a Contact
@@ -178,13 +165,13 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-/tmp/close-curl -X PUT "https://api.close.com/api/v1/contact/<contact-id>/" -d @/tmp/request.json | jq '{id, name, title}'
+bash -c 'curl -s -X PUT "https://api.close.com/api/v1/contact/<contact-id>/" --header "Authorization: Bearer $CLOSE_TOKEN" --header "Content-Type: application/json" -d @/tmp/request.json' | jq '{id, name, title}'
 ```
 
 ### Delete a Contact
 
 ```bash
-/tmp/close-curl -X DELETE "https://api.close.com/api/v1/contact/<contact-id>/"
+bash -c 'curl -s -X DELETE "https://api.close.com/api/v1/contact/<contact-id>/" --header "Authorization: Bearer $CLOSE_TOKEN"'
 ```
 
 ## Opportunities
@@ -192,13 +179,13 @@ Write to `/tmp/request.json`:
 ### List Opportunities
 
 ```bash
-/tmp/close-curl "https://api.close.com/api/v1/opportunity/?_limit=10" | jq '.data[] | {id, lead_name, status_label, status_type, value, value_currency}'
+bash -c 'curl -s "https://api.close.com/api/v1/opportunity/?_limit=10" --header "Authorization: Bearer $CLOSE_TOKEN"' | jq '.data[] | {id, lead_name, status_label, status_type, value, value_currency}'
 ```
 
 ### Get an Opportunity
 
 ```bash
-/tmp/close-curl "https://api.close.com/api/v1/opportunity/<opportunity-id>/" | jq '{id, lead_name, status_label, status_type, value, value_currency, confidence, note}'
+bash -c 'curl -s "https://api.close.com/api/v1/opportunity/<opportunity-id>/" --header "Authorization: Bearer $CLOSE_TOKEN"' | jq '{id, lead_name, status_label, status_type, value, value_currency, confidence, note}'
 ```
 
 ### Create an Opportunity
@@ -206,7 +193,7 @@ Write to `/tmp/request.json`:
 First, list available opportunity statuses to get a valid `status_id`:
 
 ```bash
-/tmp/close-curl "https://api.close.com/api/v1/status/opportunity/" | jq '.data[] | {id, label, type}'
+bash -c 'curl -s "https://api.close.com/api/v1/status/opportunity/" --header "Authorization: Bearer $CLOSE_TOKEN"' | jq '.data[] | {id, label, type}'
 ```
 
 Write to `/tmp/request.json`:
@@ -223,7 +210,7 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-/tmp/close-curl -X POST "https://api.close.com/api/v1/opportunity/" -d @/tmp/request.json | jq '{id, lead_name, status_label, value}'
+bash -c 'curl -s -X POST "https://api.close.com/api/v1/opportunity/" --header "Authorization: Bearer $CLOSE_TOKEN" --header "Content-Type: application/json" -d @/tmp/request.json' | jq '{id, lead_name, status_label, value}'
 ```
 
 ### Update an Opportunity
@@ -238,13 +225,13 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-/tmp/close-curl -X PUT "https://api.close.com/api/v1/opportunity/<opportunity-id>/" -d @/tmp/request.json | jq '{id, status_label, value, confidence}'
+bash -c 'curl -s -X PUT "https://api.close.com/api/v1/opportunity/<opportunity-id>/" --header "Authorization: Bearer $CLOSE_TOKEN" --header "Content-Type: application/json" -d @/tmp/request.json' | jq '{id, status_label, value, confidence}'
 ```
 
 ### Delete an Opportunity
 
 ```bash
-/tmp/close-curl -X DELETE "https://api.close.com/api/v1/opportunity/<opportunity-id>/"
+bash -c 'curl -s -X DELETE "https://api.close.com/api/v1/opportunity/<opportunity-id>/" --header "Authorization: Bearer $CLOSE_TOKEN"'
 ```
 
 ## Tasks
@@ -252,13 +239,13 @@ Write to `/tmp/request.json`:
 ### List Tasks
 
 ```bash
-/tmp/close-curl "https://api.close.com/api/v1/task/?_limit=10&is_complete=false" | jq '.data[] | {id, _type, text, date, is_complete, assigned_to_name, lead_name}'
+bash -c 'curl -s "https://api.close.com/api/v1/task/?_limit=10&is_complete=false" --header "Authorization: Bearer $CLOSE_TOKEN"' | jq '.data[] | {id, _type, text, date, is_complete, assigned_to_name, lead_name}'
 ```
 
 ### Get a Task
 
 ```bash
-/tmp/close-curl "https://api.close.com/api/v1/task/<task-id>/" | jq '{id, _type, text, date, is_complete, lead_name}'
+bash -c 'curl -s "https://api.close.com/api/v1/task/<task-id>/" --header "Authorization: Bearer $CLOSE_TOKEN"' | jq '{id, _type, text, date, is_complete, lead_name}'
 ```
 
 ### Create a Task
@@ -276,7 +263,7 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-/tmp/close-curl -X POST "https://api.close.com/api/v1/task/" -d @/tmp/request.json | jq '{id, text, date, is_complete}'
+bash -c 'curl -s -X POST "https://api.close.com/api/v1/task/" --header "Authorization: Bearer $CLOSE_TOKEN" --header "Content-Type: application/json" -d @/tmp/request.json' | jq '{id, text, date, is_complete}'
 ```
 
 ### Complete a Task
@@ -290,13 +277,13 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-/tmp/close-curl -X PUT "https://api.close.com/api/v1/task/<task-id>/" -d @/tmp/request.json | jq '{id, text, is_complete}'
+bash -c 'curl -s -X PUT "https://api.close.com/api/v1/task/<task-id>/" --header "Authorization: Bearer $CLOSE_TOKEN" --header "Content-Type: application/json" -d @/tmp/request.json' | jq '{id, text, is_complete}'
 ```
 
 ### Delete a Task
 
 ```bash
-/tmp/close-curl -X DELETE "https://api.close.com/api/v1/task/<task-id>/"
+bash -c 'curl -s -X DELETE "https://api.close.com/api/v1/task/<task-id>/" --header "Authorization: Bearer $CLOSE_TOKEN"'
 ```
 
 ## Activities
@@ -306,13 +293,13 @@ Write to `/tmp/request.json`:
 Filter by type: `Call`, `Email`, `EmailThread`, `Note`, `Meeting`, `SMS`, `LeadStatusChange`, `OpportunityStatusChange`, `TaskCompleted`.
 
 ```bash
-/tmp/close-curl "https://api.close.com/api/v1/activity/?_limit=10" | jq '.data[] | {id, _type, lead_id, date_created}'
+bash -c 'curl -s "https://api.close.com/api/v1/activity/?_limit=10" --header "Authorization: Bearer $CLOSE_TOKEN"' | jq '.data[] | {id, _type, lead_id, date_created}'
 ```
 
 ### List Activities for a Lead
 
 ```bash
-/tmp/close-curl "https://api.close.com/api/v1/activity/?lead_id=<lead-id>&_limit=10" | jq '.data[] | {id, _type, date_created}'
+bash -c 'curl -s "https://api.close.com/api/v1/activity/?lead_id=<lead-id>&_limit=10" --header "Authorization: Bearer $CLOSE_TOKEN"' | jq '.data[] | {id, _type, date_created}'
 ```
 
 ### Create a Note Activity
@@ -327,7 +314,7 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-/tmp/close-curl -X POST "https://api.close.com/api/v1/activity/note/" -d @/tmp/request.json | jq '{id, note, date_created}'
+bash -c 'curl -s -X POST "https://api.close.com/api/v1/activity/note/" --header "Authorization: Bearer $CLOSE_TOKEN" --header "Content-Type: application/json" -d @/tmp/request.json' | jq '{id, note, date_created}'
 ```
 
 ## Lead Statuses
@@ -335,7 +322,7 @@ Write to `/tmp/request.json`:
 ### List Lead Statuses
 
 ```bash
-/tmp/close-curl "https://api.close.com/api/v1/status/lead/" | jq '.data[] | {id, label}'
+bash -c 'curl -s "https://api.close.com/api/v1/status/lead/" --header "Authorization: Bearer $CLOSE_TOKEN"' | jq '.data[] | {id, label}'
 ```
 
 ## Pipelines
@@ -343,7 +330,7 @@ Write to `/tmp/request.json`:
 ### List Pipelines
 
 ```bash
-/tmp/close-curl "https://api.close.com/api/v1/pipeline/" | jq '.data[] | {id, name}'
+bash -c 'curl -s "https://api.close.com/api/v1/pipeline/" --header "Authorization: Bearer $CLOSE_TOKEN"' | jq '.data[] | {id, name}'
 ```
 
 ## Guidelines

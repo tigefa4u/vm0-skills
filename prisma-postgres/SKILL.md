@@ -34,30 +34,16 @@ To obtain a token manually:
 2. Navigate to your workspace **Settings > Service Tokens**
 3. Click **New Service Token** and store the generated token securely
 
+> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
 
 ---
-
-
-### Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/prisma-postgres-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "Authorization: Bearer $PRISMA_POSTGRES_TOKEN" "$@"
-EOF
-chmod +x /tmp/prisma-postgres-curl
-```
-
-**Usage:** All examples below use `/tmp/prisma-postgres-curl` instead of direct `curl` calls.
 
 ## Core APIs
 
 ### List Projects
 
 ```bash
-/tmp/prisma-postgres-curl "https://api.prisma.io/v1/projects" | jq '.[] | {id, name, createdAt}'
+bash -c 'curl -s "https://api.prisma.io/v1/projects" --header "Authorization: Bearer $PRISMA_POSTGRES_TOKEN"' | jq '.[] | {id, name, createdAt}'
 ```
 
 Docs: https://www.prisma.io/docs/postgres/introduction/management-api
@@ -69,7 +55,7 @@ Docs: https://www.prisma.io/docs/postgres/introduction/management-api
 Replace `<project-id>` with the actual project ID:
 
 ```bash
-/tmp/prisma-postgres-curl "https://api.prisma.io/v1/projects/<project-id>" | jq '{id, name, createdAt}'
+bash -c 'curl -s "https://api.prisma.io/v1/projects/<project-id>" --header "Authorization: Bearer $PRISMA_POSTGRES_TOKEN"' | jq '{id, name, createdAt}'
 ```
 
 ---
@@ -87,7 +73,7 @@ Write to `/tmp/prisma_request.json`:
 ```
 
 ```bash
-/tmp/prisma-postgres-curl -X POST "https://api.prisma.io/v1/projects" -d @/tmp/prisma_request.json | jq '{id, name, databases}'
+bash -c 'curl -s -X POST "https://api.prisma.io/v1/projects" --header "Authorization: Bearer $PRISMA_POSTGRES_TOKEN" --header "Content-Type: application/json" -d @/tmp/prisma_request.json' | jq '{id, name, databases}'
 ```
 
 Available regions can be listed with the regions endpoint below.
@@ -107,7 +93,7 @@ Write to `/tmp/prisma_request.json`:
 ```
 
 ```bash
-/tmp/prisma-postgres-curl -X PATCH "https://api.prisma.io/v1/projects/<project-id>" -d @/tmp/prisma_request.json | jq '{id, name}'
+bash -c 'curl -s -X PATCH "https://api.prisma.io/v1/projects/<project-id>" --header "Authorization: Bearer $PRISMA_POSTGRES_TOKEN" --header "Content-Type: application/json" -d @/tmp/prisma_request.json' | jq '{id, name}'
 ```
 
 ---
@@ -117,7 +103,7 @@ Write to `/tmp/prisma_request.json`:
 Replace `<project-id>` with the actual project ID:
 
 ```bash
-/tmp/prisma-postgres-curl -X DELETE "https://api.prisma.io/v1/projects/<project-id>"
+bash -c 'curl -s -X DELETE "https://api.prisma.io/v1/projects/<project-id>" --header "Authorization: Bearer $PRISMA_POSTGRES_TOKEN" -w "\nHTTP Status: %{http_code}\n"'
 ```
 
 Returns HTTP 204 on success.
@@ -129,7 +115,7 @@ Returns HTTP 204 on success.
 List all databases, optionally filtered by project:
 
 ```bash
-/tmp/prisma-postgres-curl "https://api.prisma.io/v1/databases?projectId=<project-id>" | jq '.[] | {id, name, region, createdAt}'
+bash -c 'curl -s "https://api.prisma.io/v1/databases?projectId=<project-id>" --header "Authorization: Bearer $PRISMA_POSTGRES_TOKEN"' | jq '.[] | {id, name, region, createdAt}'
 ```
 
 ---
@@ -139,7 +125,7 @@ List all databases, optionally filtered by project:
 Replace `<database-id>` with the actual database ID:
 
 ```bash
-/tmp/prisma-postgres-curl "https://api.prisma.io/v1/databases/<database-id>" | jq '{id, name, region, connections}'
+bash -c 'curl -s "https://api.prisma.io/v1/databases/<database-id>" --header "Authorization: Bearer $PRISMA_POSTGRES_TOKEN"' | jq '{id, name, region, connections}'
 ```
 
 ---
@@ -158,7 +144,7 @@ Write to `/tmp/prisma_request.json`:
 ```
 
 ```bash
-/tmp/prisma-postgres-curl -X POST "https://api.prisma.io/v1/projects/<project-id>/databases" -d @/tmp/prisma_request.json | jq '{id, name, region, connections}'
+bash -c 'curl -s -X POST "https://api.prisma.io/v1/projects/<project-id>/databases" --header "Authorization: Bearer $PRISMA_POSTGRES_TOKEN" --header "Content-Type: application/json" -d @/tmp/prisma_request.json' | jq '{id, name, region, connections}'
 ```
 
 ---
@@ -176,7 +162,7 @@ Write to `/tmp/prisma_request.json`:
 ```
 
 ```bash
-/tmp/prisma-postgres-curl -X PATCH "https://api.prisma.io/v1/databases/<database-id>" -d @/tmp/prisma_request.json | jq '{id, name}'
+bash -c 'curl -s -X PATCH "https://api.prisma.io/v1/databases/<database-id>" --header "Authorization: Bearer $PRISMA_POSTGRES_TOKEN" --header "Content-Type: application/json" -d @/tmp/prisma_request.json' | jq '{id, name}'
 ```
 
 ---
@@ -186,7 +172,7 @@ Write to `/tmp/prisma_request.json`:
 Replace `<database-id>` with the actual database ID (cannot delete default databases):
 
 ```bash
-/tmp/prisma-postgres-curl -X DELETE "https://api.prisma.io/v1/databases/<database-id>"
+bash -c 'curl -s -X DELETE "https://api.prisma.io/v1/databases/<database-id>" --header "Authorization: Bearer $PRISMA_POSTGRES_TOKEN" -w "\nHTTP Status: %{http_code}\n"'
 ```
 
 Returns HTTP 204 on success.
@@ -198,7 +184,7 @@ Returns HTTP 204 on success.
 List all connections for a specific database. Replace `<database-id>`:
 
 ```bash
-/tmp/prisma-postgres-curl "https://api.prisma.io/v1/databases/<database-id>/connections" | jq '.[] | {id, name, endpoints}'
+bash -c 'curl -s "https://api.prisma.io/v1/databases/<database-id>/connections" --header "Authorization: Bearer $PRISMA_POSTGRES_TOKEN"' | jq '.[] | {id, name, endpoints}'
 ```
 
 ---
@@ -208,7 +194,7 @@ List all connections for a specific database. Replace `<database-id>`:
 Create a new connection string for a database. Replace `<database-id>`:
 
 ```bash
-/tmp/prisma-postgres-curl -X POST "https://api.prisma.io/v1/databases/<database-id>/connections""'"'{"name": "my-connection"}'"'"'' | jq '{id, name, endpoints}'
+bash -c 'curl -s -X POST "https://api.prisma.io/v1/databases/<database-id>/connections" --header "Authorization: Bearer $PRISMA_POSTGRES_TOKEN" --header "Content-Type: application/json" -d '"'"'{"name": "my-connection"}'"'"'' | jq '{id, name, endpoints}'
 ```
 
 The response includes connection strings for direct, pooled, and accelerate endpoints.
@@ -220,7 +206,7 @@ The response includes connection strings for direct, pooled, and accelerate endp
 Replace `<connection-id>` with the actual connection ID:
 
 ```bash
-/tmp/prisma-postgres-curl -X DELETE "https://api.prisma.io/v1/connections/<connection-id>"
+bash -c 'curl -s -X DELETE "https://api.prisma.io/v1/connections/<connection-id>" --header "Authorization: Bearer $PRISMA_POSTGRES_TOKEN" -w "\nHTTP Status: %{http_code}\n"'
 ```
 
 Returns HTTP 204 on success.
@@ -232,7 +218,7 @@ Returns HTTP 204 on success.
 Replace `<database-id>` with the actual database ID:
 
 ```bash
-/tmp/prisma-postgres-curl "https://api.prisma.io/v1/databases/<database-id>/backups?limit=10" | jq '.[] | {id, createdAt}'
+bash -c 'curl -s "https://api.prisma.io/v1/databases/<database-id>/backups?limit=10" --header "Authorization: Bearer $PRISMA_POSTGRES_TOKEN"' | jq '.[] | {id, createdAt}'
 ```
 
 ---
@@ -254,7 +240,7 @@ Write to `/tmp/prisma_request.json`:
 ```
 
 ```bash
-/tmp/prisma-postgres-curl -X POST "https://api.prisma.io/v1/databases/<target-database-id>/restore" -d @/tmp/prisma_request.json | jq '{id, name, status}'
+bash -c 'curl -s -X POST "https://api.prisma.io/v1/databases/<target-database-id>/restore" --header "Authorization: Bearer $PRISMA_POSTGRES_TOKEN" --header "Content-Type: application/json" -d @/tmp/prisma_request.json' | jq '{id, name, status}'
 ```
 
 Cannot restore to default databases.
@@ -266,7 +252,7 @@ Cannot restore to default databases.
 Replace `<database-id>` with the actual database ID:
 
 ```bash
-/tmp/prisma-postgres-curl "https://api.prisma.io/v1/databases/<database-id>/usage?startDate=2025-01-01T00:00:00Z&endDate=2025-01-31T23:59:59Z" | jq .
+bash -c 'curl -s "https://api.prisma.io/v1/databases/<database-id>/usage?startDate=2025-01-01T00:00:00Z&endDate=2025-01-31T23:59:59Z" --header "Authorization: Bearer $PRISMA_POSTGRES_TOKEN"' | jq .
 ```
 
 Returns operations (ops) and storage (GiB) metrics for the specified period.
@@ -276,7 +262,7 @@ Returns operations (ops) and storage (GiB) metrics for the specified period.
 ### List Available Regions
 
 ```bash
-/tmp/prisma-postgres-curl "https://api.prisma.io/v1/regions/postgres" | jq '.[] | {id, displayName, status}'
+bash -c 'curl -s "https://api.prisma.io/v1/regions/postgres" --header "Authorization: Bearer $PRISMA_POSTGRES_TOKEN"' | jq '.[] | {id, displayName, status}'
 ```
 
 ---
@@ -284,7 +270,7 @@ Returns operations (ops) and storage (GiB) metrics for the specified period.
 ### List Workspaces
 
 ```bash
-/tmp/prisma-postgres-curl "https://api.prisma.io/v1/workspaces" | jq '.[] | {id, name}'
+bash -c 'curl -s "https://api.prisma.io/v1/workspaces" --header "Authorization: Bearer $PRISMA_POSTGRES_TOKEN"' | jq '.[] | {id, name}'
 ```
 
 ---

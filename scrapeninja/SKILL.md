@@ -47,19 +47,10 @@ export SCRAPENINJA_TOKEN="your-apiroad-key"
 ---
 
 
-### Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/scrapeninja-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "api-key: $SCRAPENINJA_TOKEN" "$@"
-EOF
-chmod +x /tmp/scrapeninja-curl
-```
-
-**Usage:** All examples below use `/tmp/scrapeninja-curl` instead of direct `curl` calls.
+> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
+> ```bash
+> bash -c 'curl -s "https://api.example.com" -H "Authorization: Bearer $API_KEY"'
+> ```
 
 ## How to Use
 
@@ -78,7 +69,7 @@ Write to `/tmp/scrapeninja_request.json`:
 Then run:
 
 ```bash
-/tmp/scrapeninja-curl -X POST "https://scrapeninja.p.rapidapi.com/scrape" -d @/tmp/scrapeninja_request.json | jq '{status: .info.statusCode, url: .info.finalUrl, bodyLength: (.body | length)}'
+bash -c 'curl -s -X POST "https://scrapeninja.p.rapidapi.com/scrape" --header "Content-Type: application/json" --header "X-RapidAPI-Key: ${SCRAPENINJA_TOKEN}" -d @/tmp/scrapeninja_request.json' | jq '{status: .info.statusCode, url: .info.finalUrl, bodyLength: (.body | length)}'
 ```
 
 **With custom headers and retries:**
@@ -97,7 +88,7 @@ Write to `/tmp/scrapeninja_request.json`:
 Then run:
 
 ```bash
-/tmp/scrapeninja-curl -X POST "https://scrapeninja.p.rapidapi.com/scrape" -d @/tmp/scrapeninja_request.json
+bash -c 'curl -s -X POST "https://scrapeninja.p.rapidapi.com/scrape" --header "Content-Type: application/json" --header "X-RapidAPI-Key: ${SCRAPENINJA_TOKEN}" -d @/tmp/scrapeninja_request.json'
 ```
 
 ### 2. Scrape with JavaScript Rendering
@@ -117,7 +108,7 @@ Write to `/tmp/scrapeninja_request.json`:
 Then run:
 
 ```bash
-/tmp/scrapeninja-curl -X POST "https://scrapeninja.p.rapidapi.com/scrape-js" -d @/tmp/scrapeninja_request.json | jq '{status: .info.statusCode, bodyLength: (.body | length)}'
+bash -c 'curl -s -X POST "https://scrapeninja.p.rapidapi.com/scrape-js" --header "Content-Type: application/json" --header "X-RapidAPI-Key: ${SCRAPENINJA_TOKEN}" -d @/tmp/scrapeninja_request.json' | jq '{status: .info.statusCode, bodyLength: (.body | length)}'
 ```
 
 **With screenshot:**
@@ -135,7 +126,7 @@ Then run:
 
 ```bash
 # Get screenshot URL from response
-/tmp/scrapeninja-curl -X POST "https://scrapeninja.p.rapidapi.com/scrape-js" -d @/tmp/scrapeninja_request.json | jq -r '.info.screenshot'
+bash -c 'curl -s -X POST "https://scrapeninja.p.rapidapi.com/scrape-js" --header "Content-Type: application/json" --header "X-RapidAPI-Key: ${SCRAPENINJA_TOKEN}" -d @/tmp/scrapeninja_request.json' | jq -r '.info.screenshot'
 ```
 
 ### 3. Geo-Based Proxy Selection
@@ -154,7 +145,7 @@ Write to `/tmp/scrapeninja_request.json`:
 Then run:
 
 ```bash
-/tmp/scrapeninja-curl -X POST "https://scrapeninja.p.rapidapi.com/scrape" -d @/tmp/scrapeninja_request.json | jq .info
+bash -c 'curl -s -X POST "https://scrapeninja.p.rapidapi.com/scrape" --header "Content-Type: application/json" --header "X-RapidAPI-Key: ${SCRAPENINJA_TOKEN}" -d @/tmp/scrapeninja_request.json' | jq .info
 ```
 
 Available geos: `us`, `eu`, `br` (Brazil), `fr` (France), `de` (Germany), `4g-eu`
@@ -177,7 +168,7 @@ Write to `/tmp/scrapeninja_request.json`:
 Then run:
 
 ```bash
-/tmp/scrapeninja-curl -X POST "https://scrapeninja.p.rapidapi.com/scrape" -d @/tmp/scrapeninja_request.json
+bash -c 'curl -s -X POST "https://scrapeninja.p.rapidapi.com/scrape" --header "Content-Type: application/json" --header "X-RapidAPI-Key: ${SCRAPENINJA_TOKEN}" -d @/tmp/scrapeninja_request.json'
 ```
 
 ### 5. Extract Data with Cheerio
@@ -196,7 +187,7 @@ Write to `/tmp/scrapeninja_request.json`:
 Then run:
 
 ```bash
-/tmp/scrapeninja-curl -X POST "https://scrapeninja.p.rapidapi.com/scrape" -d @/tmp/scrapeninja_request.json | jq '.extractor'
+bash -c 'curl -s -X POST "https://scrapeninja.p.rapidapi.com/scrape" --header "Content-Type: application/json" --header "X-RapidAPI-Key: ${SCRAPENINJA_TOKEN}" -d @/tmp/scrapeninja_request.json' | jq '.extractor'
 ```
 
 ### 6. Intercept AJAX Requests
@@ -215,7 +206,7 @@ Write to `/tmp/scrapeninja_request.json`:
 Then run:
 
 ```bash
-/tmp/scrapeninja-curl -X POST "https://scrapeninja.p.rapidapi.com/scrape-js" -d @/tmp/scrapeninja_request.json | jq '.info.catchedAjax'
+bash -c 'curl -s -X POST "https://scrapeninja.p.rapidapi.com/scrape-js" --header "Content-Type: application/json" --header "X-RapidAPI-Key: ${SCRAPENINJA_TOKEN}" -d @/tmp/scrapeninja_request.json' | jq '.info.catchedAjax'
 ```
 
 ### 7. Block Resources for Speed
@@ -235,7 +226,7 @@ Write to `/tmp/scrapeninja_request.json`:
 Then run:
 
 ```bash
-/tmp/scrapeninja-curl -X POST "https://scrapeninja.p.rapidapi.com/scrape-js" -d @/tmp/scrapeninja_request.json
+bash -c 'curl -s -X POST "https://scrapeninja.p.rapidapi.com/scrape-js" --header "Content-Type: application/json" --header "X-RapidAPI-Key: ${SCRAPENINJA_TOKEN}" -d @/tmp/scrapeninja_request.json'
 ```
 
 ---

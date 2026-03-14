@@ -37,22 +37,7 @@ Use this skill when you need to:
 export PUSHINATOR_TOKEN="your-api-token"
 ```
 
-#
-### Setup API Wrapper
-
-Create a helper script for API calls:
-
-```bash
-cat > /tmp/pushinator-curl << 'EOF'
-#!/bin/bash
-curl -s -H "Content-Type: application/json" -H "Authorization: Bearer $PUSHINATOR_TOKEN" "$@"
-EOF
-chmod +x /tmp/pushinator-curl
-```
-
-**Usage:** All examples below use `/tmp/pushinator-curl` instead of direct `curl` calls.
-
-## Pricing
+### Pricing
 
 - **Free**: 3 devices, 200 notifications/month
 - **Pro** ($9.99/mo): 20 devices, 2,000 notifications/month
@@ -60,6 +45,11 @@ chmod +x /tmp/pushinator-curl
 
 ---
 
+
+> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
+> ```bash
+> bash -c 'curl -s "https://api.example.com" -H "Authorization: Bearer $API_KEY"'
+> ```
 
 ## How to Use
 
