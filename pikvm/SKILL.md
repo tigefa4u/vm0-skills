@@ -32,8 +32,6 @@ export PIKVM_AUTH=admin:admin
 1. Access your PiKVM web interface
 2. Default credentials: `admin:admin`
 
-> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
-
 ## Coordinate System
 
 **Mouse coordinates use screen center as origin (0,0)**:
@@ -52,7 +50,7 @@ For 1920x1080 screen:
 ### Take Screenshot
 
 ```bash
-bash -c 'curl -k -s -o /tmp/screenshot.jpg -u "$PIKVM_AUTH" "${PIKVM_URL}/api/streamer/snapshot"'
+curl -k -s -o /tmp/screenshot.jpg -u "$(printenv PIKVM_AUTH)" "$(printenv PIKVM_URL)/api/streamer/snapshot"
 ```
 
 ### Type Text
@@ -60,11 +58,11 @@ bash -c 'curl -k -s -o /tmp/screenshot.jpg -u "$PIKVM_AUTH" "${PIKVM_URL}/api/st
 Text must be sent as raw body with `Content-Type: text/plain`:
 
 ```bash
-bash -c 'curl -k -s -X POST \
+curl -k -s -X POST \
   -H "Content-Type: text/plain" \
-  -u "$PIKVM_AUTH" \
+  -u "$(printenv PIKVM_AUTH)" \
   -d "Hello World" \
-  "${PIKVM_URL}/api/hid/print?limit=0"'
+  "$(printenv PIKVM_URL)/api/hid/print?limit=0"
 ```
 
 ### Move Mouse
@@ -72,23 +70,23 @@ bash -c 'curl -k -s -X POST \
 Move to absolute position (0,0 = screen center):
 
 ```bash
-bash -c 'curl -k -s -X POST \
-  -u "$PIKVM_AUTH" \
-  "${PIKVM_URL}/api/hid/events/send_mouse_move?to_x=-500&to_y=-300"'
+curl -k -s -X POST \
+  -u "$(printenv PIKVM_AUTH)" \
+  "$(printenv PIKVM_URL)/api/hid/events/send_mouse_move?to_x=-500&to_y=-300"
 ```
 
 ### Mouse Click
 
 ```bash
 # Press
-bash -c 'curl -k -s -X POST \
-  -u "$PIKVM_AUTH" \
-  "${PIKVM_URL}/api/hid/events/send_mouse_button?button=left&state=true"'
+curl -k -s -X POST \
+  -u "$(printenv PIKVM_AUTH)" \
+  "$(printenv PIKVM_URL)/api/hid/events/send_mouse_button?button=left&state=true"
 
 # Release
-bash -c 'curl -k -s -X POST \
-  -u "$PIKVM_AUTH" \
-  "${PIKVM_URL}/api/hid/events/send_mouse_button?button=left&state=false"'
+curl -k -s -X POST \
+  -u "$(printenv PIKVM_AUTH)" \
+  "$(printenv PIKVM_URL)/api/hid/events/send_mouse_button?button=left&state=false"
 ```
 
 ### Press Key
@@ -97,13 +95,13 @@ Press and release with `state=true` then `state=false`:
 
 ```bash
 # Press Enter
-bash -c 'curl -k -s -X POST \
-  -u "$PIKVM_AUTH" \
-  "${PIKVM_URL}/api/hid/events/send_key?key=Enter&state=true"'
+curl -k -s -X POST \
+  -u "$(printenv PIKVM_AUTH)" \
+  "$(printenv PIKVM_URL)/api/hid/events/send_key?key=Enter&state=true"
 
-bash -c 'curl -k -s -X POST \
-  -u "$PIKVM_AUTH" \
-  "${PIKVM_URL}/api/hid/events/send_key?key=Enter&state=false"'
+curl -k -s -X POST \
+  -u "$(printenv PIKVM_AUTH)" \
+  "$(printenv PIKVM_URL)/api/hid/events/send_key?key=Enter&state=false"
 ```
 
 ### Key Combo (e.g., Cmd+Space for Spotlight)
@@ -112,47 +110,47 @@ Press all keys in order, then release in reverse:
 
 ```bash
 # Press Cmd
-bash -c 'curl -k -s -X POST -u "$PIKVM_AUTH" "${PIKVM_URL}/api/hid/events/send_key?key=MetaLeft&state=true"'
+curl -k -s -X POST -u "$(printenv PIKVM_AUTH)" "$(printenv PIKVM_URL)/api/hid/events/send_key?key=MetaLeft&state=true"
 
 # Press Space
-bash -c 'curl -k -s -X POST -u "$PIKVM_AUTH" "${PIKVM_URL}/api/hid/events/send_key?key=Space&state=true"'
+curl -k -s -X POST -u "$(printenv PIKVM_AUTH)" "$(printenv PIKVM_URL)/api/hid/events/send_key?key=Space&state=true"
 
 # Release Space
-bash -c 'curl -k -s -X POST -u "$PIKVM_AUTH" "${PIKVM_URL}/api/hid/events/send_key?key=Space&state=false"'
+curl -k -s -X POST -u "$(printenv PIKVM_AUTH)" "$(printenv PIKVM_URL)/api/hid/events/send_key?key=Space&state=false"
 
 # Release Cmd
-bash -c 'curl -k -s -X POST -u "$PIKVM_AUTH" "${PIKVM_URL}/api/hid/events/send_key?key=MetaLeft&state=false"'
+curl -k -s -X POST -u "$(printenv PIKVM_AUTH)" "$(printenv PIKVM_URL)/api/hid/events/send_key?key=MetaLeft&state=false"
 ```
 
 ### Mouse Scroll
 
 ```bash
-bash -c 'curl -k -s -X POST \
-  -u "$PIKVM_AUTH" \
-  "${PIKVM_URL}/api/hid/events/send_mouse_wheel?delta_x=0&delta_y=-50"'
+curl -k -s -X POST \
+  -u "$(printenv PIKVM_AUTH)" \
+  "$(printenv PIKVM_URL)/api/hid/events/send_mouse_wheel?delta_x=0&delta_y=-50"
 ```
 
 ### Get Device Info
 
 ```bash
-bash -c 'curl -k -s \
-  -u "$PIKVM_AUTH" \
-  "${PIKVM_URL}/api/info"' | jq .
+curl -k -s \
+  -u "$(printenv PIKVM_AUTH)" \
+  "$(printenv PIKVM_URL)/api/info" | jq .
 ```
 
 ### ATX Power Control
 
 ```bash
 # Power on
-bash -c 'curl -k -s -X POST \
-  -u "$PIKVM_AUTH" \
-  "${PIKVM_URL}/api/atx/power?action=on"'
+curl -k -s -X POST \
+  -u "$(printenv PIKVM_AUTH)" \
+  "$(printenv PIKVM_URL)/api/atx/power?action=on"
 
 # Power off
-bash -c 'curl -k -s -X POST -u "$PIKVM_AUTH" "${PIKVM_URL}/api/atx/power?action=off"'
+curl -k -s -X POST -u "$(printenv PIKVM_AUTH)" "$(printenv PIKVM_URL)/api/atx/power?action=off"
 
 # Hard reset
-bash -c 'curl -k -s -X POST -u "$PIKVM_AUTH" "${PIKVM_URL}/api/atx/power?action=reset_hard"'
+curl -k -s -X POST -u "$(printenv PIKVM_AUTH)" "$(printenv PIKVM_URL)/api/atx/power?action=reset_hard"
 ```
 
 ---
