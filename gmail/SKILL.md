@@ -33,8 +33,6 @@ Go to [vm0.ai](https://vm0.ai) **Settings → Connectors** and connect **Gmail**
 
 ---
 
-> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
-
 > **Placeholders:** Values in `{curly-braces}` like `{message-id}` are placeholders. Replace them with actual values when executing.
 
 ---
@@ -44,7 +42,7 @@ Go to [vm0.ai](https://vm0.ai) **Settings → Connectors** and connect **Gmail**
 ### Get Profile
 
 ```bash
-bash -c 'curl -s "https://gmail.googleapis.com/gmail/v1/users/me/profile" --header "Authorization: Bearer $GMAIL_TOKEN"'
+curl -s "https://gmail.googleapis.com/gmail/v1/users/me/profile" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)"
 ```
 
 ---
@@ -54,7 +52,7 @@ bash -c 'curl -s "https://gmail.googleapis.com/gmail/v1/users/me/profile" --head
 ### List Messages
 
 ```bash
-bash -c 'curl -s "https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=10" --header "Authorization: Bearer $GMAIL_TOKEN"'
+curl -s "https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=10" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)"
 ```
 
 ### List Messages with Query
@@ -62,7 +60,7 @@ bash -c 'curl -s "https://gmail.googleapis.com/gmail/v1/users/me/messages?maxRes
 Search using Gmail query syntax:
 
 ```bash
-bash -c 'curl -s "https://gmail.googleapis.com/gmail/v1/users/me/messages?q=is:unread&maxResults=10" --header "Authorization: Bearer $GMAIL_TOKEN"'
+curl -s "https://gmail.googleapis.com/gmail/v1/users/me/messages?q=is:unread&maxResults=10" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)"
 ```
 
 Common queries:
@@ -76,13 +74,13 @@ Common queries:
 ### Get Message
 
 ```bash
-bash -c 'curl -s "https://gmail.googleapis.com/gmail/v1/users/me/messages/{message-id}" --header "Authorization: Bearer $GMAIL_TOKEN"'
+curl -s "https://gmail.googleapis.com/gmail/v1/users/me/messages/{message-id}" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)"
 ```
 
 ### Get Message (Metadata Only)
 
 ```bash
-bash -c 'curl -s "https://gmail.googleapis.com/gmail/v1/users/me/messages/{message-id}?format=metadata&metadataHeaders=From&metadataHeaders=Subject&metadataHeaders=Date" --header "Authorization: Bearer $GMAIL_TOKEN"'
+curl -s "https://gmail.googleapis.com/gmail/v1/users/me/messages/{message-id}?format=metadata&metadataHeaders=From&metadataHeaders=Subject&metadataHeaders=Date" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)"
 ```
 
 ### Send Email
@@ -106,7 +104,7 @@ Write to `/tmp/gmail_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://gmail.googleapis.com/gmail/v1/users/me/messages/send" --header "Authorization: Bearer $GMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/gmail_request.json'
+curl -s -X POST "https://gmail.googleapis.com/gmail/v1/users/me/messages/send" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)" --header "Content-Type: application/json" -d @/tmp/gmail_request.json
 ```
 
 ### Reply to Thread
@@ -131,7 +129,7 @@ Write to `/tmp/gmail_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://gmail.googleapis.com/gmail/v1/users/me/messages/send" --header "Authorization: Bearer $GMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/gmail_request.json'
+curl -s -X POST "https://gmail.googleapis.com/gmail/v1/users/me/messages/send" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)" --header "Content-Type: application/json" -d @/tmp/gmail_request.json
 ```
 
 ### Modify Message Labels
@@ -148,19 +146,19 @@ Write to `/tmp/gmail_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://gmail.googleapis.com/gmail/v1/users/me/messages/{message-id}/modify" --header "Authorization: Bearer $GMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/gmail_request.json'
+curl -s -X POST "https://gmail.googleapis.com/gmail/v1/users/me/messages/{message-id}/modify" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)" --header "Content-Type: application/json" -d @/tmp/gmail_request.json
 ```
 
 ### Trash Message
 
 ```bash
-bash -c 'curl -s -X POST "https://gmail.googleapis.com/gmail/v1/users/me/messages/{message-id}/trash" --header "Authorization: Bearer $GMAIL_TOKEN"'
+curl -s -X POST "https://gmail.googleapis.com/gmail/v1/users/me/messages/{message-id}/trash" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)"
 ```
 
 ### Delete Message Permanently
 
 ```bash
-bash -c 'curl -s -X DELETE "https://gmail.googleapis.com/gmail/v1/users/me/messages/{message-id}" --header "Authorization: Bearer $GMAIL_TOKEN"'
+curl -s -X DELETE "https://gmail.googleapis.com/gmail/v1/users/me/messages/{message-id}" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)"
 ```
 
 ---
@@ -170,19 +168,19 @@ bash -c 'curl -s -X DELETE "https://gmail.googleapis.com/gmail/v1/users/me/messa
 ### List Threads
 
 ```bash
-bash -c 'curl -s "https://gmail.googleapis.com/gmail/v1/users/me/threads?maxResults=10" --header "Authorization: Bearer $GMAIL_TOKEN"'
+curl -s "https://gmail.googleapis.com/gmail/v1/users/me/threads?maxResults=10" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)"
 ```
 
 ### Get Thread
 
 ```bash
-bash -c 'curl -s "https://gmail.googleapis.com/gmail/v1/users/me/threads/{thread-id}" --header "Authorization: Bearer $GMAIL_TOKEN"'
+curl -s "https://gmail.googleapis.com/gmail/v1/users/me/threads/{thread-id}" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)"
 ```
 
 ### Trash Thread
 
 ```bash
-bash -c 'curl -s -X POST "https://gmail.googleapis.com/gmail/v1/users/me/threads/{thread-id}/trash" --header "Authorization: Bearer $GMAIL_TOKEN"'
+curl -s -X POST "https://gmail.googleapis.com/gmail/v1/users/me/threads/{thread-id}/trash" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)"
 ```
 
 ---
@@ -192,7 +190,7 @@ bash -c 'curl -s -X POST "https://gmail.googleapis.com/gmail/v1/users/me/threads
 ### List Labels
 
 ```bash
-bash -c 'curl -s "https://gmail.googleapis.com/gmail/v1/users/me/labels" --header "Authorization: Bearer $GMAIL_TOKEN"' | jq '.labels[] | {id, name, type}'
+curl -s "https://gmail.googleapis.com/gmail/v1/users/me/labels" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)" | jq '.labels[] | {id, name, type}'
 ```
 
 ### Create Label
@@ -210,13 +208,13 @@ Write to `/tmp/gmail_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://gmail.googleapis.com/gmail/v1/users/me/labels" --header "Authorization: Bearer $GMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/gmail_request.json'
+curl -s -X POST "https://gmail.googleapis.com/gmail/v1/users/me/labels" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)" --header "Content-Type: application/json" -d @/tmp/gmail_request.json
 ```
 
 ### Delete Label
 
 ```bash
-bash -c 'curl -s -X DELETE "https://gmail.googleapis.com/gmail/v1/users/me/labels/{label-id}" --header "Authorization: Bearer $GMAIL_TOKEN"'
+curl -s -X DELETE "https://gmail.googleapis.com/gmail/v1/users/me/labels/{label-id}" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)"
 ```
 
 ---
@@ -226,7 +224,7 @@ bash -c 'curl -s -X DELETE "https://gmail.googleapis.com/gmail/v1/users/me/label
 ### List Drafts
 
 ```bash
-bash -c 'curl -s "https://gmail.googleapis.com/gmail/v1/users/me/drafts" --header "Authorization: Bearer $GMAIL_TOKEN"'
+curl -s "https://gmail.googleapis.com/gmail/v1/users/me/drafts" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)"
 ```
 
 ### Create Draft
@@ -251,7 +249,7 @@ Write to `/tmp/gmail_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://gmail.googleapis.com/gmail/v1/users/me/drafts" --header "Authorization: Bearer $GMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/gmail_request.json'
+curl -s -X POST "https://gmail.googleapis.com/gmail/v1/users/me/drafts" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)" --header "Content-Type: application/json" -d @/tmp/gmail_request.json
 ```
 
 ### Send Draft
@@ -267,13 +265,13 @@ Write to `/tmp/gmail_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://gmail.googleapis.com/gmail/v1/users/me/drafts/send" --header "Authorization: Bearer $GMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/gmail_request.json'
+curl -s -X POST "https://gmail.googleapis.com/gmail/v1/users/me/drafts/send" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)" --header "Content-Type: application/json" -d @/tmp/gmail_request.json
 ```
 
 ### Delete Draft
 
 ```bash
-bash -c 'curl -s -X DELETE "https://gmail.googleapis.com/gmail/v1/users/me/drafts/{draft-id}" --header "Authorization: Bearer $GMAIL_TOKEN"'
+curl -s -X DELETE "https://gmail.googleapis.com/gmail/v1/users/me/drafts/{draft-id}" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)"
 ```
 
 ---
@@ -283,7 +281,7 @@ bash -c 'curl -s -X DELETE "https://gmail.googleapis.com/gmail/v1/users/me/draft
 ### Get Attachment
 
 ```bash
-bash -c 'curl -s "https://gmail.googleapis.com/gmail/v1/users/me/messages/{message-id}/attachments/{attachment-id}" --header "Authorization: Bearer $GMAIL_TOKEN"' | jq -r '.data' | base64 -d > attachment.bin
+curl -s "https://gmail.googleapis.com/gmail/v1/users/me/messages/{message-id}/attachments/{attachment-id}" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)" | jq -r '.data' | base64 -d > attachment.bin
 ```
 
 ---
@@ -293,7 +291,7 @@ bash -c 'curl -s "https://gmail.googleapis.com/gmail/v1/users/me/messages/{messa
 ### Get Vacation Settings
 
 ```bash
-bash -c 'curl -s "https://gmail.googleapis.com/gmail/v1/users/me/settings/vacation" --header "Authorization: Bearer $GMAIL_TOKEN"'
+curl -s "https://gmail.googleapis.com/gmail/v1/users/me/settings/vacation" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)"
 ```
 
 ### Update Vacation Settings
@@ -313,13 +311,13 @@ Write to `/tmp/gmail_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X PUT "https://gmail.googleapis.com/gmail/v1/users/me/settings/vacation" --header "Authorization: Bearer $GMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/gmail_request.json'
+curl -s -X PUT "https://gmail.googleapis.com/gmail/v1/users/me/settings/vacation" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)" --header "Content-Type: application/json" -d @/tmp/gmail_request.json
 ```
 
 ### List Filters
 
 ```bash
-bash -c 'curl -s "https://gmail.googleapis.com/gmail/v1/users/me/settings/filters" --header "Authorization: Bearer $GMAIL_TOKEN"'
+curl -s "https://gmail.googleapis.com/gmail/v1/users/me/settings/filters" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)"
 ```
 
 ### Create Filter
@@ -341,7 +339,7 @@ Write to `/tmp/gmail_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://gmail.googleapis.com/gmail/v1/users/me/settings/filters" --header "Authorization: Bearer $GMAIL_TOKEN" --header "Content-Type: application/json" -d @/tmp/gmail_request.json'
+curl -s -X POST "https://gmail.googleapis.com/gmail/v1/users/me/settings/filters" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)" --header "Content-Type: application/json" -d @/tmp/gmail_request.json
 ```
 
 ---
@@ -367,7 +365,7 @@ Use full URL: `https://www.googleapis.com/auth/gmail.modify`
 Gmail returns message body as base64url encoded. To decode:
 
 ```bash
-bash -c 'curl -s "https://gmail.googleapis.com/gmail/v1/users/me/messages/{message-id}" --header "Authorization: Bearer $GMAIL_TOKEN"' | jq -r '.payload.body.data // .payload.parts[0].body.data' | tr '_-' '/+' | base64 -d
+curl -s "https://gmail.googleapis.com/gmail/v1/users/me/messages/{message-id}" --header "Authorization: Bearer $(printenv GMAIL_TOKEN)" | jq -r '.payload.body.data // .payload.parts[0].body.data' | tr '_-' '/+' | base64 -d
 ```
 
 ---
