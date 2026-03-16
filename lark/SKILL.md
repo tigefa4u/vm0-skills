@@ -83,9 +83,9 @@ TOKEN=$(get_lark_token)
 Or get token directly without caching:
 
 ```bash
-TOKEN=$(bash -c 'curl -s -X POST "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal" \
+TOKEN=$(curl -s -X POST "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal" \
   -H "Content-Type: application/json" \
-  -d "{\"app_id\": \"${LARK_APP_ID}\", \"app_secret\": \"${LARK_APP_SECRET}\"}"' | jq -r '.tenant_access_token')
+  -d "{\"app_id\": \"$(printenv LARK_APP_ID)\", \"app_secret\": \"$(printenv LARK_APP_SECRET)\"}" | jq -r '.tenant_access_token')
 ```
 
 ## Examples
@@ -103,9 +103,9 @@ Write to `/tmp/lark_request.json`:
 ```
 
 ```bash
-bash -c 'curl -X POST "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal" \
+curl -X POST "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal" \
   -H "Content-Type: application/json" \
-  -d @/tmp/lark_request.json'
+  -d @/tmp/lark_request.json
 ```
 
 ### 2. Messaging - Send Messages
