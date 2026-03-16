@@ -41,12 +41,6 @@ export PDFORGE_API_KEY="pdfnoodle_api_your-key-here"
 
 ---
 
-
-> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
-> ```bash
-> bash -c 'curl -s "https://api.example.com" -H "Authorization: Bearer $API_KEY"' | jq '.field'
-> ```
-
 ## How to Use
 
 All examples below assume you have `PDFORGE_API_KEY` set.
@@ -78,7 +72,7 @@ Write to `/tmp/pdforge_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.pdfnoodle.com/v1/pdf/sync" --header "Authorization: Bearer ${PDFORGE_API_KEY}" --header "Content-Type: application/json" -d @/tmp/pdforge_request.json'
+curl -s -X POST "https://api.pdfnoodle.com/v1/pdf/sync" --header "Authorization: Bearer $(printenv PDFORGE_API_KEY)" --header "Content-Type: application/json" -d @/tmp/pdforge_request.json
 ```
 
 **Response:**
@@ -114,7 +108,7 @@ Write to `/tmp/pdforge_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.pdfnoodle.com/v1/pdf/async" --header "Authorization: Bearer ${PDFORGE_API_KEY}" --header "Content-Type: application/json" -d @/tmp/pdforge_request.json'
+curl -s -X POST "https://api.pdfnoodle.com/v1/pdf/async" --header "Authorization: Bearer $(printenv PDFORGE_API_KEY)" --header "Content-Type: application/json" -d @/tmp/pdforge_request.json
 ```
 
 **Response:**
@@ -144,7 +138,7 @@ Write to `/tmp/pdforge_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.pdfnoodle.com/v1/html-to-pdf/sync" --header "Authorization: Bearer ${PDFORGE_API_KEY}" --header "Content-Type: application/json" -d @/tmp/pdforge_request.json'
+curl -s -X POST "https://api.pdfnoodle.com/v1/html-to-pdf/sync" --header "Authorization: Bearer $(printenv PDFORGE_API_KEY)" --header "Content-Type: application/json" -d @/tmp/pdforge_request.json
 ```
 
 ---
@@ -164,7 +158,7 @@ Write to `/tmp/pdforge_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.pdfnoodle.com/v1/html-to-pdf/sync" --header "Authorization: Bearer ${PDFORGE_API_KEY}" --header "Content-Type: application/json" -d @/tmp/pdforge_request.json'
+curl -s -X POST "https://api.pdfnoodle.com/v1/html-to-pdf/sync" --header "Authorization: Bearer $(printenv PDFORGE_API_KEY)" --header "Content-Type: application/json" -d @/tmp/pdforge_request.json
 ```
 
 ---
@@ -185,7 +179,7 @@ Write to `/tmp/pdforge_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.pdfnoodle.com/v1/html-to-pdf/sync" --header "Authorization: Bearer ${PDFORGE_API_KEY}" --header "Content-Type: application/json" -d @/tmp/pdforge_request.json'
+curl -s -X POST "https://api.pdfnoodle.com/v1/html-to-pdf/sync" --header "Authorization: Bearer $(printenv PDFORGE_API_KEY)" --header "Content-Type: application/json" -d @/tmp/pdforge_request.json
 ```
 
 ---
