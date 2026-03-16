@@ -45,12 +45,6 @@ GitLab.com has rate limits of ~2000 requests per minute for authenticated users.
 
 ---
 
-
-> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
-> ```bash
-> bash -c 'curl -s "https://api.example.com" -H "Authorization: Bearer $API_KEY"' | jq .
-> ```
-
 ## How to Use
 
 All examples below assume `GITLAB_HOST` and `GITLAB_TOKEN` are set.
@@ -66,7 +60,7 @@ Base URL: `https://${GITLAB_HOST}/api/v4`
 Verify your authentication:
 
 ```bash
-bash -c 'curl -s "https://${GITLAB_HOST}/api/v4/user" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}"' | jq '{id, username, name, email, state}'
+curl -s "https://$(printenv GITLAB_HOST)/api/v4/user" --header "PRIVATE-TOKEN: $(printenv GITLAB_TOKEN)" | jq '{id, username, name, email, state}'
 ```
 
 ---
@@ -76,7 +70,7 @@ bash -c 'curl -s "https://${GITLAB_HOST}/api/v4/user" --header "PRIVATE-TOKEN: $
 Get projects accessible to you:
 
 ```bash
-bash -c 'curl -s "https://${GITLAB_HOST}/api/v4/projects?membership=true&per_page=20" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}"' | jq '.[] | {id, path_with_namespace, visibility, default_branch}'
+curl -s "https://$(printenv GITLAB_HOST)/api/v4/projects?membership=true&per_page=20" --header "PRIVATE-TOKEN: $(printenv GITLAB_TOKEN)" | jq '.[] | {id, path_with_namespace, visibility, default_branch}'
 ```
 
 Filter options:
@@ -92,7 +86,7 @@ Filter options:
 Get details for a specific project. Replace `<project-id>` with the numeric project ID or URL-encoded path (e.g., `mygroup%2Fmyproject`):
 
 ```bash
-bash -c 'curl -s "https://${GITLAB_HOST}/api/v4/projects/<project-id>" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}"' | jq '{id, name, path_with_namespace, default_branch, visibility, web_url}
+curl -s "https://$(printenv GITLAB_HOST)/api/v4/projects/<project-id>" --header "PRIVATE-TOKEN: $(printenv GITLAB_TOKEN)" | jq '{id, name, path_with_namespace, default_branch, visibility, web_url}
 ```
 
 ---
@@ -102,7 +96,7 @@ bash -c 'curl -s "https://${GITLAB_HOST}/api/v4/projects/<project-id>" --header 
 Get issues for a project. Replace `<project-id>` with the numeric project ID or URL-encoded path:
 
 ```bash
-bash -c 'curl -s "https://${GITLAB_HOST}/api/v4/projects/<project-id>/issues?state=opened&per_page=20" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}"' | jq '.[] | {iid, title, state, author: .author.username, labels, web_url}'
+curl -s "https://$(printenv GITLAB_HOST)/api/v4/projects/<project-id>/issues?state=opened&per_page=20" --header "PRIVATE-TOKEN: $(printenv GITLAB_TOKEN)" | jq '.[] | {iid, title, state, author: .author.username, labels, web_url}'
 ```
 
 Filter options:
@@ -118,7 +112,7 @@ Filter options:
 Get a specific issue. Replace `<project-id>` and `<issue-iid>` with actual values:
 
 ```bash
-bash -c 'curl -s "https://${GITLAB_HOST}/api/v4/projects/<project-id>/issues/<issue-iid>" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}"' | jq '{iid, title, description, state, author: .author.username, assignees: [.assignees[].username], labels, created_at, web_url}'
+curl -s "https://$(printenv GITLAB_HOST)/api/v4/projects/<project-id>/issues/<issue-iid>" --header "PRIVATE-TOKEN: $(printenv GITLAB_TOKEN)" | jq '{iid, title, description, state, author: .author.username, assignees: [.assignees[].username], labels, created_at, web_url}'
 ```
 
 ---
@@ -140,7 +134,7 @@ Write to `/tmp/gitlab_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://${GITLAB_HOST}/api/v4/projects/<project-id>/issues" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" --header "Content-Type: application/json" -d @/tmp/gitlab_request.json' | jq '{iid, title, web_url}'
+curl -s -X POST "https://$(printenv GITLAB_HOST)/api/v4/projects/<project-id>/issues" --header "PRIVATE-TOKEN: $(printenv GITLAB_TOKEN)" --header "Content-Type: application/json" -d @/tmp/gitlab_request.json | jq '{iid, title, web_url}'
 ```
 
 ---
@@ -164,7 +158,7 @@ Write to `/tmp/gitlab_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://${GITLAB_HOST}/api/v4/projects/<project-id>/issues" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" --header "Content-Type: application/json" -d @/tmp/gitlab_request.json' | jq '{iid, title, web_url}'
+curl -s -X POST "https://$(printenv GITLAB_HOST)/api/v4/projects/<project-id>/issues" --header "PRIVATE-TOKEN: $(printenv GITLAB_TOKEN)" --header "Content-Type: application/json" -d @/tmp/gitlab_request.json | jq '{iid, title, web_url}'
 ```
 
 ---
@@ -185,7 +179,7 @@ Write to `/tmp/gitlab_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X PUT "https://${GITLAB_HOST}/api/v4/projects/<project-id>/issues/<issue-iid>" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" --header "Content-Type: application/json" -d @/tmp/gitlab_request.json' | jq '{iid, title, labels, updated_at}'
+curl -s -X PUT "https://$(printenv GITLAB_HOST)/api/v4/projects/<project-id>/issues/<issue-iid>" --header "PRIVATE-TOKEN: $(printenv GITLAB_TOKEN)" --header "Content-Type: application/json" -d @/tmp/gitlab_request.json | jq '{iid, title, labels, updated_at}'
 ```
 
 ---
@@ -205,7 +199,7 @@ Write to `/tmp/gitlab_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X PUT "https://${GITLAB_HOST}/api/v4/projects/<project-id>/issues/<issue-iid>" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" --header "Content-Type: application/json" -d @/tmp/gitlab_request.json' | jq '{iid, title, state}'
+curl -s -X PUT "https://$(printenv GITLAB_HOST)/api/v4/projects/<project-id>/issues/<issue-iid>" --header "PRIVATE-TOKEN: $(printenv GITLAB_TOKEN)" --header "Content-Type: application/json" -d @/tmp/gitlab_request.json | jq '{iid, title, state}'
 ```
 
 Use `"state_event": "reopen"` to reopen a closed issue.
@@ -227,7 +221,7 @@ Write to `/tmp/gitlab_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://${GITLAB_HOST}/api/v4/projects/<project-id>/issues/<issue-iid>/notes" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" --header "Content-Type: application/json" -d @/tmp/gitlab_request.json' | jq '{id, body, author: .author.username, created_at}'
+curl -s -X POST "https://$(printenv GITLAB_HOST)/api/v4/projects/<project-id>/issues/<issue-iid>/notes" --header "PRIVATE-TOKEN: $(printenv GITLAB_TOKEN)" --header "Content-Type: application/json" -d @/tmp/gitlab_request.json | jq '{id, body, author: .author.username, created_at}'
 ```
 
 ---
@@ -237,7 +231,7 @@ bash -c 'curl -s -X POST "https://${GITLAB_HOST}/api/v4/projects/<project-id>/is
 Get merge requests for a project. Replace `<project-id>` with the actual project ID:
 
 ```bash
-bash -c 'curl -s "https://${GITLAB_HOST}/api/v4/projects/<project-id>/merge_requests?state=opened&per_page=20" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}"' | jq '.[] | {iid, title, state, source_branch, target_branch, author: .author.username, web_url}'
+curl -s "https://$(printenv GITLAB_HOST)/api/v4/projects/<project-id>/merge_requests?state=opened&per_page=20" --header "PRIVATE-TOKEN: $(printenv GITLAB_TOKEN)" | jq '.[] | {iid, title, state, source_branch, target_branch, author: .author.username, web_url}'
 ```
 
 Filter options:
@@ -252,7 +246,7 @@ Filter options:
 Get a specific merge request. Replace `<project-id>` and `<mr-iid>` with actual values:
 
 ```bash
-bash -c 'curl -s "https://${GITLAB_HOST}/api/v4/projects/<project-id>/merge_requests/<mr-iid>" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}"' | jq '{iid, title, state, source_branch, target_branch, author: .author.username, merge_status, has_conflicts, web_url}'
+curl -s "https://$(printenv GITLAB_HOST)/api/v4/projects/<project-id>/merge_requests/<mr-iid>" --header "PRIVATE-TOKEN: $(printenv GITLAB_TOKEN)" | jq '{iid, title, state, source_branch, target_branch, author: .author.username, merge_status, has_conflicts, web_url}'
 ```
 
 ---
@@ -275,7 +269,7 @@ Write to `/tmp/gitlab_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://${GITLAB_HOST}/api/v4/projects/<project-id>/merge_requests" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" --header "Content-Type: application/json" -d @/tmp/gitlab_request.json' | jq '{iid, title, web_url}'
+curl -s -X POST "https://$(printenv GITLAB_HOST)/api/v4/projects/<project-id>/merge_requests" --header "PRIVATE-TOKEN: $(printenv GITLAB_TOKEN)" --header "Content-Type: application/json" -d @/tmp/gitlab_request.json | jq '{iid, title, web_url}'
 ```
 
 ---
@@ -295,7 +289,7 @@ Write to `/tmp/gitlab_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X PUT "https://${GITLAB_HOST}/api/v4/projects/<project-id>/merge_requests/<mr-iid>/merge" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" --header "Content-Type: application/json" -d @/tmp/gitlab_request.json' | jq '{iid, title, state, merged_by: .merged_by.username}'
+curl -s -X PUT "https://$(printenv GITLAB_HOST)/api/v4/projects/<project-id>/merge_requests/<mr-iid>/merge" --header "PRIVATE-TOKEN: $(printenv GITLAB_TOKEN)" --header "Content-Type: application/json" -d @/tmp/gitlab_request.json | jq '{iid, title, state, merged_by: .merged_by.username}'
 ```
 
 Options:
@@ -310,7 +304,7 @@ Options:
 Get pipelines for a project. Replace `<project-id>` with the actual project ID:
 
 ```bash
-bash -c 'curl -s "https://${GITLAB_HOST}/api/v4/projects/<project-id>/pipelines?per_page=10" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}"' | jq '.[] | {id, status, ref, sha: .sha[0:8], created_at, web_url}'
+curl -s "https://$(printenv GITLAB_HOST)/api/v4/projects/<project-id>/pipelines?per_page=10" --header "PRIVATE-TOKEN: $(printenv GITLAB_TOKEN)" | jq '.[] | {id, status, ref, sha: .sha[0:8], created_at, web_url}'
 ```
 
 ---
@@ -320,7 +314,7 @@ bash -c 'curl -s "https://${GITLAB_HOST}/api/v4/projects/<project-id>/pipelines?
 Get details of a specific pipeline. Replace `<project-id>` and `<pipeline-id>` with actual values:
 
 ```bash
-bash -c 'curl -s "https://${GITLAB_HOST}/api/v4/projects/<project-id>/pipelines/<pipeline-id>" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}"' | jq '{id, status, ref, duration, finished_at, web_url}'
+curl -s "https://$(printenv GITLAB_HOST)/api/v4/projects/<project-id>/pipelines/<pipeline-id>" --header "PRIVATE-TOKEN: $(printenv GITLAB_TOKEN)" | jq '{id, status, ref, duration, finished_at, web_url}'
 ```
 
 ---
@@ -330,7 +324,7 @@ bash -c 'curl -s "https://${GITLAB_HOST}/api/v4/projects/<project-id>/pipelines/
 Get jobs in a pipeline. Replace `<project-id>` and `<pipeline-id>` with actual values:
 
 ```bash
-bash -c 'curl -s "https://${GITLAB_HOST}/api/v4/projects/<project-id>/pipelines/<pipeline-id>/jobs" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}"' | jq '.[] | {id, name, stage, status, duration}'
+curl -s "https://$(printenv GITLAB_HOST)/api/v4/projects/<project-id>/pipelines/<pipeline-id>/jobs" --header "PRIVATE-TOKEN: $(printenv GITLAB_TOKEN)" | jq '.[] | {id, name, stage, status, duration}'
 ```
 
 ---
@@ -346,7 +340,7 @@ john
 ```
 
 ```bash
-bash -c 'curl -s -G "https://${GITLAB_HOST}/api/v4/users" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" --data-urlencode "search@/tmp/gitlab_search.txt"' | jq '.[] | {id, username, name, state}'
+curl -s -G "https://$(printenv GITLAB_HOST)/api/v4/users" --header "PRIVATE-TOKEN: $(printenv GITLAB_TOKEN)" --data-urlencode "search@/tmp/gitlab_search.txt" | jq '.[] | {id, username, name, state}'
 ```
 
 ---
@@ -368,7 +362,7 @@ Write to `/tmp/gitlab_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://${GITLAB_HOST}/api/v4/projects" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" --header "Content-Type: application/json" -d @/tmp/gitlab_request.json' | jq '{id, path_with_namespace, web_url}'
+curl -s -X POST "https://$(printenv GITLAB_HOST)/api/v4/projects" --header "PRIVATE-TOKEN: $(printenv GITLAB_TOKEN)" --header "Content-Type: application/json" -d @/tmp/gitlab_request.json | jq '{id, path_with_namespace, web_url}'
 ```
 
 ---
@@ -378,7 +372,7 @@ bash -c 'curl -s -X POST "https://${GITLAB_HOST}/api/v4/projects" --header "PRIV
 Delete an issue (requires admin or owner permissions). Replace `<project-id>` and `<issue-iid>` with actual values:
 
 ```bash
-bash -c 'curl -s -X DELETE "https://${GITLAB_HOST}/api/v4/projects/<project-id>/issues/<issue-iid>" --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" -w "\nHTTP Status: %{http_code}"'
+curl -s -X DELETE "https://$(printenv GITLAB_HOST)/api/v4/projects/<project-id>/issues/<issue-iid>" --header "PRIVATE-TOKEN: $(printenv GITLAB_TOKEN)" -w "\nHTTP Status: %{http_code}"
 ```
 
 Returns 204 No Content on success.
