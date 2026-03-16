@@ -41,12 +41,6 @@ export PDFCO_API_KEY="your-email@example.com_your-api-key"
 
 ---
 
-
-> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
-> ```bash
-> bash -c 'curl -s "https://api.example.com" -H "Authorization: Bearer $API_KEY"'
-> ```
-
 ## How to Use
 
 ### 1. PDF to Text
@@ -63,7 +57,7 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-bash -c 'curl --location --request POST "https://api.pdf.co/v1/pdf/convert/to/text" --header "x-api-key: ${PDFCO_API_KEY}" --header "Content-Type: application/json" -d @/tmp/request.json'
+curl --location --request POST "https://api.pdf.co/v1/pdf/convert/to/text" --header "x-api-key: $(printenv PDFCO_API_KEY)" --header "Content-Type: application/json" -d @/tmp/request.json
 ```
 
 **With specific pages (1-indexed):**
@@ -79,7 +73,7 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-bash -c 'curl --location --request POST "https://api.pdf.co/v1/pdf/convert/to/text" --header "x-api-key: ${PDFCO_API_KEY}" --header "Content-Type: application/json" -d @/tmp/request.json'
+curl --location --request POST "https://api.pdf.co/v1/pdf/convert/to/text" --header "x-api-key: $(printenv PDFCO_API_KEY)" --header "Content-Type: application/json" -d @/tmp/request.json
 ```
 
 ### 2. PDF to CSV
@@ -96,7 +90,7 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-bash -c 'curl --location --request POST "https://api.pdf.co/v1/pdf/convert/to/csv" --header "x-api-key: ${PDFCO_API_KEY}" --header "Content-Type: application/json" -d @/tmp/request.json'
+curl --location --request POST "https://api.pdf.co/v1/pdf/convert/to/csv" --header "x-api-key: $(printenv PDFCO_API_KEY)" --header "Content-Type: application/json" -d @/tmp/request.json
 ```
 
 ### 3. Merge PDFs
@@ -113,7 +107,7 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-bash -c 'curl --location --request POST "https://api.pdf.co/v1/pdf/merge" --header "x-api-key: ${PDFCO_API_KEY}" --header "Content-Type: application/json" -d @/tmp/request.json'
+curl --location --request POST "https://api.pdf.co/v1/pdf/merge" --header "x-api-key: $(printenv PDFCO_API_KEY)" --header "Content-Type: application/json" -d @/tmp/request.json
 ```
 
 ### 4. Split PDF
@@ -130,7 +124,7 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-bash -c 'curl --location --request POST "https://api.pdf.co/v1/pdf/split" --header "x-api-key: ${PDFCO_API_KEY}" --header "Content-Type: application/json" -d @/tmp/request.json'
+curl --location --request POST "https://api.pdf.co/v1/pdf/split" --header "x-api-key: $(printenv PDFCO_API_KEY)" --header "Content-Type: application/json" -d @/tmp/request.json
 ```
 
 ### 5. Compress PDF
@@ -147,7 +141,7 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-bash -c 'curl --location --request POST "https://api.pdf.co/v1/pdf/optimize" --header "x-api-key: ${PDFCO_API_KEY}" --header "Content-Type: application/json" -d @/tmp/request.json'
+curl --location --request POST "https://api.pdf.co/v1/pdf/optimize" --header "x-api-key: $(printenv PDFCO_API_KEY)" --header "Content-Type: application/json" -d @/tmp/request.json
 ```
 
 ### 6. HTML to PDF
@@ -164,7 +158,7 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-bash -c 'curl --location --request POST "https://api.pdf.co/v1/pdf/convert/from/html" --header "x-api-key: ${PDFCO_API_KEY}" --header "Content-Type: application/json" -d @/tmp/request.json'
+curl --location --request POST "https://api.pdf.co/v1/pdf/convert/from/html" --header "x-api-key: $(printenv PDFCO_API_KEY)" --header "Content-Type: application/json" -d @/tmp/request.json
 ```
 
 **From URL:**
@@ -179,7 +173,7 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-bash -c 'curl --location --request POST "https://api.pdf.co/v1/pdf/convert/from/url" --header "x-api-key: ${PDFCO_API_KEY}" --header "Content-Type: application/json" -d @/tmp/request.json'
+curl --location --request POST "https://api.pdf.co/v1/pdf/convert/from/url" --header "x-api-key: $(printenv PDFCO_API_KEY)" --header "Content-Type: application/json" -d @/tmp/request.json
 ```
 
 ### 7. AI Invoice Parser
@@ -196,7 +190,7 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-bash -c 'curl --location --request POST "https://api.pdf.co/v1/ai-invoice-parser" --header "x-api-key: ${PDFCO_API_KEY}" --header "Content-Type: application/json" -d @/tmp/request.json'
+curl --location --request POST "https://api.pdf.co/v1/ai-invoice-parser" --header "x-api-key: $(printenv PDFCO_API_KEY)" --header "Content-Type: application/json" -d @/tmp/request.json
 ```
 
 ### 8. Upload Local File
@@ -206,7 +200,7 @@ Upload a local file first, then use the returned URL:
 **Step 1: Get presigned upload URL**
 
 ```bash
-bash -c 'curl -s "https://api.pdf.co/v1/file/upload/get-presigned-url?name=myfile.pdf&contenttype=application/pdf" --header "x-api-key: ${PDFCO_API_KEY}"' | jq -r '.presignedUrl, .url'
+curl -s "https://api.pdf.co/v1/file/upload/get-presigned-url?name=myfile.pdf&contenttype=application/pdf" --header "x-api-key: $(printenv PDFCO_API_KEY)" | jq -r '.presignedUrl, .url'
 ```
 
 Copy the presigned URL and file URL from the response.
@@ -233,7 +227,7 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-bash -c 'curl --location --request POST "https://api.pdf.co/v1/pdf/convert/to/text" --header "x-api-key: ${PDFCO_API_KEY}" --header "Content-Type: application/json" -d @/tmp/request.json'
+curl --location --request POST "https://api.pdf.co/v1/pdf/convert/to/text" --header "x-api-key: $(printenv PDFCO_API_KEY)" --header "Content-Type: application/json" -d @/tmp/request.json
 ```
 
 ### 9. Async Mode (Large Files)
@@ -252,7 +246,7 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-bash -c 'curl -s --location --request POST "https://api.pdf.co/v1/pdf/convert/to/text" --header "x-api-key: ${PDFCO_API_KEY}" --header "Content-Type: application/json" -d @/tmp/request.json' | jq -r '.jobId'
+curl -s --location --request POST "https://api.pdf.co/v1/pdf/convert/to/text" --header "x-api-key: $(printenv PDFCO_API_KEY)" --header "Content-Type: application/json" -d @/tmp/request.json | jq -r '.jobId'
 ```
 
 Copy the job ID from the response.
@@ -270,7 +264,7 @@ Write to `/tmp/request.json`:
 ```
 
 ```bash
-bash -c 'curl --location --request POST "https://api.pdf.co/v1/job/check" --header "x-api-key: ${PDFCO_API_KEY}" --header "Content-Type: application/json" -d @/tmp/request.json'
+curl --location --request POST "https://api.pdf.co/v1/job/check" --header "x-api-key: $(printenv PDFCO_API_KEY)" --header "Content-Type: application/json" -d @/tmp/request.json
 ```
 
 ---
