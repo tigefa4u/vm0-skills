@@ -46,8 +46,6 @@ export JAM_TOKEN="jam_pat_your-token-here"
 
 ---
 
-> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
-
 ## How to Use
 
 Jam exposes its API through an MCP (Model Context Protocol) server at `https://mcp.jam.dev/mcp`. All interactions use JSON-RPC 2.0 over HTTP with Bearer token authentication. You need to initialize the MCP session first, then call tools.
@@ -63,7 +61,7 @@ Jam exposes its API through an MCP (Model Context Protocol) server at `https://m
 Start an MCP session to get a session URL for subsequent requests.
 
 ```bash
-bash -c 'curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $JAM_TOKEN" -d '"'"'{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"vm0","version":"1.0.0"}}}'"'"'' -D /tmp/jam_headers.txt' | jq .
+curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv JAM_TOKEN)" -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"vm0","version":"1.0.0"}}}' -D /tmp/jam_headers.txt | jq .
 ```
 
 After initialization, check the response headers for the `Mcp-Session-Id` or use the session URL from the response. Save the session URL for subsequent calls:
@@ -94,7 +92,7 @@ Write to `/tmp/jam_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $JAM_TOKEN" -d @/tmp/jam_request.json' | jq '.result.tools[] | {name, description}'
+curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv JAM_TOKEN)" -d @/tmp/jam_request.json | jq '.result.tools[] | {name, description}'
 ```
 
 ---
@@ -120,7 +118,7 @@ Write to `/tmp/jam_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $JAM_TOKEN" -d @/tmp/jam_request.json' | jq .
+curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv JAM_TOKEN)" -d @/tmp/jam_request.json | jq .
 ```
 
 Filter by text, type, folder, author, URL, or date:
@@ -145,7 +143,7 @@ Write to `/tmp/jam_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $JAM_TOKEN" -d @/tmp/jam_request.json' | jq .
+curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv JAM_TOKEN)" -d @/tmp/jam_request.json | jq .
 ```
 
 ---
@@ -173,7 +171,7 @@ Write to `/tmp/jam_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $JAM_TOKEN" -d @/tmp/jam_request.json' | jq .
+curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv JAM_TOKEN)" -d @/tmp/jam_request.json | jq .
 ```
 
 ---
@@ -203,7 +201,7 @@ Write to `/tmp/jam_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $JAM_TOKEN" -d @/tmp/jam_request.json' | jq .
+curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv JAM_TOKEN)" -d @/tmp/jam_request.json | jq .
 ```
 
 Available `logLevel` values: `error`, `warn`, `info`, `log`, `debug`.
@@ -235,7 +233,7 @@ Write to `/tmp/jam_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $JAM_TOKEN" -d @/tmp/jam_request.json' | jq .
+curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv JAM_TOKEN)" -d @/tmp/jam_request.json | jq .
 ```
 
 Filter parameters: `statusCode` (HTTP status code), `contentType` (e.g., `application/json`), `host` (e.g., `api.example.com`), `limit` (max results).
@@ -265,7 +263,7 @@ Write to `/tmp/jam_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $JAM_TOKEN" -d @/tmp/jam_request.json' | jq .
+curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv JAM_TOKEN)" -d @/tmp/jam_request.json | jq .
 ```
 
 ---
@@ -293,7 +291,7 @@ Write to `/tmp/jam_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $JAM_TOKEN" -d @/tmp/jam_request.json' | jq .
+curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv JAM_TOKEN)" -d @/tmp/jam_request.json | jq .
 ```
 
 ---
@@ -321,7 +319,7 @@ Write to `/tmp/jam_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $JAM_TOKEN" -d @/tmp/jam_request.json' | jq .
+curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv JAM_TOKEN)" -d @/tmp/jam_request.json | jq .
 ```
 
 ---
@@ -349,7 +347,7 @@ Write to `/tmp/jam_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $JAM_TOKEN" -d @/tmp/jam_request.json' | jq .
+curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv JAM_TOKEN)" -d @/tmp/jam_request.json | jq .
 ```
 
 ---
@@ -377,7 +375,7 @@ Write to `/tmp/jam_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $JAM_TOKEN" -d @/tmp/jam_request.json' | jq .
+curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv JAM_TOKEN)" -d @/tmp/jam_request.json | jq .
 ```
 
 ---
@@ -403,7 +401,7 @@ Write to `/tmp/jam_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $JAM_TOKEN" -d @/tmp/jam_request.json' | jq .
+curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv JAM_TOKEN)" -d @/tmp/jam_request.json | jq .
 ```
 
 ---
@@ -429,7 +427,7 @@ Write to `/tmp/jam_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $JAM_TOKEN" -d @/tmp/jam_request.json' | jq .
+curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv JAM_TOKEN)" -d @/tmp/jam_request.json | jq .
 ```
 
 ---
@@ -458,7 +456,7 @@ Write to `/tmp/jam_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $JAM_TOKEN" -d @/tmp/jam_request.json' | jq .
+curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv JAM_TOKEN)" -d @/tmp/jam_request.json | jq .
 ```
 
 ---
@@ -487,7 +485,7 @@ Write to `/tmp/jam_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $JAM_TOKEN" -d @/tmp/jam_request.json' | jq .
+curl -s -X POST "https://mcp.jam.dev/mcp" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv JAM_TOKEN)" -d @/tmp/jam_request.json | jq .
 ```
 
 ---
