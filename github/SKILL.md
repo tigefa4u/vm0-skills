@@ -135,12 +135,7 @@ gh pr view <number> --repo <owner>/<repo> --json title,state,reviews,checks
 
 This Skill requires the GitHub CLI (`gh`) to be installed. Token is automatically provided by vm0 — connect GitHub in [vm0.ai](https://vm0.ai) **Settings → Connectors**.
 
-**Important:** When using environment variables in commands with pipes, wrap the command in `bash -c '...'` to avoid variable substitution issues:
-```bash
-bash -c 'gh pr view <number> --repo $OWNER/$REPO --json title,state' | jq '.title'
-```
-
-Without environment variables, the pipe is fine:
+When piping output to other commands like `jq`, use `$(printenv VAR)` for environment variables:
 ```bash
 gh pr view <number> --repo <owner>/<repo> --json title,state | jq '.title'
 ```
