@@ -39,8 +39,6 @@ export LINE_TOKEN="your-channel-access-token"
 
 ---
 
-> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
-
 ## How to Use
 
 All examples below assume you have `LINE_TOKEN` set. Authentication uses Bearer token in the Authorization header.
@@ -56,7 +54,7 @@ All examples below assume you have `LINE_TOKEN` set. Authentication uses Bearer 
 Retrieve information about the bot associated with the channel access token.
 
 ```bash
-bash -c 'curl -s "https://api.line.me/v2/bot/info" --header "Authorization: Bearer $LINE_TOKEN"' | jq .
+curl -s "https://api.line.me/v2/bot/info" --header "Authorization: Bearer $(printenv LINE_TOKEN)" | jq .
 ```
 
 ---
@@ -66,7 +64,7 @@ bash -c 'curl -s "https://api.line.me/v2/bot/info" --header "Authorization: Bear
 Retrieve a user's display name, profile image, and status message. Replace `USER_ID` with the actual user ID.
 
 ```bash
-bash -c 'curl -s "https://api.line.me/v2/bot/profile/USER_ID" --header "Authorization: Bearer $LINE_TOKEN"' | jq .
+curl -s "https://api.line.me/v2/bot/profile/USER_ID" --header "Authorization: Bearer $(printenv LINE_TOKEN)" | jq .
 ```
 
 ---
@@ -76,13 +74,13 @@ bash -c 'curl -s "https://api.line.me/v2/bot/profile/USER_ID" --header "Authoriz
 Retrieve a list of user IDs that have added the bot as a friend. Supports pagination with `start` parameter.
 
 ```bash
-bash -c 'curl -s "https://api.line.me/v2/bot/followers/ids?limit=100" --header "Authorization: Bearer $LINE_TOKEN"' | jq .
+curl -s "https://api.line.me/v2/bot/followers/ids?limit=100" --header "Authorization: Bearer $(printenv LINE_TOKEN)" | jq .
 ```
 
 For pagination, use the `next` token from the response:
 
 ```bash
-bash -c 'curl -s "https://api.line.me/v2/bot/followers/ids?limit=100&start=CONTINUATION_TOKEN" --header "Authorization: Bearer $LINE_TOKEN"' | jq .
+curl -s "https://api.line.me/v2/bot/followers/ids?limit=100&start=CONTINUATION_TOKEN" --header "Authorization: Bearer $(printenv LINE_TOKEN)" | jq .
 ```
 
 ---
@@ -108,7 +106,7 @@ Write to `/tmp/line_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.line.me/v2/bot/message/push" --header "Content-Type: application/json" --header "Authorization: Bearer $LINE_TOKEN" -d @/tmp/line_request.json' | jq .
+curl -s -X POST "https://api.line.me/v2/bot/message/push" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv LINE_TOKEN)" -d @/tmp/line_request.json | jq .
 ```
 
 ---
@@ -134,7 +132,7 @@ Write to `/tmp/line_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.line.me/v2/bot/message/reply" --header "Content-Type: application/json" --header "Authorization: Bearer $LINE_TOKEN" -d @/tmp/line_request.json' | jq .
+curl -s -X POST "https://api.line.me/v2/bot/message/reply" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv LINE_TOKEN)" -d @/tmp/line_request.json | jq .
 ```
 
 ---
@@ -160,7 +158,7 @@ Write to `/tmp/line_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.line.me/v2/bot/message/multicast" --header "Content-Type: application/json" --header "Authorization: Bearer $LINE_TOKEN" -d @/tmp/line_request.json' | jq .
+curl -s -X POST "https://api.line.me/v2/bot/message/multicast" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv LINE_TOKEN)" -d @/tmp/line_request.json | jq .
 ```
 
 ---
@@ -185,7 +183,7 @@ Write to `/tmp/line_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.line.me/v2/bot/message/broadcast" --header "Content-Type: application/json" --header "Authorization: Bearer $LINE_TOKEN" -d @/tmp/line_request.json' | jq .
+curl -s -X POST "https://api.line.me/v2/bot/message/broadcast" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv LINE_TOKEN)" -d @/tmp/line_request.json | jq .
 ```
 
 ---
@@ -195,13 +193,13 @@ bash -c 'curl -s -X POST "https://api.line.me/v2/bot/message/broadcast" --header
 Get the monthly message quota for the LINE Official Account.
 
 ```bash
-bash -c 'curl -s "https://api.line.me/v2/bot/message/quota" --header "Authorization: Bearer $LINE_TOKEN"' | jq .
+curl -s "https://api.line.me/v2/bot/message/quota" --header "Authorization: Bearer $(printenv LINE_TOKEN)" | jq .
 ```
 
 Check how many messages have been sent this month:
 
 ```bash
-bash -c 'curl -s "https://api.line.me/v2/bot/message/quota/consumption" --header "Authorization: Bearer $LINE_TOKEN"' | jq .
+curl -s "https://api.line.me/v2/bot/message/quota/consumption" --header "Authorization: Bearer $(printenv LINE_TOKEN)" | jq .
 ```
 
 ---
@@ -228,7 +226,7 @@ Write to `/tmp/line_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.line.me/v2/bot/message/push" --header "Content-Type: application/json" --header "Authorization: Bearer $LINE_TOKEN" -d @/tmp/line_request.json' | jq .
+curl -s -X POST "https://api.line.me/v2/bot/message/push" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv LINE_TOKEN)" -d @/tmp/line_request.json | jq .
 ```
 
 ---
@@ -271,7 +269,7 @@ Write to `/tmp/line_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.line.me/v2/bot/message/push" --header "Content-Type: application/json" --header "Authorization: Bearer $LINE_TOKEN" -d @/tmp/line_request.json' | jq .
+curl -s -X POST "https://api.line.me/v2/bot/message/push" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv LINE_TOKEN)" -d @/tmp/line_request.json | jq .
 ```
 
 ---
@@ -281,7 +279,7 @@ bash -c 'curl -s -X POST "https://api.line.me/v2/bot/message/push" --header "Con
 Retrieve the current webhook URL configuration.
 
 ```bash
-bash -c 'curl -s "https://api.line.me/v2/bot/channel/webhook/endpoint" --header "Authorization: Bearer $LINE_TOKEN"' | jq .
+curl -s "https://api.line.me/v2/bot/channel/webhook/endpoint" --header "Authorization: Bearer $(printenv LINE_TOKEN)" | jq .
 ```
 
 ---
@@ -291,7 +289,7 @@ bash -c 'curl -s "https://api.line.me/v2/bot/channel/webhook/endpoint" --header 
 Configure the webhook URL where LINE sends events.
 
 ```bash
-bash -c 'curl -s -X PUT "https://api.line.me/v2/bot/channel/webhook/endpoint" --header "Content-Type: application/json" --header "Authorization: Bearer $LINE_TOKEN" -d '"'"'{"endpoint":"https://example.com/webhook"}'"'"'' | jq .
+curl -s -X PUT "https://api.line.me/v2/bot/channel/webhook/endpoint" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv LINE_TOKEN)" -d '{"endpoint":"https://example.com/webhook"}' | jq .
 ```
 
 ---
@@ -301,7 +299,7 @@ bash -c 'curl -s -X PUT "https://api.line.me/v2/bot/channel/webhook/endpoint" --
 Test the webhook endpoint connectivity.
 
 ```bash
-bash -c 'curl -s -X POST "https://api.line.me/v2/bot/channel/webhook/test" --header "Content-Type: application/json" --header "Authorization: Bearer $LINE_TOKEN" -d '"'"'{"endpoint":"https://example.com/webhook"}'"'"'' | jq .
+curl -s -X POST "https://api.line.me/v2/bot/channel/webhook/test" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv LINE_TOKEN)" -d '{"endpoint":"https://example.com/webhook"}' | jq .
 ```
 
 ---
@@ -311,7 +309,7 @@ bash -c 'curl -s -X POST "https://api.line.me/v2/bot/channel/webhook/test" --hea
 Get all rich menus created for the bot.
 
 ```bash
-bash -c 'curl -s "https://api.line.me/v2/bot/richmenu/list" --header "Authorization: Bearer $LINE_TOKEN"' | jq '.richmenus[] | {richMenuId, name, size}'
+curl -s "https://api.line.me/v2/bot/richmenu/list" --header "Authorization: Bearer $(printenv LINE_TOKEN)" | jq '.richmenus[] | {richMenuId, name, size}'
 ```
 
 ---
@@ -363,7 +361,7 @@ Write to `/tmp/line_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.line.me/v2/bot/richmenu" --header "Content-Type: application/json" --header "Authorization: Bearer $LINE_TOKEN" -d @/tmp/line_request.json' | jq .
+curl -s -X POST "https://api.line.me/v2/bot/richmenu" --header "Content-Type: application/json" --header "Authorization: Bearer $(printenv LINE_TOKEN)" -d @/tmp/line_request.json | jq .
 ```
 
 ---
@@ -373,7 +371,7 @@ bash -c 'curl -s -X POST "https://api.line.me/v2/bot/richmenu" --header "Content
 Delete a rich menu by ID.
 
 ```bash
-bash -c 'curl -s -X DELETE "https://api.line.me/v2/bot/richmenu/RICH_MENU_ID" --header "Authorization: Bearer $LINE_TOKEN"' | jq .
+curl -s -X DELETE "https://api.line.me/v2/bot/richmenu/RICH_MENU_ID" --header "Authorization: Bearer $(printenv LINE_TOKEN)" | jq .
 ```
 
 ---
@@ -383,7 +381,7 @@ bash -c 'curl -s -X DELETE "https://api.line.me/v2/bot/richmenu/RICH_MENU_ID" --
 Get the number of messages delivered on a specific date (format: `yyyyMMdd`).
 
 ```bash
-bash -c 'curl -s "https://api.line.me/v2/bot/insight/message/delivery?date=20260301" --header "Authorization: Bearer $LINE_TOKEN"' | jq .
+curl -s "https://api.line.me/v2/bot/insight/message/delivery?date=20260301" --header "Authorization: Bearer $(printenv LINE_TOKEN)" | jq .
 ```
 
 ---
@@ -393,7 +391,7 @@ bash -c 'curl -s "https://api.line.me/v2/bot/insight/message/delivery?date=20260
 Retrieve demographic data about followers (gender, age, area distribution).
 
 ```bash
-bash -c 'curl -s "https://api.line.me/v2/bot/insight/demographic" --header "Authorization: Bearer $LINE_TOKEN"' | jq .
+curl -s "https://api.line.me/v2/bot/insight/demographic" --header "Authorization: Bearer $(printenv LINE_TOKEN)" | jq .
 ```
 
 ---
@@ -403,7 +401,7 @@ bash -c 'curl -s "https://api.line.me/v2/bot/insight/demographic" --header "Auth
 Retrieve information about a group chat the bot is a member of.
 
 ```bash
-bash -c 'curl -s "https://api.line.me/v2/bot/group/GROUP_ID/summary" --header "Authorization: Bearer $LINE_TOKEN"' | jq .
+curl -s "https://api.line.me/v2/bot/group/GROUP_ID/summary" --header "Authorization: Bearer $(printenv LINE_TOKEN)" | jq .
 ```
 
 ---
@@ -413,7 +411,7 @@ bash -c 'curl -s "https://api.line.me/v2/bot/group/GROUP_ID/summary" --header "A
 Retrieve the profile of a specific member in a group chat.
 
 ```bash
-bash -c 'curl -s "https://api.line.me/v2/bot/group/GROUP_ID/member/USER_ID" --header "Authorization: Bearer $LINE_TOKEN"' | jq .
+curl -s "https://api.line.me/v2/bot/group/GROUP_ID/member/USER_ID" --header "Authorization: Bearer $(printenv LINE_TOKEN)" | jq .
 ```
 
 ---
