@@ -73,12 +73,6 @@ mc alias set myminio https://${MINIO_ENDPOINT} ${MINIO_ACCESS_KEY} ${MINIO_SECRE
 
 ---
 
-
-> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
-> ```bash
-> bash -c 'curl -s "https://api.example.com" -H "Authorization: Bearer $API_KEY"' | jq .
-> ```
-
 ## How to Use
 
 ### 1. List Buckets
@@ -200,7 +194,7 @@ For environments without `mc`, use pre-signed URLs with curl:
 
 ```bash
 # First, generate upload URL with mc
-UPLOAD_URL=$(bash -c 'mc share upload --json myminio/my-bucket/file.txt' | jq -r '.share')
+UPLOAD_URL=$(mc share upload --json myminio/my-bucket/file.txt | jq -r '.share')
 
 # Then upload with curl
 curl -X PUT --upload-file /path/to/file.txt "$UPLOAD_URL"
@@ -210,7 +204,7 @@ curl -X PUT --upload-file /path/to/file.txt "$UPLOAD_URL"
 
 ```bash
 # Generate download URL
-DOWNLOAD_URL=$(bash -c 'mc share download --json myminio/my-bucket/file.txt' | jq -r '.share')
+DOWNLOAD_URL=$(mc share download --json myminio/my-bucket/file.txt | jq -r '.share')
 
 # Download with curl
 curl -o /local/path/file.txt "$DOWNLOAD_URL"
