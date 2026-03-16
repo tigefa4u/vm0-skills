@@ -24,14 +24,12 @@ Manage tasks, projects, sections, labels, and comments with the Todoist REST API
 
 Go to [vm0.ai](https://vm0.ai) **Settings > Connectors** and connect **Todoist**. vm0 will automatically inject the required `TODOIST_TOKEN` environment variable.
 
-> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
-
 ## Core APIs
 
 ### Get All Projects
 
 ```bash
-bash -c 'curl -s "https://api.todoist.com/rest/v2/projects" --header "Authorization: Bearer $TODOIST_TOKEN"' | jq '.[] | {id, name, color, is_favorite}'
+curl -s "https://api.todoist.com/rest/v2/projects" --header "Authorization: Bearer $(printenv TODOIST_TOKEN)" | jq '.[] | {id, name, color, is_favorite}'
 ```
 
 Docs: https://developer.todoist.com/rest/v2/#get-all-projects
@@ -43,7 +41,7 @@ Docs: https://developer.todoist.com/rest/v2/#get-all-projects
 Replace `<project-id>` with the actual project ID:
 
 ```bash
-bash -c 'curl -s "https://api.todoist.com/rest/v2/projects/<project-id>" --header "Authorization: Bearer $TODOIST_TOKEN"' | jq '{id, name, comment_count, color, is_shared, is_favorite, url}'
+curl -s "https://api.todoist.com/rest/v2/projects/<project-id>" --header "Authorization: Bearer $(printenv TODOIST_TOKEN)" | jq '{id, name, comment_count, color, is_shared, is_favorite, url}'
 ```
 
 ---
@@ -59,7 +57,7 @@ Write to `/tmp/todoist_request.json`:
 ```
 
 ```bash
-bash -c 'curl -s -X POST "https://api.todoist.com/rest/v2/projects" --header "Authorization: Bearer $TODOIST_TOKEN" --header "Content-Type: application/json" -d @/tmp/todoist_request.json' | jq '{id, name, url}'
+curl -s -X POST "https://api.todoist.com/rest/v2/projects" --header "Authorization: Bearer $(printenv TODOIST_TOKEN)" --header "Content-Type: application/json" -d @/tmp/todoist_request.json | jq '{id, name, url}'
 ```
 
 Docs: https://developer.todoist.com/rest/v2/#create-a-new-project
@@ -80,7 +78,7 @@ Write to `/tmp/todoist_request.json`:
 ```
 
 ```bash
-bash -c 'curl -s -X POST "https://api.todoist.com/rest/v2/projects/<project-id>" --header "Authorization: Bearer $TODOIST_TOKEN" --header "Content-Type: application/json" -d @/tmp/todoist_request.json' | jq '{id, name, color}'
+curl -s -X POST "https://api.todoist.com/rest/v2/projects/<project-id>" --header "Authorization: Bearer $(printenv TODOIST_TOKEN)" --header "Content-Type: application/json" -d @/tmp/todoist_request.json | jq '{id, name, color}'
 ```
 
 ---
@@ -90,7 +88,7 @@ bash -c 'curl -s -X POST "https://api.todoist.com/rest/v2/projects/<project-id>"
 Replace `<project-id>` with the actual project ID:
 
 ```bash
-bash -c 'curl -s -X DELETE "https://api.todoist.com/rest/v2/projects/<project-id>" --header "Authorization: Bearer $TODOIST_TOKEN" -w "\nHTTP Status: %{http_code}\n"'
+curl -s -X DELETE "https://api.todoist.com/rest/v2/projects/<project-id>" --header "Authorization: Bearer $(printenv TODOIST_TOKEN)" -w "\nHTTP Status: %{http_code}\n"
 ```
 
 A `204` response means success.
@@ -100,7 +98,7 @@ A `204` response means success.
 ### Get Active Tasks
 
 ```bash
-bash -c 'curl -s "https://api.todoist.com/rest/v2/tasks" --header "Authorization: Bearer $TODOIST_TOKEN"' | jq '.[] | {id, content, description, project_id, priority, due: .due.date, labels}'
+curl -s "https://api.todoist.com/rest/v2/tasks" --header "Authorization: Bearer $(printenv TODOIST_TOKEN)" | jq '.[] | {id, content, description, project_id, priority, due: .due.date, labels}'
 ```
 
 Docs: https://developer.todoist.com/rest/v2/#get-active-tasks
@@ -110,7 +108,7 @@ Docs: https://developer.todoist.com/rest/v2/#get-active-tasks
 Replace `<project-id>` with the actual project ID:
 
 ```bash
-bash -c 'curl -s "https://api.todoist.com/rest/v2/tasks?project_id=<project-id>" --header "Authorization: Bearer $TODOIST_TOKEN"' | jq '.[] | {id, content, priority, due: .due.date}'
+curl -s "https://api.todoist.com/rest/v2/tasks?project_id=<project-id>" --header "Authorization: Bearer $(printenv TODOIST_TOKEN)" | jq '.[] | {id, content, priority, due: .due.date}'
 ```
 
 ---
@@ -120,7 +118,7 @@ bash -c 'curl -s "https://api.todoist.com/rest/v2/tasks?project_id=<project-id>"
 Replace `<task-id>` with the actual task ID:
 
 ```bash
-bash -c 'curl -s "https://api.todoist.com/rest/v2/tasks/<task-id>" --header "Authorization: Bearer $TODOIST_TOKEN"' | jq '{id, content, description, project_id, section_id, priority, due, labels, url}'
+curl -s "https://api.todoist.com/rest/v2/tasks/<task-id>" --header "Authorization: Bearer $(printenv TODOIST_TOKEN)" | jq '{id, content, description, project_id, section_id, priority, due, labels, url}'
 ```
 
 ---
@@ -141,7 +139,7 @@ Write to `/tmp/todoist_request.json`:
 ```
 
 ```bash
-bash -c 'curl -s -X POST "https://api.todoist.com/rest/v2/tasks" --header "Authorization: Bearer $TODOIST_TOKEN" --header "Content-Type: application/json" -d @/tmp/todoist_request.json' | jq '{id, content, due: .due.date, url}'
+curl -s -X POST "https://api.todoist.com/rest/v2/tasks" --header "Authorization: Bearer $(printenv TODOIST_TOKEN)" --header "Content-Type: application/json" -d @/tmp/todoist_request.json | jq '{id, content, due: .due.date, url}'
 ```
 
 Docs: https://developer.todoist.com/rest/v2/#create-a-new-task
@@ -162,7 +160,7 @@ Write to `/tmp/todoist_request.json`:
 ```
 
 ```bash
-bash -c 'curl -s -X POST "https://api.todoist.com/rest/v2/tasks/<task-id>" --header "Authorization: Bearer $TODOIST_TOKEN" --header "Content-Type: application/json" -d @/tmp/todoist_request.json' | jq '{id, content, priority}'
+curl -s -X POST "https://api.todoist.com/rest/v2/tasks/<task-id>" --header "Authorization: Bearer $(printenv TODOIST_TOKEN)" --header "Content-Type: application/json" -d @/tmp/todoist_request.json | jq '{id, content, priority}'
 ```
 
 ---
@@ -172,7 +170,7 @@ bash -c 'curl -s -X POST "https://api.todoist.com/rest/v2/tasks/<task-id>" --hea
 Replace `<task-id>` with the actual task ID:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.todoist.com/rest/v2/tasks/<task-id>/close" --header "Authorization: Bearer $TODOIST_TOKEN" -w "\nHTTP Status: %{http_code}\n"'
+curl -s -X POST "https://api.todoist.com/rest/v2/tasks/<task-id>/close" --header "Authorization: Bearer $(printenv TODOIST_TOKEN)" -w "\nHTTP Status: %{http_code}\n"
 ```
 
 A `204` response means success.
@@ -186,7 +184,7 @@ Docs: https://developer.todoist.com/rest/v2/#close-a-task
 Replace `<task-id>` with the actual task ID:
 
 ```bash
-bash -c 'curl -s -X POST "https://api.todoist.com/rest/v2/tasks/<task-id>/reopen" --header "Authorization: Bearer $TODOIST_TOKEN" -w "\nHTTP Status: %{http_code}\n"'
+curl -s -X POST "https://api.todoist.com/rest/v2/tasks/<task-id>/reopen" --header "Authorization: Bearer $(printenv TODOIST_TOKEN)" -w "\nHTTP Status: %{http_code}\n"
 ```
 
 ---
@@ -196,7 +194,7 @@ bash -c 'curl -s -X POST "https://api.todoist.com/rest/v2/tasks/<task-id>/reopen
 Replace `<task-id>` with the actual task ID:
 
 ```bash
-bash -c 'curl -s -X DELETE "https://api.todoist.com/rest/v2/tasks/<task-id>" --header "Authorization: Bearer $TODOIST_TOKEN" -w "\nHTTP Status: %{http_code}\n"'
+curl -s -X DELETE "https://api.todoist.com/rest/v2/tasks/<task-id>" --header "Authorization: Bearer $(printenv TODOIST_TOKEN)" -w "\nHTTP Status: %{http_code}\n"
 ```
 
 ---
@@ -204,7 +202,7 @@ bash -c 'curl -s -X DELETE "https://api.todoist.com/rest/v2/tasks/<task-id>" --h
 ### Get Sections
 
 ```bash
-bash -c 'curl -s "https://api.todoist.com/rest/v2/sections" --header "Authorization: Bearer $TODOIST_TOKEN"' | jq '.[] | {id, name, project_id, order}'
+curl -s "https://api.todoist.com/rest/v2/sections" --header "Authorization: Bearer $(printenv TODOIST_TOKEN)" | jq '.[] | {id, name, project_id, order}'
 ```
 
 ### Get Sections by Project
@@ -212,7 +210,7 @@ bash -c 'curl -s "https://api.todoist.com/rest/v2/sections" --header "Authorizat
 Replace `<project-id>` with the actual project ID:
 
 ```bash
-bash -c 'curl -s "https://api.todoist.com/rest/v2/sections?project_id=<project-id>" --header "Authorization: Bearer $TODOIST_TOKEN"' | jq '.[] | {id, name, order}'
+curl -s "https://api.todoist.com/rest/v2/sections?project_id=<project-id>" --header "Authorization: Bearer $(printenv TODOIST_TOKEN)" | jq '.[] | {id, name, order}'
 ```
 
 ---
@@ -229,7 +227,7 @@ Write to `/tmp/todoist_request.json`:
 ```
 
 ```bash
-bash -c 'curl -s -X POST "https://api.todoist.com/rest/v2/sections" --header "Authorization: Bearer $TODOIST_TOKEN" --header "Content-Type: application/json" -d @/tmp/todoist_request.json' | jq '{id, name, project_id}'
+curl -s -X POST "https://api.todoist.com/rest/v2/sections" --header "Authorization: Bearer $(printenv TODOIST_TOKEN)" --header "Content-Type: application/json" -d @/tmp/todoist_request.json | jq '{id, name, project_id}'
 ```
 
 ---
@@ -237,7 +235,7 @@ bash -c 'curl -s -X POST "https://api.todoist.com/rest/v2/sections" --header "Au
 ### Get Labels
 
 ```bash
-bash -c 'curl -s "https://api.todoist.com/rest/v2/labels" --header "Authorization: Bearer $TODOIST_TOKEN"' | jq '.[] | {id, name, color, order, is_favorite}'
+curl -s "https://api.todoist.com/rest/v2/labels" --header "Authorization: Bearer $(printenv TODOIST_TOKEN)" | jq '.[] | {id, name, color, order, is_favorite}'
 ```
 
 ### Create Label
@@ -252,7 +250,7 @@ Write to `/tmp/todoist_request.json`:
 ```
 
 ```bash
-bash -c 'curl -s -X POST "https://api.todoist.com/rest/v2/labels" --header "Authorization: Bearer $TODOIST_TOKEN" --header "Content-Type: application/json" -d @/tmp/todoist_request.json' | jq '{id, name, color}'
+curl -s -X POST "https://api.todoist.com/rest/v2/labels" --header "Authorization: Bearer $(printenv TODOIST_TOKEN)" --header "Content-Type: application/json" -d @/tmp/todoist_request.json | jq '{id, name, color}'
 ```
 
 ---
@@ -262,7 +260,7 @@ bash -c 'curl -s -X POST "https://api.todoist.com/rest/v2/labels" --header "Auth
 Replace `<task-id>` with the actual task ID:
 
 ```bash
-bash -c 'curl -s "https://api.todoist.com/rest/v2/comments?task_id=<task-id>" --header "Authorization: Bearer $TODOIST_TOKEN"' | jq '.[] | {id, content, posted_at}'
+curl -s "https://api.todoist.com/rest/v2/comments?task_id=<task-id>" --header "Authorization: Bearer $(printenv TODOIST_TOKEN)" | jq '.[] | {id, content, posted_at}'
 ```
 
 ### Create Comment
@@ -277,7 +275,7 @@ Write to `/tmp/todoist_request.json`:
 ```
 
 ```bash
-bash -c 'curl -s -X POST "https://api.todoist.com/rest/v2/comments" --header "Authorization: Bearer $TODOIST_TOKEN" --header "Content-Type: application/json" -d @/tmp/todoist_request.json' | jq '{id, content, posted_at}'
+curl -s -X POST "https://api.todoist.com/rest/v2/comments" --header "Authorization: Bearer $(printenv TODOIST_TOKEN)" --header "Content-Type: application/json" -d @/tmp/todoist_request.json | jq '{id, content, posted_at}'
 ```
 
 ---
