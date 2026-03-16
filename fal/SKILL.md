@@ -35,12 +35,6 @@ export FAL_TOKEN="your-api-key"
 
 ---
 
-
-> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
-> ```bash
-> bash -c 'curl -s "https://api.example.com" -H "Authorization: Bearer $API_KEY"'
-> ```
-
 ## How to Use
 
 ### 1. Generate Image (nano-banana-pro - fast)
@@ -56,7 +50,7 @@ Write to `/tmp/fal_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://fal.run/fal-ai/nano-banana-pro" --header "Authorization: Key ${FAL_TOKEN}" --header "Content-Type: application/json" -d @/tmp/fal_request.json' | jq -r '.images[0].url'
+curl -s -X POST "https://fal.run/fal-ai/nano-banana-pro" --header "Authorization: Key $(printenv FAL_TOKEN)" --header "Content-Type: application/json" -d @/tmp/fal_request.json | jq -r '.images[0].url'
 ```
 
 ### 2. Generate Image (flux/schnell - fast)
@@ -72,7 +66,7 @@ Write to `/tmp/fal_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://fal.run/fal-ai/flux/schnell" --header "Authorization: Key ${FAL_TOKEN}" --header "Content-Type: application/json" -d @/tmp/fal_request.json' | jq -r '.images[0].url'
+curl -s -X POST "https://fal.run/fal-ai/flux/schnell" --header "Authorization: Key $(printenv FAL_TOKEN)" --header "Content-Type: application/json" -d @/tmp/fal_request.json | jq -r '.images[0].url'
 ```
 
 ### 3. Generate Image (recraft-v3 - high quality)
@@ -88,7 +82,7 @@ Write to `/tmp/fal_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://fal.run/fal-ai/recraft-v3" --header "Authorization: Key ${FAL_TOKEN}" --header "Content-Type: application/json" -d @/tmp/fal_request.json' | jq -r '.images[0].url'
+curl -s -X POST "https://fal.run/fal-ai/recraft-v3" --header "Authorization: Key $(printenv FAL_TOKEN)" --header "Content-Type: application/json" -d @/tmp/fal_request.json | jq -r '.images[0].url'
 ```
 
 ### 4. Generate with Custom Size
@@ -105,7 +99,7 @@ Write to `/tmp/fal_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://fal.run/fal-ai/nano-banana-pro" --header "Authorization: Key ${FAL_TOKEN}" --header "Content-Type: application/json" -d @/tmp/fal_request.json' | jq -r '.images[0].url'
+curl -s -X POST "https://fal.run/fal-ai/nano-banana-pro" --header "Authorization: Key $(printenv FAL_TOKEN)" --header "Content-Type: application/json" -d @/tmp/fal_request.json | jq -r '.images[0].url'
 ```
 
 ### 5. Download Generated Image
@@ -121,28 +115,28 @@ Write to `/tmp/fal_request.json`:
 Then run:
 
 ```bash
-bash -c 'curl -s -X POST "https://fal.run/fal-ai/nano-banana-pro" --header "Authorization: Key ${FAL_TOKEN}" --header "Content-Type: application/json" -d @/tmp/fal_request.json' | jq -r '.images[0].url' | xargs curl -sL -o /tmp/image.png
+curl -s -X POST "https://fal.run/fal-ai/nano-banana-pro" --header "Authorization: Key $(printenv FAL_TOKEN)" --header "Content-Type: application/json" -d @/tmp/fal_request.json | jq -r '.images[0].url' | xargs curl -sL -o /tmp/image.png
 ```
 
 ### 6. Pipe Prompt from Echo (JSON escaped)
 
 ```bash
 echo "A dragon breathing fire, epic fantasy art" | jq -Rs '{prompt: .}' > /tmp/fal_request.json
-bash -c 'curl -s -X POST "https://fal.run/fal-ai/nano-banana-pro" --header "Authorization: Key ${FAL_TOKEN}" --header "Content-Type: application/json" -d @/tmp/fal_request.json' | jq -r '.images[0].url'
+curl -s -X POST "https://fal.run/fal-ai/nano-banana-pro" --header "Authorization: Key $(printenv FAL_TOKEN)" --header "Content-Type: application/json" -d @/tmp/fal_request.json | jq -r '.images[0].url'
 ```
 
 ### 7. Pipe Prompt from File (JSON escaped)
 
 ```bash
 cat /tmp/prompt.txt | jq -Rs '{prompt: .}' > /tmp/fal_request.json
-bash -c 'curl -s -X POST "https://fal.run/fal-ai/nano-banana-pro" --header "Authorization: Key ${FAL_TOKEN}" --header "Content-Type: application/json" -d @/tmp/fal_request.json' | jq -r '.images[0].url'
+curl -s -X POST "https://fal.run/fal-ai/nano-banana-pro" --header "Authorization: Key $(printenv FAL_TOKEN)" --header "Content-Type: application/json" -d @/tmp/fal_request.json | jq -r '.images[0].url'
 ```
 
 ### 8. Pipe with Additional Parameters
 
 ```bash
 echo "Neon city at night" | jq -Rs '{prompt: ., image_size: "landscape_16_9"}' > /tmp/fal_request.json
-bash -c 'curl -s -X POST "https://fal.run/fal-ai/nano-banana-pro" --header "Authorization: Key ${FAL_TOKEN}" --header "Content-Type: application/json" -d @/tmp/fal_request.json' | jq -r '.images[0].url'
+curl -s -X POST "https://fal.run/fal-ai/nano-banana-pro" --header "Authorization: Key $(printenv FAL_TOKEN)" --header "Content-Type: application/json" -d @/tmp/fal_request.json | jq -r '.images[0].url'
 ```
 
 ---
