@@ -45,18 +45,12 @@ export PUSHINATOR_TOKEN="your-api-token"
 
 ---
 
-
-> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
-> ```bash
-> bash -c 'curl -s "https://api.example.com" -H "Authorization: Bearer $API_KEY"'
-> ```
-
 ## How to Use
 
 Base URL: `https://api.pushinator.com`
 
 **Required headers:**
-- `Authorization: Bearer ${PUSHINATOR_TOKEN}`
+- `Authorization: Bearer $(printenv PUSHINATOR_TOKEN)`
 - `Content-Type: application/json`
 
 ---
@@ -78,7 +72,7 @@ Replace `<your-channel-uuid>` with your actual channel UUID, then run:
 
 ```bash
 curl -s -X POST "https://api.pushinator.com/api/v2/notifications/send" \
-  --header "Authorization: Bearer ${PUSHINATOR_TOKEN}" \
+  --header "Authorization: Bearer $(printenv PUSHINATOR_TOKEN)" \
   --header "Content-Type: application/json" \
   -d @/tmp/pushinator_request.json
 ```
@@ -110,7 +104,7 @@ Replace `<your-channel-uuid>` with your actual channel UUID, then run:
 
 ```bash
 curl -s -X POST "https://api.pushinator.com/api/v2/notifications/send" \
-  --header "Authorization: Bearer ${PUSHINATOR_TOKEN}" \
+  --header "Authorization: Bearer $(printenv PUSHINATOR_TOKEN)" \
   --header "Content-Type: application/json" \
   -d @/tmp/pushinator_request.json
 ```
@@ -134,7 +128,7 @@ Replace `<your-channel-uuid>` with your actual channel UUID, then run:
 
 ```bash
 curl -s -X POST "https://api.pushinator.com/api/v2/notifications/send" \
-  --header "Authorization: Bearer ${PUSHINATOR_TOKEN}" \
+  --header "Authorization: Bearer $(printenv PUSHINATOR_TOKEN)" \
   --header "Content-Type: application/json" \
   -d @/tmp/pushinator_request.json
 ```
