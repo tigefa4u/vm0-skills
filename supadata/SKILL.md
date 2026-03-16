@@ -44,11 +44,6 @@ export SUPADATA_TOKEN="your-api-key"
 ---
 
 
-> **Important:** When using `$VAR` in a command that pipes to another command, wrap the command containing `$VAR` in `bash -c '...'`. Due to a Claude Code bug, environment variables are silently cleared when pipes are used directly.
-> ```bash
-> bash -c 'curl -s "https://api.example.com" -H "Authorization: Bearer $API_KEY"' | jq .
-> ```
-
 ## How to Use
 
 All examples below assume you have `SUPADATA_TOKEN` set.
@@ -72,7 +67,7 @@ https://www.youtube.com/watch?v=dQw4w9WgXcQ
 ```
 
 ```bash
-bash -c 'curl -s "https://api.supadata.ai/v1/transcript" -H "x-api-key: ${SUPADATA_TOKEN}" -G --data-urlencode "url@/tmp/supadata_url.txt" -d "text=true"'
+curl -s "https://api.supadata.ai/v1/transcript" -H "x-api-key: $(printenv SUPADATA_TOKEN)" -G --data-urlencode "url@/tmp/supadata_url.txt" -d "text=true"
 ```
 
 **Parameters:**
@@ -89,7 +84,7 @@ bash -c 'curl -s "https://api.supadata.ai/v1/transcript" -H "x-api-key: ${SUPADA
 Get transcript with timing information:
 
 ```bash
-bash -c 'curl -s "https://api.supadata.ai/v1/transcript" -H "x-api-key: ${SUPADATA_TOKEN}" -G --data-urlencode "url@/tmp/supadata_url.txt" -d "text=false"' | jq '.content[:3]'
+curl -s "https://api.supadata.ai/v1/transcript" -H "x-api-key: $(printenv SUPADATA_TOKEN)" -G --data-urlencode "url@/tmp/supadata_url.txt" -d "text=false" | jq '.content[:3]'
 ```
 
 Response format:
@@ -111,10 +106,10 @@ Extract transcript from other platforms:
 
 ```bash
 # TikTok
-bash -c 'curl -s "https://api.supadata.ai/v1/transcript" -H "x-api-key: ${SUPADATA_TOKEN}" -G --data-urlencode "url@/tmp/supadata_url.txt" -d "text=true"'
+curl -s "https://api.supadata.ai/v1/transcript" -H "x-api-key: $(printenv SUPADATA_TOKEN)" -G --data-urlencode "url@/tmp/supadata_url.txt" -d "text=true"
 
 # Instagram Reel
-bash -c 'curl -s "https://api.supadata.ai/v1/transcript" -H "x-api-key: ${SUPADATA_TOKEN}" -G --data-urlencode "url@/tmp/supadata_url.txt" -d "text=true"'
+curl -s "https://api.supadata.ai/v1/transcript" -H "x-api-key: $(printenv SUPADATA_TOKEN)" -G --data-urlencode "url@/tmp/supadata_url.txt" -d "text=true"
 ```
 
 Supported platforms: YouTube, TikTok, Instagram, X (Twitter), Facebook
@@ -126,7 +121,7 @@ Supported platforms: YouTube, TikTok, Instagram, X (Twitter), Facebook
 Fetch only existing transcripts without AI generation:
 
 ```bash
-bash -c 'curl -s "https://api.supadata.ai/v1/transcript" -H "x-api-key: ${SUPADATA_TOKEN}" -G --data-urlencode "url@/tmp/supadata_url.txt" -d "text=true" -d "mode=native"'
+curl -s "https://api.supadata.ai/v1/transcript" -H "x-api-key: $(printenv SUPADATA_TOKEN)" -G --data-urlencode "url@/tmp/supadata_url.txt" -d "text=true" -d "mode=native"
 ```
 
 Use `mode=native` to avoid AI generation costs (1 credit vs 2 credits/min).
@@ -138,7 +133,7 @@ Use `mode=native` to avoid AI generation costs (1 credit vs 2 credits/min).
 Get channel information:
 
 ```bash
-bash -c 'curl -s "https://api.supadata.ai/v1/youtube/channel" -H "x-api-key: ${SUPADATA_TOKEN}" -G --data-urlencode "id=@mkbhd"' | jq '{name, subscriberCount, videoCount}
+curl -s "https://api.supadata.ai/v1/youtube/channel" -H "x-api-key: $(printenv SUPADATA_TOKEN)" -G --data-urlencode "id=@mkbhd" | jq '{name, subscriberCount, videoCount}
 ```
 
 Accepts channel URL, channel ID, or handle (e.g., `@mkbhd`).
@@ -150,7 +145,7 @@ Accepts channel URL, channel ID, or handle (e.g., `@mkbhd`).
 Get video information:
 
 ```bash
-bash -c 'curl -s "https://api.supadata.ai/v1/youtube/video" -H "x-api-key: ${SUPADATA_TOKEN}" -G --data-urlencode "url@/tmp/supadata_url.txt"' | jq '{title, viewCount, likeCount, duration}
+curl -s "https://api.supadata.ai/v1/youtube/video" -H "x-api-key: $(printenv SUPADATA_TOKEN)" -G --data-urlencode "url@/tmp/supadata_url.txt" | jq '{title, viewCount, likeCount, duration}
 ```
 
 ---
@@ -160,7 +155,7 @@ bash -c 'curl -s "https://api.supadata.ai/v1/youtube/video" -H "x-api-key: ${SUP
 Get metadata from any supported platform:
 
 ```bash
-bash -c 'curl -s "https://api.supadata.ai/v1/metadata" -H "x-api-key: ${SUPADATA_TOKEN}" -G --data-urlencode "url@/tmp/supadata_url.txt"'
+curl -s "https://api.supadata.ai/v1/metadata" -H "x-api-key: $(printenv SUPADATA_TOKEN)" -G --data-urlencode "url@/tmp/supadata_url.txt"
 ```
 
 Works with YouTube, TikTok, Instagram, X, Facebook posts.
@@ -172,7 +167,7 @@ Works with YouTube, TikTok, Instagram, X, Facebook posts.
 Extract web page content:
 
 ```bash
-bash -c 'curl -s "https://api.supadata.ai/v1/web/scrape" -H "x-api-key: ${SUPADATA_TOKEN}" -G --data-urlencode "url@/tmp/supadata_url.txt"'
+curl -s "https://api.supadata.ai/v1/web/scrape" -H "x-api-key: $(printenv SUPADATA_TOKEN)" -G --data-urlencode "url@/tmp/supadata_url.txt"
 ```
 
 Returns page content in Markdown format, ideal for AI processing.
@@ -184,7 +179,7 @@ Returns page content in Markdown format, ideal for AI processing.
 Get all links from a website:
 
 ```bash
-bash -c 'curl -s "https://api.supadata.ai/v1/web/map" -H "x-api-key: ${SUPADATA_TOKEN}" -G --data-urlencode "url@/tmp/supadata_url.txt"' | jq '.urls[:10]'
+curl -s "https://api.supadata.ai/v1/web/map" -H "x-api-key: $(printenv SUPADATA_TOKEN)" -G --data-urlencode "url@/tmp/supadata_url.txt" | jq '.urls[:10]'
 ```
 
 ---
@@ -206,12 +201,12 @@ Then run:
 
 ```bash
 # Start crawl
-JOB_ID="$(bash -c 'curl -s "https://api.supadata.ai/v1/web/crawl" -X POST -H "x-api-key: ${SUPADATA_TOKEN}" -H "Content-Type: application/json" -d @/tmp/supadata_request.json' | jq -r '.jobId')"
+JOB_ID="$(curl -s "https://api.supadata.ai/v1/web/crawl" -X POST -H "x-api-key: $(printenv SUPADATA_TOKEN)" -H "Content-Type: application/json" -d @/tmp/supadata_request.json | jq -r '.jobId')"
 
 echo "Job ID: ${JOB_ID}"
 
 # Check status
-bash -c 'curl -s "https://api.supadata.ai/v1/web/crawl/<your-job-id>" -H "x-api-key: ${SUPADATA_TOKEN}"' | jq '{status, pagesCompleted}'
+curl -s "https://api.supadata.ai/v1/web/crawl/<your-job-id>" -H "x-api-key: $(printenv SUPADATA_TOKEN)" | jq '{status, pagesCompleted}'
 ```
 
 Status values: `queued`, `active`, `completed`, `failed`
@@ -223,7 +218,7 @@ Status values: `queued`, `active`, `completed`, `failed`
 Translate a YouTube transcript to another language:
 
 ```bash
-bash -c 'curl -s "https://api.supadata.ai/v1/youtube/transcript/translate" -H "x-api-key: ${SUPADATA_TOKEN}" -G --data-urlencode "url@/tmp/supadata_url.txt" -d "lang=zh" -d "text=true"'
+curl -s "https://api.supadata.ai/v1/youtube/transcript/translate" -H "x-api-key: $(printenv SUPADATA_TOKEN)" -G --data-urlencode "url@/tmp/supadata_url.txt" -d "lang=zh" -d "text=true"
 ```
 
 ---
