@@ -113,8 +113,15 @@ bash -c 'curl -s -X POST "https://api.example.com/endpoint" --header "Content-Ty
 Claude Code has a known bug where **environment variables are silently cleared when used with pipe operators**. This affects curl commands with API keys in headers.
 
 **Related issues:**
+- [#29298](https://github.com/anthropics/claude-code/issues/29298) - Bash Tool Silently Empties Environment Variables in Pipelines
+- [#17182](https://github.com/anthropics/claude-code/issues/17182) - Environment variables expand to empty strings when used in piped commands
+- [#18979](https://github.com/anthropics/claude-code/issues/18979) - Environment variables expand to empty string when command contains pipe
+- [#14371](https://github.com/anthropics/claude-code/issues/14371) - Environment variables stripped when command contains pipes
+- [#24956](https://github.com/anthropics/claude-code/issues/24956) - Bash tool drops pipe stdin with command substitution syntax
+- [#14523](https://github.com/anthropics/claude-code/issues/14523) - Bash tool fails with command substitution in pipe arguments
 - [#11225](https://github.com/anthropics/claude-code/issues/11225) - Comprehensive bash preprocessing bugs
 - [#8318](https://github.com/anthropics/claude-code/issues/8318) - Environment variables cleared with pipes
+
 
 **The Problem:**
 
