@@ -6,13 +6,13 @@ description: VM0 platform API for agents. Use when user mentions "VM0", "vm0 age
   "access my Gmail", "access my calendar", or asks about VM0 platform operations,
   agent configuration, connecting/integrating with external services, or
   "connect to {service}" / "access my {service}" patterns for SaaS integrations.
-vm0_secrets:
+vm0_env:
   - VM0_TOKEN
 ---
 
 # VM0 Agent Self-Management
 
-Use this skill to inspect and update the current agent's own configuration — its skills, instructions, and environment variables — by cloning, editing, and redeploying via `vm0 compose`.
+Use this skill to inspect and update the current agent's own configuration — its connectors (skills) and instructions — via the VM0 Zero Agents API.
 
 > Official docs: https://docs.vm0.ai
 
@@ -22,54 +22,80 @@ Use this skill to inspect and update the current agent's own configuration — i
 
 Use this skill when you need to:
 
-- Understand the current agent's `vm0.yaml` configuration
-- Add or remove skills from the current agent
-- Update the agent's instructions file
-- Change environment variables or secrets references
+- Read the current agent's configuration (connectors, metadata)
+- Add or remove connectors (skills) from the current agent
+- Read or update the agent's instructions
 - Redeploy the agent after configuration changes
 
 ---
 
-## vm0.yaml Format
+## Prerequisites
 
-Every agent is defined by a `vm0.yaml` file:
+The `VM0_TOKEN` environment variable must be set. It is automatically injected when this skill is loaded.
 
-```yaml
-version: "1.0"
+The base URL defaults to `https://www.vm0.ai`. Override with `VM0_API_URL` if needed.
 
-agents:
-  my-agent:
-    framework: claude-code
-    instructions: AGENTS.md
-    skills:
-      - https://github.com/vm0-ai/vm0-skills/tree/main/github
-      - https://github.com/vm0-ai/vm0-skills/tree/main/slack
-    environment:
-      SOME_VAR: "literal-value"
-      API_KEY: "${{ secrets.API_KEY }}"
-      DEBUG: "${{ vars.DEBUG }}"
+---
+
+## How to Use
+
+### 1. Get Agent Configuration
+
+Retrieve the current agent's connectors and metadata.
+
+```bash
+bash -c 'curl -s -X GET "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME" --header "Authorization: Bearer $VM0_TOKEN"' | jq .
 ```
 
-### Fields
+**Response:**
 
-| Field | Description |
-|-------|-------------|
-| `version` | Config version — always `"1.0"` |
-| `agents` | Map of agent definitions (key = agent name) |
-| `framework` | Agent runtime — use `claude-code` |
-| `instructions` | Path to the instructions/system-prompt file (e.g. `AGENTS.md`) |
-| `skills` | List of skill URLs to inject into the agent |
-| `environment` | Environment variables available at runtime |
+```json
+{
+  "name": "agent-uuid",
+  "agentComposeId": "compose-id",
+  "description": "Agent description",
+  "displayName": "My Agent",
+  "sound": null,
+  "connectors": ["github", "slack"]
+}
+```
 
-### Variable Syntax
+### 2. Update Agent Configuration
 
-| Syntax | When to use |
-|--------|-------------|
-| `"literal-value"` | Plain non-sensitive config |
-| `"${{ secrets.NAME }}"` | Sensitive values (API keys, tokens) |
-| `"${{ vars.NAME }}"` | Non-sensitive remote variables |
+Update the agent's connectors (skills) and metadata. The `connectors` field is required — it replaces the full list. The `displayName`, `description`, and `sound` fields are optional — only provided fields are updated.
 
-> **Important:** Each skill's `SKILL.md` declares its own required secrets and vars in the frontmatter (`vm0_secrets` / `vm0_vars`). These are automatically injected when the skill is loaded — do **not** redeclare them in `environment`. Only put entries in `environment` that are specific to this agent and not already covered by a skill's frontmatter.
+```bash
+bash -c 'curl -s -X PUT "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME" --header "Content-Type: application/json" --header "Authorization: Bearer $VM0_TOKEN" -d '"'"'{"connectors": ["github", "slack", "gmail"], "displayName": "My Agent"}'"'"'' | jq .
+```
+
+**Response:** Same shape as GET.
+
+### 3. Get Agent Instructions
+
+Retrieve the current agent's instructions content and filename.
+
+```bash
+bash -c 'curl -s -X GET "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME/instructions" --header "Authorization: Bearer $VM0_TOKEN"' | jq .
+```
+
+**Response:**
+
+```json
+{
+  "content": "# My Agent Instructions\n\nYou are a helpful agent...",
+  "filename": "agent.md"
+}
+```
+
+### 4. Update Agent Instructions
+
+Replace the agent's instructions content.
+
+```bash
+bash -c 'curl -s -X PUT "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME/instructions" --header "Content-Type: application/json" --header "Authorization: Bearer $VM0_TOKEN" -d '"'"'{"content": "# Updated Instructions\n\nNew instructions here..."}'"'"'' | jq .
+```
+
+**Response:** Same shape as GET agent configuration (name, agentComposeId, connectors, etc.).
 
 ---
 
@@ -89,68 +115,19 @@ Browse at: https://github.com/vm0-ai/vm0-skills
 
 > **Priority rule:** If a skill exists in both marketplaces, prefer the `vm0-ai/vm0-skills` version — it is optimized for VM0 agent workflows and has consistent quality.
 
-### Converting search results to vm0.yaml URLs
+### Connector short names
 
-Skills are referenced in `vm0.yaml` as GitHub tree URLs:
-
-| Source | URL format |
-|--------|------------|
-| `vm0-ai/vm0-skills` | `https://github.com/vm0-ai/vm0-skills/tree/main/{skill-name}` |
-| `anthropics/skills` | `https://github.com/anthropics/skills/tree/main/skills/{skill-name}` |
-| `vercel-labs/agent-skills` | `https://github.com/vercel-labs/agent-skills/tree/main/skills/{skill-name}` |
-| Other repos | `https://github.com/{owner}/{repo}/tree/main/skills/{skill-name}` |
+Connectors in the API use short names that correspond to skill directory names in the `vm0-ai/vm0-skills` repository (e.g. `github`, `slack`, `gmail`, `notion`).
 
 ### Checking required credentials
 
-After picking a skill, read its `SKILL.md` to see what secrets or vars it needs:
+After picking a skill, read its `SKILL.md` frontmatter to see what secrets or vars it needs:
 
 ```bash
-curl -s "https://raw.githubusercontent.com/vm0-ai/vm0-skills/main/{skill-name}/SKILL.md" | head -20
+bash -c 'curl -s "https://raw.githubusercontent.com/vm0-ai/vm0-skills/main/{skill-name}/SKILL.md"' | head -20
 ```
 
-Look for `vm0_secrets` and `vm0_vars` in the frontmatter. Store any missing values before deploying:
-
-```bash
-vm0 secret set SKILL_TOKEN --body "value"
-```
-
----
-
-## CLI: clone & compose
-
-### Clone — download current agent config
-
-`vm0 agent clone` downloads a deployed agent's configuration to the local filesystem. It writes `vm0.yaml` and the instructions file (e.g. `AGENTS.md`) to a local directory.
-
-```bash
-# Clone into a new subdirectory (directory must not already exist)
-vm0 agent clone {agent-name} ./agent-config
-
-# Clone into current directory
-vm0 agent clone {agent-name} .
-```
-
-What it downloads:
-- `vm0.yaml` — the compose configuration
-- The instructions file referenced in `vm0.yaml` (e.g. `AGENTS.md`)
-
-> **Note:** Secret values are preserved as `${{ secrets.NAME }}` placeholders — the actual values are never written to disk.
-
----
-
-### Compose — deploy updated config
-
-`vm0 compose` deploys a `vm0.yaml` to the platform, creating or updating the agent.
-
-```bash
-# Deploy with confirmation prompt
-vm0 compose vm0.yaml
-
-# Deploy non-interactively (skip confirmation)
-vm0 compose vm0.yaml -y
-```
-
-If the yaml references secrets that don't yet exist on the platform, `compose` will prompt to set them (use `-y` to skip in automated contexts).
+Look for `vm0_secrets` and `vm0_vars` in the frontmatter. These are automatically injected when the skill is loaded — no manual setup needed. If a required secret is missing, guide the user to the VM0 console to configure it.
 
 ---
 
@@ -162,14 +139,14 @@ This operation enables the agent to update itself based on user requirements.
 
 ### Step 1: Understand the current agent
 
-Use `vm0 whoami` to learn the current agent's name, then clone it to /tmp to work with its current configuration:
+Read the current configuration and instructions via the API:
 
 ```bash
-# Use npx to run vm0 commands without installation
-npx -y @vm0/cli agent clone <agent-name> /tmp/<agent-name>
+bash -c 'curl -s -X GET "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME" --header "Authorization: Bearer $VM0_TOKEN"' | jq .
+```
 
-cat /tmp/<agent-name>/AGENTS.md
-cat /tmp/<agent-name>/vm0.yaml
+```bash
+bash -c 'curl -s -X GET "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME/instructions" --header "Authorization: Bearer $VM0_TOKEN"' | jq .
 ```
 
 ### Step 2: Understand User Intent
@@ -181,43 +158,21 @@ Ask clarifying questions to understand what the user wants to update:
 - What skills need to be added/removed?
 - What configuration changes are needed?
 
-### Step 3: Reference Documentation (if needed)
+### Step 3: Apply Changes
 
-If unsure about file formats, check the official documentation https://docs.vm0.ai/docs/reference/configuration/vm0-yaml
+**To update connectors (add/remove skills):**
 
-Key vm0.yaml fields:
-
-- `version`: Configuration version (currently "1.0")
-- `agents`: Map of agent definitions
-  - `framework`: Agent framework (claude-code)
-  - `instructions`: Path to AGENTS.md
-  - `skills`: List of skill URLs
-  - `environment`: Environment variables
-
-### Step 4: Modify Configuration Files
-
-Based on user requirements, modify the appropriate files:
-
-**For AGENTS.md changes:**
-
-- Add new operation sections following the existing format
-- Update existing operations as needed
-- Ensure consistent markdown formatting
-
-**For vm0.yaml changes:**
-
-- Add/remove skills from the skills list
-
-### Step 5: Compose the Agent
-
-Deploy the updated configuration:
+Get the current connectors list from Step 1, modify it, then PUT:
 
 ```bash
-cd /tmp/<agent-name>
-npx -y @vm0/cli compose vm0.yaml
+bash -c 'curl -s -X PUT "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME" --header "Content-Type: application/json" --header "Authorization: Bearer $VM0_TOKEN" -d '"'"'{"connectors": ["github", "slack", "new-skill"]}'"'"'' | jq .
 ```
 
-Note: `npx -y @vm0/cli compose` is idempotent. If configuration hasn't changed, the version hash stays the same.
+**To update instructions:**
+
+```bash
+bash -c 'curl -s -X PUT "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME/instructions" --header "Content-Type: application/json" --header "Authorization: Bearer $VM0_TOKEN" -d '"'"'{"content": "# Updated Instructions\n\nNew content here..."}'"'"'' | jq .
+```
 
 ---
 
@@ -229,7 +184,11 @@ This operation helps the user connect external SaaS services to their agent.
 
 ### Step 1: Check existing skills
 
-First, follow the Self Update workflow (Steps 1) to clone the agent and inspect its `vm0.yaml`. Check if the requested service skill is already in the `skills` list.
+Read the current agent configuration and check if the requested service connector is already in the `connectors` list:
+
+```bash
+bash -c 'curl -s -X GET "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME" --header "Authorization: Bearer $VM0_TOKEN"' | jq .connectors
+```
 
 ### Step 2: If skill exists
 
@@ -245,13 +204,18 @@ Guide the user to complete OAuth/connector setup on the VM0 console, then stop. 
 Search for it in the `vm0-ai/vm0-skills` repository:
 
 ```bash
-# List available skills in the official repository
-gh api repos/vm0-ai/vm0-skills/contents --jq '.[].name' | grep -i {service-name}
+bash -c 'curl -s "https://api.github.com/repos/vm0-ai/vm0-skills/contents"' | jq -r '.[].name' | grep -i {service-name}
 ```
 
 ### Step 4: If found in vm0-skills
 
-Add the skill to the agent's `vm0.yaml` using the Self Update workflow (Steps 4–5), then guide the user to the VM0 console using the same closing pattern from Step 2.
+Add the connector to the agent via the update API. Get current connectors, append the new one, then PUT:
+
+```bash
+bash -c 'curl -s -X PUT "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME" --header "Content-Type: application/json" --header "Authorization: Bearer $VM0_TOKEN" -d '"'"'{"connectors": ["existing-1", "existing-2", "new-service"]}'"'"'' | jq .
+```
+
+Then guide the user to the VM0 console using the same closing pattern from Step 2.
 
 ### Step 5: If not found anywhere
 
@@ -263,8 +227,8 @@ Inform the user: "This service is not supported yet. Please check the [vm0-ai/vm
 
 ## Guidelines
 
-1. **Agent name**: When self-updating, the agent name comes from the `agents:` key in `vm0.yaml`. The current agent name is available in the `VM0_AGENT_NAME` environment variable if set.
-2. **Clone target must not exist**: `vm0 agent clone` fails if the destination directory already exists. Use a fresh path like `/tmp/self-config` or add a timestamp.
-3. **compose -y for automation**: Always pass `-y` when running compose non-interactively to skip confirmation prompts.
-4. **Instructions file**: The instructions file path in `vm0.yaml` is relative to the directory where `vm0 compose` is run. Keep both files in the same directory.
-5. **Secrets are not cloned**: Secret values are never downloaded — only the `${{ secrets.NAME }}` reference is preserved. Don't try to read secret values from the cloned config.
+1. **Agent name**: The current agent name is available in the `VM0_AGENT_NAME` environment variable.
+2. **Connectors replace the full list**: The PUT endpoint replaces the entire connectors list. Always read the current list first, modify it, then PUT the complete list back.
+3. **Selective metadata updates**: Only `displayName`, `description`, and `sound` fields that are explicitly included in the PUT body are updated. Omitted fields keep their current values.
+4. **422 errors**: If the API returns 422, one or more connectors reference skills that are not cached on the platform. Verify the connector names are correct.
+5. **Secrets are never exposed**: Secret values are never returned by the API — only `${{ secrets.NAME }}` references are preserved.
