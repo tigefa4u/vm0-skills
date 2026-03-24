@@ -7,8 +7,7 @@ description: VM0 platform API for agents. Use when user mentions "VM0", "vm0 age
   agent configuration, connecting/integrating with external services, or
   "connect to {service}" / "access my {service}" patterns for SaaS integrations.
 vm0_env:
-  - VM0_API_TOKEN
-  - VM0_AGENT_ORG_SLUG
+  - VM0_TOKEN
 ---
 
 # VM0 Agent Self-Management
@@ -32,7 +31,7 @@ Use this skill when you need to:
 
 ## Prerequisites
 
-The `VM0_API_TOKEN` and `VM0_AGENT_ORG_SLUG` environment variables must be set. They are automatically injected when this skill is loaded.
+The `VM0_TOKEN` environment variable must be set. It is automatically injected when this skill is loaded.
 
 The base URL defaults to `https://www.vm0.ai`. Override with `VM0_API_URL` if needed.
 
@@ -45,7 +44,7 @@ The base URL defaults to `https://www.vm0.ai`. Override with `VM0_API_URL` if ne
 Retrieve the current agent's connectors and metadata.
 
 ```bash
-bash -c 'curl -s -X GET "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME?org=$VM0_AGENT_ORG_SLUG" --header "Authorization: Bearer $VM0_API_TOKEN"' | jq .
+bash -c 'curl -s -X GET "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME" --header "Authorization: Bearer $VM0_TOKEN"' | jq .
 ```
 
 **Response:**
@@ -66,7 +65,7 @@ bash -c 'curl -s -X GET "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME?org=
 Update the agent's connectors (skills) and metadata. The `connectors` field is required — it replaces the full list. The `displayName`, `description`, and `sound` fields are optional — only provided fields are updated.
 
 ```bash
-bash -c 'curl -s -X PUT "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME?org=$VM0_AGENT_ORG_SLUG" --header "Content-Type: application/json" --header "Authorization: Bearer $VM0_API_TOKEN" -d '"'"'{"connectors": ["github", "slack", "gmail"], "displayName": "My Agent"}'"'"'' | jq .
+bash -c 'curl -s -X PUT "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME" --header "Content-Type: application/json" --header "Authorization: Bearer $VM0_TOKEN" -d '"'"'{"connectors": ["github", "slack", "gmail"], "displayName": "My Agent"}'"'"'' | jq .
 ```
 
 **Response:** Same shape as GET.
@@ -76,7 +75,7 @@ bash -c 'curl -s -X PUT "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME?org=
 Retrieve the current agent's instructions content and filename.
 
 ```bash
-bash -c 'curl -s -X GET "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME/instructions?org=$VM0_AGENT_ORG_SLUG" --header "Authorization: Bearer $VM0_API_TOKEN"' | jq .
+bash -c 'curl -s -X GET "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME/instructions" --header "Authorization: Bearer $VM0_TOKEN"' | jq .
 ```
 
 **Response:**
@@ -93,7 +92,7 @@ bash -c 'curl -s -X GET "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME/inst
 Replace the agent's instructions content.
 
 ```bash
-bash -c 'curl -s -X PUT "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME/instructions?org=$VM0_AGENT_ORG_SLUG" --header "Content-Type: application/json" --header "Authorization: Bearer $VM0_API_TOKEN" -d '"'"'{"content": "# Updated Instructions\n\nNew instructions here..."}'"'"'' | jq .
+bash -c 'curl -s -X PUT "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME/instructions" --header "Content-Type: application/json" --header "Authorization: Bearer $VM0_TOKEN" -d '"'"'{"content": "# Updated Instructions\n\nNew instructions here..."}'"'"'' | jq .
 ```
 
 **Response:** Same shape as GET agent configuration (name, agentComposeId, connectors, etc.).
@@ -143,11 +142,11 @@ This operation enables the agent to update itself based on user requirements.
 Read the current configuration and instructions via the API:
 
 ```bash
-bash -c 'curl -s -X GET "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME?org=$VM0_AGENT_ORG_SLUG" --header "Authorization: Bearer $VM0_API_TOKEN"' | jq .
+bash -c 'curl -s -X GET "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME" --header "Authorization: Bearer $VM0_TOKEN"' | jq .
 ```
 
 ```bash
-bash -c 'curl -s -X GET "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME/instructions?org=$VM0_AGENT_ORG_SLUG" --header "Authorization: Bearer $VM0_API_TOKEN"' | jq .
+bash -c 'curl -s -X GET "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME/instructions" --header "Authorization: Bearer $VM0_TOKEN"' | jq .
 ```
 
 ### Step 2: Understand User Intent
@@ -166,13 +165,13 @@ Ask clarifying questions to understand what the user wants to update:
 Get the current connectors list from Step 1, modify it, then PUT:
 
 ```bash
-bash -c 'curl -s -X PUT "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME?org=$VM0_AGENT_ORG_SLUG" --header "Content-Type: application/json" --header "Authorization: Bearer $VM0_API_TOKEN" -d '"'"'{"connectors": ["github", "slack", "new-skill"]}'"'"'' | jq .
+bash -c 'curl -s -X PUT "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME" --header "Content-Type: application/json" --header "Authorization: Bearer $VM0_TOKEN" -d '"'"'{"connectors": ["github", "slack", "new-skill"]}'"'"'' | jq .
 ```
 
 **To update instructions:**
 
 ```bash
-bash -c 'curl -s -X PUT "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME/instructions?org=$VM0_AGENT_ORG_SLUG" --header "Content-Type: application/json" --header "Authorization: Bearer $VM0_API_TOKEN" -d '"'"'{"content": "# Updated Instructions\n\nNew content here..."}'"'"'' | jq .
+bash -c 'curl -s -X PUT "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME/instructions" --header "Content-Type: application/json" --header "Authorization: Bearer $VM0_TOKEN" -d '"'"'{"content": "# Updated Instructions\n\nNew content here..."}'"'"'' | jq .
 ```
 
 ---
@@ -188,7 +187,7 @@ This operation helps the user connect external SaaS services to their agent.
 Read the current agent configuration and check if the requested service connector is already in the `connectors` list:
 
 ```bash
-bash -c 'curl -s -X GET "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME?org=$VM0_AGENT_ORG_SLUG" --header "Authorization: Bearer $VM0_API_TOKEN"' | jq .connectors
+bash -c 'curl -s -X GET "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME" --header "Authorization: Bearer $VM0_TOKEN"' | jq .connectors
 ```
 
 ### Step 2: If skill exists
@@ -213,7 +212,7 @@ bash -c 'curl -s "https://api.github.com/repos/vm0-ai/vm0-skills/contents"' | jq
 Add the connector to the agent via the update API. Get current connectors, append the new one, then PUT:
 
 ```bash
-bash -c 'curl -s -X PUT "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME?org=$VM0_AGENT_ORG_SLUG" --header "Content-Type: application/json" --header "Authorization: Bearer $VM0_API_TOKEN" -d '"'"'{"connectors": ["existing-1", "existing-2", "new-service"]}'"'"'' | jq .
+bash -c 'curl -s -X PUT "https://www.vm0.ai/api/zero/agents/$VM0_AGENT_NAME" --header "Content-Type: application/json" --header "Authorization: Bearer $VM0_TOKEN" -d '"'"'{"connectors": ["existing-1", "existing-2", "new-service"]}'"'"'' | jq .
 ```
 
 Then guide the user to the VM0 console using the same closing pattern from Step 2.
