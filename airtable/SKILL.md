@@ -21,10 +21,6 @@ Manage bases, tables, records, and comments in Airtable.
 - Read and write record comments
 - Get current user info
 
-## Prerequisites
-
-Go to [vm0.ai](https://vm0.ai) **Settings > Connectors** and connect **Airtable**. vm0 will automatically inject the required `AIRTABLE_TOKEN` environment variable.
-
 ## Core APIs
 
 ### Get Current User

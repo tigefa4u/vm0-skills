@@ -20,10 +20,6 @@ Manage contracts, people, time off, and organization data with the Deel REST API
 - Access organization and team information
 - View invoice adjustments and payslips
 
-## Prerequisites
-
-Go to [vm0.ai](https://vm0.ai) **Settings > Connectors** and connect **Deel**. vm0 will automatically inject the required `DEEL_TOKEN` environment variable.
-
 ## Core APIs
 
 ### List Contracts

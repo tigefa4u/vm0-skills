@@ -20,10 +20,6 @@ Manage tasks, projects, sections, labels, and comments with the Todoist REST API
 - List and filter tasks by project or label
 - Manage projects (create, update, delete)
 
-## Prerequisites
-
-Go to [vm0.ai](https://vm0.ai) **Settings > Connectors** and connect **Todoist**. vm0 will automatically inject the required `TODOIST_TOKEN` environment variable.
-
 ## Core APIs
 
 ### Get All Projects

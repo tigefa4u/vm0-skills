@@ -21,10 +21,6 @@ Manage payments, customers, subscriptions, and billing with the Stripe API.
 - View account balance and transactions
 - List charges and events
 
-## Prerequisites
-
-Go to [vm0.ai](https://vm0.ai) **Settings > Connectors** and connect **Stripe**. vm0 will automatically inject the required `STRIPE_TOKEN` environment variable.
-
 ## Important: Stripe Uses Form-Encoded Bodies
 
 Stripe API accepts `application/x-www-form-urlencoded` for POST requests, **not JSON**. Write request bodies to a `.txt` file using `key=value&key=value` format. Nested params use bracket syntax: `items[0][price]=price_xxx`.

@@ -27,10 +27,6 @@ Use this skill when you need to:
 
 ---
 
-## Prerequisites
-
-Go to [vm0.ai](https://vm0.ai) **Settings → Connectors** and connect **Meta Ads**. vm0 will automatically inject the required `META_ADS_TOKEN` environment variable.
-
 ---
 
 > **Placeholders:** Values in `{curly-braces}` like `{ad-account-id}` are placeholders. Replace them with actual values when executing. Ad account IDs must be prefixed with `act_` (e.g., `act_123456789`).

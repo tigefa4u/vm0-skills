@@ -20,10 +20,6 @@ Manage serverless Postgres projects, branches, databases, roles, and compute end
 - Start/stop and configure compute endpoints
 - Get connection URIs for databases
 
-## Prerequisites
-
-Go to [vm0.ai](https://vm0.ai) **Settings > Connectors** and connect **Neon**. vm0 will automatically inject the required `NEON_TOKEN` environment variable.
-
 ## Core APIs
 
 ### List Projects

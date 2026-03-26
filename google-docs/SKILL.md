@@ -29,10 +29,6 @@ Use this skill when you need to:
 
 ---
 
-## Prerequisites
-
-Go to [vm0.ai](https://vm0.ai) **Settings → Connectors** and connect **Google Docs**. vm0 will automatically inject the required `GOOGLE_DOCS_TOKEN` environment variable.
-
 ---
 
 > **Placeholders:** Values in `{curly-braces}` like `{document-id}` are placeholders. Replace them with actual values when executing.
